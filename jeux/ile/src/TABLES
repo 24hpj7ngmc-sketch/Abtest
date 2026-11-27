@@ -1,0 +1,13 @@
+# Les tables du jeu que le lobby peut lire (IleDesCinq.tables) : une par ligne. build.py les tire des règles (outils/tables.js) ; les fonctions n'y passent pas.
+ELS
+EL
+BEATS
+CAMPK
+CAMPS
+CAMPT
+BAL
+BALN
+KIT
+KINDS
+CAMPN
+CAMPW

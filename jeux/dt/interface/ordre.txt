@@ -1,0 +1,15 @@
+# fichiers de l'interface, dans l'ordre où build.py les colle (au marqueur UI de page.html, avant la 3D, les règles et les sons)
+sauvegarde.js
+menu.js
+hud.js
+outils.js
+commandes.js
+carte.js
+dev.js
+arbre.js
+evenements.js
+tutoriel.js
+lobby.js
+regles.js
+multi.js
+boucle.js

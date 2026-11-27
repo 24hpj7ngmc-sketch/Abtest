@@ -3,3 +3,7 @@ atelier/shots/
 atelier/shots3d/
 node_modules/
 __pycache__/
+jeux/ile/construit/
+jeux/ile/livraison/
+jeux/ile/shots/
+jeux/ile/shots3d/

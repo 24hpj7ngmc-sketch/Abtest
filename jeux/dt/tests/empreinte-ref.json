@@ -1,0 +1,135 @@
+{
+ "fuite j1 Braise fusil": {
+  "jour": 1,
+  "phase": "day",
+  "act": 13,
+  "tues": 26,
+  "fuyards": 0,
+  "ville": 100,
+  "argent": 52,
+  "p": [
+   1.659,
+   19.4,
+   -12.4,
+   100
+  ],
+  "tur": "",
+  "ult": 0.0467,
+  "zombies": "373e3279",
+  "evenements": "boom:46 brasier0:14 dawn:1 hult:4 land:26 meteor:32 pkill:26 road:1 shot:172"
+ },
+ "fuite j4 Roc pompe": {
+  "jour": 4,
+  "phase": "day",
+  "act": 82,
+  "tues": 337,
+  "fuyards": 18,
+  "ville": 100,
+  "argent": 845,
+  "p": [
+   1.659,
+   19.4,
+   -12.4,
+   150
+  ],
+  "tur": "0,0",
+  "ult": 0.62,
+  "zombies": "58631c7b",
+  "evenements": "dawn:1 escape:18 hult:4 land:337 pellet:117 pkill:313 rempart:14 rempart_fin:9 road:1 shot:39 tracer:399 variant:3"
+ },
+ "fuite j6 Sylve lance-flammes": {
+  "jour": 6,
+  "phase": "day",
+  "act": 622,
+  "tues": 117,
+  "fuyards": 90,
+  "ville": 100,
+  "argent": 406,
+  "p": [
+   1.659,
+   19.4,
+   -12.4,
+   100
+  ],
+  "tur": "0,0",
+  "ult": 0.0933,
+  "zombies": "ca6068cd",
+  "evenements": "dawn:1 escape:90 fleche:266 hult:4 hurle:20 inv:30 land:117 pkill:109 road:1 ronces:14 shot:400 tracer:399 variant:4"
+ },
+ "fuite j7 Volt sniper arbre max": {
+  "jour": 7,
+  "phase": "day",
+  "act": 63,
+  "tues": 1079,
+  "fuyards": 0,
+  "ville": 100,
+  "argent": 12912.1416,
+  "p": [
+   1.4038,
+   19.4,
+   -12.4,
+   85
+  ],
+  "tur": "0,0",
+  "ult": 1,
+  "zombies": "ccec0113",
+  "evenements": "dawn:1 eclair:14 hult:4 hurle:2 inv:62 land:1070 road:1 shot:100 tracer:1342 variant:4"
+ },
+ "fuite j9 Ondine assaut": {
+  "jour": 9,
+  "phase": "day",
+  "act": 1452,
+  "tues": 237,
+  "fuyards": 145,
+  "ville": 100,
+  "argent": 1155,
+  "p": [
+   1.659,
+   19.4,
+   -12.4,
+   100
+  ],
+  "tur": "0,0",
+  "ult": 1,
+  "zombies": "e3d1efcc",
+  "evenements": "dawn:1 escape:145 hult:4 hurle:81 inv:189 land:237 maree:14 pkill:233 road:1 shot:300 tracer:399 variant:4"
+ },
+ "arrivent j2": {
+  "jour": 2,
+  "phase": "day",
+  "act": 185,
+  "tues": 23,
+  "fuyards": 0,
+  "ville": 100,
+  "argent": 23,
+  "p": [
+   1.659,
+   19.4,
+   -12.4,
+   100
+  ],
+  "tur": "0,0",
+  "ult": 0,
+  "zombies": "1a10dd05",
+  "evenements": "dawn:1 land:23 road:1 shot:172 tracer:131"
+ },
+ "arrivent j6 arbre max": {
+  "jour": 6,
+  "phase": "day",
+  "act": 410,
+  "tues": 419,
+  "fuyards": 0,
+  "ville": 100,
+  "argent": 2791.5185,
+  "p": [
+   1.659,
+   19.4,
+   -12.4,
+   100
+  ],
+  "tur": "0,0",
+  "ult": 1,
+  "zombies": "69202950",
+  "evenements": "boom:18 dawn:1 land:419 pkill:36 road:1 shot:300 tracer:397"
+ }
+}

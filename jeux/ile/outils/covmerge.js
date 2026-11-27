@@ -1,0 +1,5 @@
+// fusionne /tmp/cov/*.json : une fonction ou un bloc compte comme « vivant » s'il a tourné dans au moins un test
+const fs=require('fs'),all={};for(const f of fs.readdirSync('/tmp/cov')){if(!f.endsWith('.json'))continue;const m=JSON.parse(fs.readFileSync('/tmp/cov/'+f));for(const k in m){const a=all[k]||(all[k]=Object.assign({},m[k],{c:0}));a.c=Math.max(a.c,m[k].c);}}
+const dead=Object.values(all).filter(m=>m.c===0),fn=dead.filter(m=>!m.b).sort((a,b)=>b.l-a.l),bl=dead.filter(m=>m.b&&m.l>=(+process.argv[2]||250)).sort((a,b)=>b.l-a.l);
+console.log('fonctions jamais appelées :',fn.length,'·',fn.reduce((a,m)=>a+m.l,0),'caractères');for(const m of fn.slice(0,+process.argv[3]||80))console.log(String(m.l).padStart(6),(m.n||'(anonyme)').padEnd(16),m.s.replace(/\s+/g,' ').slice(0,110));
+console.log('\nblocs jamais exécutés (≥ '+(+process.argv[2]||250)+' car.) :',bl.length,'·',bl.reduce((a,m)=>a+m.l,0),'caractères');for(const m of bl.slice(0,+process.argv[4]||60))console.log(String(m.l).padStart(6),(m.n||'(anonyme)').padEnd(16),m.s.replace(/\s+/g,' ').slice(0,110));

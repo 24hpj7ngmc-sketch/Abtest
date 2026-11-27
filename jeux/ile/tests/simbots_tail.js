@@ -1,0 +1,7 @@
+// bots joueurs : parties sans aucune aide du joueur (il reste planté au cœur), les bots font tout
+function runBots(mode,nb,N){let w=0,wv=0,co=0,bad=0,tw=0,dn=0,stuck=0,mu=0,fo=0;for(let sd=1;sd<=N;sd++){const s=newSim('feu',mk(sd*7919),{},mode);const els=ELS.filter(e=>e!=='feu');for(let j=0;j<nb;j++){const o=botMake(s,j,els[j%4],{});s.others['bot'+j]=o;}s.players=1+nb;s.heroGod=false;
+  let g=0,pt=0;const last={};while(!s.over&&g++<3000000){if(s.phase==='prep'){pt+=1/30;if(pt>(mode==='normal'?7:14)){pt=0;startWave(s);}}step(s,1/30,{f:0,r:0});
+    if(g%90===0){for(const o of botList(s)){if(!Number.isFinite(o.x+o.z+o.y+o.hp+o.yaw))bad++;const q=last[o.id];if(q&&s.phase==='wave'&&s.enemies.length>3&&Math.hypot(q[0]-o.x,q[1]-o.z)<.05&&!(o.down>0)&&!o.inp.fire)stuck++;last[o.id]=[o.x,o.z];if(o.down>0)dn++;}}}
+  if(s.over==='win')w++;wv+=s.wave;co+=s.core;tw+=s.towers.length;for(let i=0;i<s.wallSet.length;i++){if(s.wallSet[i]>0)mu++;if(s.pit[i]>0)fo++;}}
+  return (mode+' · '+nb+' bot'+(nb>1?'s':'')).padEnd(18)+': gagne '+w+'/'+N+' · vague moy '+(wv/N).toFixed(1)+' · cœur '+(co/N).toFixed(1)+' · défenses '+(tw/N).toFixed(0)+' · murs '+(mu/N).toFixed(0)+' cases · fosses '+(fo/N).toFixed(0)+' cases'+' · relevés à terre '+dn+' · immobiles '+stuck+(bad?' · NaN!':'');}
+console.log(runBots('hard',1,3));console.log(runBots('hard',2,3));console.log(runBots('hard',3,2));console.log(runBots('normal',2,2));

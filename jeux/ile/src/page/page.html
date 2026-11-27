@@ -1,0 +1,113 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>L'Île des Cinq V@VERSION@</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Barlow:wght@400;600&display=swap">
+<style>
+/*@STYLE@*/
+</style>
+
+<div id="stage">
+<canvas id="game" tabindex="0"></canvas>
+<div id="vig"></div>
+<canvas id="mark"></canvas>
+
+<div id="hud"><div id="hudIn">
+  <div id="stats" class="panel">
+    <span id="sCore"><small>Cœur</small><b>20</b></span>
+    <span id="sGold"><small>Or</small><b>0</b></span>
+    <span id="sWave"><small>Vague</small><b>0/10</b></span>
+    <span id="sLeft" hidden><small>Ennemis</small><b>0</b></span>
+    <span id="sNet" hidden><small>Joueurs</small><b>1</b></span>
+  </div>
+  <button id="bGrid" class="panel" hidden>Marchand · <b>0</b> pts</button>
+  <button id="bHire" class="panel" hidden>Esclaves · <b>0</b> or</button>
+  <button id="bArmes" class="panel" hidden>Armes</button>
+  <button id="bRules" class="panel" hidden>Règles</button>
+  <div id="devP" class="panel" hidden></div>
+  <div id="wave" class="panel"></div>
+  <canvas id="mini" width="208" height="208"></canvas>
+  <div id="sPot" class="panel" hidden>Pot <b>0</b></div>
+  <div id="cross"></div>
+  <span id="wheelL" hidden></span>
+  <div id="scope" hidden></div>
+  <div id="hurt"></div>
+  <div id="boomF"></div>
+  <div id="downV" hidden></div>
+  <div id="joy"><div id="knob"></div></div>
+  <div id="act" hidden>
+    <div id="hp"><i id="hpF"></i><span id="hpT"></span></div>
+    <div id="ult" hidden><i id="ultF"></i></div>
+    <div id="sub" hidden></div>
+    <div id="hot"></div>
+  </div>
+  <div id="wheel" hidden></div>
+  <div id="leftCol"><div id="buffs"></div><div id="tutoB" class="panel" hidden></div></div>
+  <div id="pads">
+    <span id="aLab" class="panel" hidden><b></b><small></small></span>
+    <button id="bFree" class="pad vh"><b></b><small></small></button><button id="bSneak" class="pad">Sneak</button><button id="bAb" class="pad">Compétence<small></small></button><button id="bUlt" class="pad">Ultime<small></small></button><button id="bRenf" class="pad">Renfort<small></small></button>
+    <div id="padMain"><button id="bFire" class="pad"><b>Tir</b><small></small></button><button id="bJump" class="pad">Saut</button></div>
+  </div>
+  <div id="cielH" hidden>
+    <div id="cShops"></div>
+    <div id="cLow"><span id="cHint"></span><div id="cSub"></div><div id="cBar"></div></div>
+    <button id="cReady"><b>Prêt</b><small></small></button>
+    <button id="cRules" class="panel">Règles</button>
+  </div>
+</div></div>
+
+<div id="tree" hidden>
+  <div id="tScroll"><div id="tMap"></div></div>
+  <div id="tHud"><div id="tHudIn">
+    <div id="tTop"><div class="panel tcur"><span id="tTitle"></span><b id="tSh">0</b><small id="tUnit"></small></div></div>
+    <div id="tInfo" class="panel"></div>
+    <button class="solid" id="tClose">Retour</button>
+  </div></div>
+</div>
+
+<div id="mapV" class="veil" hidden>
+  <div id="mapOpt"></div>
+  <div id="mapBox"><canvas id="mapC" width="720" height="720"></canvas></div>
+</div>
+
+<div id="guideV" class="veil" hidden><div class="card">
+  <div class="row"><h1 id="guT">Le Guide</h1><span style="display:flex;gap:8px;flex-wrap:wrap"><button class="ghost" id="guA" hidden></button><button class="solid" id="guX">Retour</button></span></div>
+  <div class="row" id="guTabs"></div>
+  <div id="guB"></div>
+</div></div>
+
+<div id="arsV" class="veil" hidden><div class="card">
+  <div class="row"><h1>Tes armes</h1><button class="solid" id="arsGo">C'est parti</button></div>
+  <p>Jusqu'à 3 armes, un élément pour chacune. Une balle fait ×1,5 à l'élément qu'elle bat, ×0,75 à celui qui la bat&nbsp;: Eau › Feu › Nature › Vent › Terre › Élec › Eau. ★&nbsp;: l'élément de ton héros, +10&nbsp;%.</p>
+  <div id="arsW"></div>
+  <div id="arsE"></div>
+  <p id="arsM" hidden></p>
+  <p id="arsC" hidden></p>
+</div></div>
+
+<div id="armV" class="veil" hidden><div class="card">
+  <div class="row"><h1>Marchand d'armes</h1><span class="gold"><span id="armG">0</span> or</span><button class="solid" id="armX">Retour</button></div>
+  <p>Pour toi, arme par arme, payé avec l'or de l'équipe. Tout repart à zéro à la fin de la partie.</p>
+  <div id="armTabs"></div>
+  <div id="armB"></div>
+</div></div>
+
+<div id="end" class="veil" hidden><div class="card">
+  <h1 id="eTitle"></h1><p id="eText"></p>
+  <div id="eGain"></div>
+  <div class="row"><button class="ghost" id="eReplay">Rejouer</button><button class="solid" id="eAgain">Retour sur l'île</button></div>
+</div></div>
+
+<div id="hireV" class="veil" hidden><div class="card">
+  <div class="row"><h1>Marchand d'esclaves</h1><span class="gold"><span id="hireG">0</span> or</span><button class="solid" id="hireX">Retour</button></div>
+  <p id="hireT"></p>
+  <div id="hireB"></div>
+  <div class="row"><button class="ghost" id="hireW"></button></div>
+</div></div>
+
+<div id="toast"></div>
+<div id="cTime" hidden></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/*@JS@*/
+</script>

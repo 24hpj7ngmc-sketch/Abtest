@@ -1,0 +1,1530 @@
+/* style.css — le style de toute la page de Dernier Toit (collé par build.py dans le <style> de page.html).
+   La vue 3D (#game) occupe tout l'écran ; le HUD (#hud) est un calque par-dessus ; les écrans (menu #start, fin #endV,
+   grande carte #mapV : classe .veil ; arbre #tree) couvrent le jeu. Mêmes commandes universelles que L'Île des Cinq.
+   Classes posées sur <html> par l'interface : .rot (téléphone en portrait : la page tourne de 90°), .sm (moins de 800 px de large),
+   .mOut (mode « Ils s'échappent »). Couleurs et polices : les variables de :root ci-dessous. */
+:root {
+  color-scheme: dark;
+  --ink: #121418;
+  --panel: rgba(16, 18, 22, 0.78);
+  --panel-solid: #1b1f25;
+  --line: rgba(230, 220, 200, 0.22);
+  --fg: #f1ece2;
+  --mute: #b3aa9a;
+  --gold: #ffcf5a;
+  --danger: #ff6b5b;
+  --ok: #7bd88f;
+  --display: 'Chakra Petch', 'Trebuchet MS', sans-serif;
+  --body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  background: var(--ink);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 14px;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+}
+/* ---- la scène, le HUD */
+#stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+.rot #stage {
+  inset: auto;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  transform: rotate(90deg) translateY(-100%);
+}
+.rot #hud,
+.rot #tHud,
+.rot .veil {
+  padding-block: 8px 10px;
+  padding-left: max(16px, var(--saT, env(safe-area-inset-top, 0px)));
+  padding-right: max(16px, var(--saB, env(safe-area-inset-bottom, 0px)));
+}
+#game {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+  outline: none;
+}
+#vig {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 46%, rgba(10, 8, 6, 0) 56%, rgba(10, 8, 6, 0.35) 100%);
+}
+#hurt {
+  position: absolute;
+  inset: -40px;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse at center, rgba(200, 20, 10, 0) 45%, rgba(200, 20, 10, 0.65) 100%);
+}
+#hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  padding-block: calc(8px + var(--saT, env(safe-area-inset-top, 0px))) calc(10px + var(--saB, env(safe-area-inset-bottom, 0px)));
+  padding-left: max(16px, var(--saL, env(safe-area-inset-left, 0px)));
+  padding-right: max(16px, var(--saR, env(safe-area-inset-right, 0px)));
+}
+#hudIn {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+/* mini-carte, bouton DEV et son panneau (sous la mini-carte), compteur d'images */
+#mini {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(16, 18, 22, 0.55);
+  pointer-events: auto;
+}
+#devB {
+  position: absolute;
+  left: 24px;
+  top: 110px;
+  width: 56px;
+  height: 26px;
+  border-radius: 13px;
+  border: 1px solid #ff5ad0;
+  background: rgba(40, 12, 34, 0.8);
+  color: #ffb3ea;
+  font:
+    800 11px system-ui,
+    sans-serif;
+  letter-spacing: 0.08em;
+  pointer-events: auto;
+  display: none;
+  padding: 0;
+}
+#devB.on {
+  display: block;
+}
+#devB.open {
+  background: #ff5ad0;
+  color: #2a0a22;
+}
+#fps {
+  position: absolute;
+  left: 86px;
+  top: 115px;
+  font:
+    700 11px ui-monospace,
+    monospace;
+  color: #9effa8;
+  text-shadow: 0 1px 2px #000;
+  pointer-events: none;
+  display: none;
+}
+#fps.on {
+  display: block;
+}
+#devP {
+  position: absolute;
+  left: 0;
+  top: 142px;
+  width: 384px;
+  display: none;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 90, 208, 0.5);
+  background: rgba(16, 18, 22, 0.9);
+  pointer-events: auto;
+  z-index: 5;
+}
+#devP.on {
+  display: grid;
+}
+#devP button {
+  font:
+    600 11.5px system-ui,
+    sans-serif;
+  padding: 6px 7px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.06);
+  color: #eee;
+  text-align: left;
+}
+#devP button b {
+  color: #ffb3ea;
+}
+#devP button.on {
+  border-color: #ff5ad0;
+  background: rgba(255, 90, 208, 0.16);
+}
+/* chiffres du haut à droite, bouton Améliorations / Boutique, panneau du jour (haut centre) */
+#stats {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: flex;
+  gap: 9px;
+  padding: 4px 9px; /* V4.5 : plus serrés, comme L'Île des Cinq V1.2 */
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+#stats span {
+  display: flex;
+  gap: 5px;
+  align-items: baseline;
+}
+#stats small {
+  font-family: var(--body);
+  font-weight: 600;
+  color: var(--mute);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+#sCash b {
+  color: var(--gold);
+}
+#sHp.low b,
+#sCity.low b,
+#sIn b {
+  color: var(--danger);
+}
+#bTree {
+  position: absolute;
+  right: 0;
+  top: 34px;
+  pointer-events: auto;
+  padding: 3px 9px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--fg);
+}
+/* V4.5 (comme le Marchand de L'Île des Cinq V1.2) : doré quand une amélioration est achetable, pâli sinon */
+#bTree.has {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+#bTree:not(.has) {
+  opacity: 0.55;
+}
+#wave {
+  position: absolute;
+  left: 50%;
+  /* sous la rangée des chiffres du haut à droite : sur un téléphone, les deux se chevauchaient (V4.0) */
+  top: 44px;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  padding: 7px 12px 8px;
+  width: min(290px, calc(100% - 330px));
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+#wave.mini {
+  opacity: 0.5;
+}
+/* V4.5 : pendant le jour, plus de bandeau (les chiffres sont en haut à droite) */
+#wave.vide {
+  display: none;
+}
+#wave.mini .wi,
+#wave.mini #wBar {
+  display: none;
+}
+#wave .wh {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+#wave .wi {
+  font-size: 12px;
+  color: var(--mute);
+  text-align: center;
+  line-height: 1.3;
+}
+#wave .wi b {
+  color: var(--fg);
+}
+#wave .wi em {
+  font-style: normal;
+  color: var(--danger);
+  font-weight: 600;
+}
+#wBar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+#wBar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--danger);
+}
+#go {
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--gold);
+  color: #1b1505;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 14px;
+}
+/* V4.3 : le multi (multi.js) : le compteur « 3 sur le toit » au-dessus du panneau du jour ; chez l'invité, le bouton du jour attend l'hôte */
+#mNb {
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+#go.attente {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--mute);
+}
+/* lunette du sniper, réticule (rouge : zombie dans l'axe ; grossit quand on touche), messages */
+#scope {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+  background: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 38vh, rgba(4, 5, 6, 0.96) calc(38vh + 2px));
+}
+#scope.on {
+  display: block;
+}
+#scope::before,
+#scope::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: rgba(10, 12, 14, 0.85);
+}
+#scope::before {
+  width: 76vh;
+  height: 1.5px;
+  margin: -0.75px 0 0 -38vh;
+}
+#scope::after {
+  height: 76vh;
+  width: 1.5px;
+  margin: -38vh 0 0 -0.75px;
+}
+#cross {
+  position: fixed !important;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin: -11px 0 0 -11px;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-radius: 50%;
+  transition:
+    transform 0.07s,
+    border-color 0.07s;
+}
+#cross::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px;
+  border-radius: 50%;
+  background: #fff;
+}
+#cross.on {
+  border-color: var(--danger);
+}
+#cross.hit {
+  transform: scale(1.35);
+  border-color: #fff;
+}
+#cross.crit {
+  transform: scale(1.6);
+  border-color: var(--gold);
+}
+#cross.kill {
+  transform: scale(1.9) rotate(45deg);
+  border-color: var(--danger);
+  border-radius: 3px;
+}
+/* V4.9 : Sniper, tir chargé (1 s en visée) */
+#cross.charge {
+  border-color: #8fe6dc;
+  box-shadow: 0 0 8px #8fe6dc;
+}
+#cross.ads {
+  width: 8px;
+  height: 8px;
+  margin: -6px 0 0 -6px;
+  border-color: rgba(255, 80, 60, 0.9);
+}
+#toast {
+  position: absolute;
+  left: 50%;
+  top: 63%;
+  transform: translateX(-50%);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 17px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  transition: opacity 0.3s;
+  text-align: center;
+  white-space: nowrap;
+}
+#toast.on {
+  opacity: 1;
+}
+#big {
+  position: absolute;
+  left: 50%;
+  top: 33%;
+  transform: translateX(-50%);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+#big.on {
+  opacity: 1;
+}
+/* V4.2 : le joueur tombé (mode fuite) : un voile sombre et le compte à rebours du relevé ; on peut encore tourner la tête */
+#chuteV {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: radial-gradient(ellipse at center, rgba(40, 6, 6, 0.25), rgba(20, 0, 0, 0.72));
+  pointer-events: none;
+  text-align: center;
+  z-index: 5;
+}
+#chuteV[hidden] {
+  display: none;
+}
+#chuteV b {
+  font-family: var(--display);
+  font-size: 34px;
+  letter-spacing: 0.06em;
+  color: var(--fg);
+  text-shadow: 0 3px 14px #000;
+}
+#chuteV span {
+  font-family: var(--display);
+  font-size: 20px;
+  color: var(--gold);
+  text-shadow: 0 2px 8px #000;
+}
+#chuteV small {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  opacity: 0.85;
+  text-shadow: 0 2px 6px #000;
+}
+/* V4.2 : l'écran de paie (fin de partie en mode fuite) : ce qu'on a gagné, en gros */
+#eT.paie {
+  font-size: 44px;
+  color: var(--gold) !important;
+}
+#eP small {
+  display: block;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+#big b {
+  display: block;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 40px;
+  letter-spacing: 0.08em;
+  text-shadow: 0 3px 14px rgba(0, 0, 0, 0.8);
+}
+#big small {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  text-shadow: 0 2px 6px #000;
+}
+#big.red b {
+  color: var(--danger);
+}
+#big.gold b {
+  color: var(--gold);
+}
+/* gains qui flottent, repères au bord de l'écran */
+.flo {
+  position: absolute;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--gold);
+  text-shadow: 0 1px 4px #000;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+.edge {
+  position: absolute;
+  top: 44%;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(160, 20, 10, 0.75);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 12px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+/* joystick (bas gauche), barre de vie, barre d'outils et sous-barre (bas centre) */
+#joy {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  background: rgba(16, 18, 22, 0.3);
+  /* V4.5 (comme L'Île des Cinq V1.2) : à peine visible au repos, il s'allume sous le pouce */
+  opacity: 0.32;
+  transition: opacity 0.25s;
+}
+#joy.on {
+  opacity: 1;
+}
+#joy.sprint {
+  border-color: var(--gold);
+}
+#knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin: -23px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+}
+#joy.sprint #knob {
+  background: var(--gold);
+}
+#act {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}
+/* V4.5 (comme L'Île des Cinq V1.2) : la vie est une barre fine, sans chiffres, tout en bas sous la barre d'outils */
+#hp {
+  order: 3;
+  position: relative;
+  width: 180px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(16, 18, 22, 0.8);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+#hp i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  background: var(--ok);
+}
+#hp.low i {
+  background: var(--danger);
+}
+/* V4.9 : le bouclier de la Soigneuse, par-dessus la vie */
+#hp #hpS {
+  width: 0;
+  background: #3fa9ff;
+  opacity: 0.85;
+}
+#hp span {
+  display: none !important; /* V4.5 : plus de « 100 / 100 » au milieu de l'écran */
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 2px #000;
+}
+#hot {
+  display: flex;
+  gap: 5px;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  transition:
+    opacity 0.35s,
+    background-color 0.35s,
+    border-color 0.35s;
+}
+#act.quiet #hot {
+  opacity: 0.3;
+  background-color: transparent;
+  border-color: transparent;
+}
+.slot {
+  position: relative;
+  width: 54px; /* V4.5 : barre d'outils un peu plus petite (L'Île des Cinq V1.2) */
+  height: 40px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 0;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.slot svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.slot small {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--mute);
+}
+.slot.sel {
+  border-color: var(--gold);
+  background: rgba(255, 207, 90, 0.16);
+}
+.slot.sel small {
+  color: var(--gold);
+}
+.slot.lock {
+  opacity: 0.35;
+}
+.slot i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+#sub {
+  display: flex;
+  gap: 6px;
+  transition: opacity 0.25s;
+}
+#sub .tchip {
+  padding: 4px 9px; /* V4.5 : choix des tourelles un peu plus petit (L'Île des Cinq V1.2) */
+}
+#act.quiet #sub {
+  opacity: 0;
+  pointer-events: none;
+}
+.tchip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: var(--panel-solid);
+  color: var(--mute);
+  font-weight: 600;
+  font-size: 12px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  touch-action: manipulation;
+}
+.tchip.sel {
+  border-color: var(--c, var(--gold));
+  color: var(--c, var(--gold));
+}
+/* commandes universelles : quart de rond dans le coin (Action en bas, Saut en haut), Sneak, Compétence, Ultime le long de l'arc, bouton libre à gauche */
+:root {
+  --edge: calc(0px - max(16px, var(--saR, env(safe-area-inset-right, 0px))));
+  --low: calc(-2px - var(--saB, env(safe-area-inset-bottom, 0px)));
+}
+.rot {
+  --edge: 0px;
+  --low: 0px;
+}
+#pads {
+  position: absolute;
+  display: block;
+  width: 0;
+  height: 0;
+  right: var(--edge);
+  bottom: var(--low);
+  pointer-events: none;
+}
+.pad {
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  background: rgba(16, 18, 22, 0.5);
+  font-family: var(--display);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  line-height: 1.1;
+  padding: 0;
+  pointer-events: auto;
+}
+.pad.on {
+  background: rgba(255, 255, 255, 0.3);
+}
+#padMain {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 124px;
+  height: 124px;
+  box-sizing: border-box;
+  border: solid rgba(255, 255, 255, 0.42);
+  border-width: 2px 0 0 2px;
+  border-radius: 100% 0 0 0;
+  overflow: hidden;
+  pointer-events: auto;
+}
+#padMain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 1px),
+    rgba(255, 255, 255, 0.42) calc(50% - 1px),
+    rgba(255, 255, 255, 0.42) calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+}
+#padMain .pad {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  background: rgba(16, 18, 22, 0.36);
+}
+#padMain .pad.on {
+  background: rgba(255, 255, 255, 0.3);
+}
+#bFire {
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 34px 14px 16px;
+  text-align: center;
+  font-size: 13px;
+}
+#bJump.clb {
+  color: var(--gold);
+  font-size: 11.5px;
+  padding-right: 6px;
+  letter-spacing: -0.01em;
+}
+#bJump {
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 45px 14px 0 0;
+  font-size: 14px;
+}
+#bFire b {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: -0.01em;
+}
+#bFree,
+#bSneak,
+#bAb,
+#bUlt {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  font-size: 9.5px;
+  background: rgba(16, 18, 22, 0.36);
+}
+#bFree {
+  right: 181px;
+  bottom: 0;
+  border-color: var(--gold);
+  color: var(--gold);
+}
+#bFree.on {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+#bFree b {
+  font-size: 9px;
+  letter-spacing: -0.03em;
+}
+#bSneak {
+  right: 128px;
+  bottom: 0;
+}
+#bAb {
+  right: 111px;
+  bottom: 50px;
+}
+#bUlt {
+  right: 78px;
+  bottom: 92px;
+}
+#bSneak.on {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.pad small {
+  display: block;
+  font-family: var(--body);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--mute);
+  white-space: nowrap;
+}
+.pad small:empty {
+  display: none;
+}
+.pad.vh {
+  visibility: hidden;
+}
+.pad.arm {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.2);
+}
+.pad.idle {
+  opacity: 0.45;
+}
+#bFire.go {
+  color: var(--gold);
+  background: rgba(74, 54, 8, 0.68);
+}
+#bFire.poor {
+  color: var(--mute);
+}
+#bUlt.rdy {
+  border-color: var(--gold);
+  color: #1b1505;
+  background: var(--gold);
+  animation: pulse 0.9s ease-in-out infinite;
+}
+#bUlt.rdy small {
+  color: #1b1505;
+}
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 207, 90, 0.35);
+  }
+}
+/* l'étiquette d'action (V4.5, comme L'Île des Cinq V1.2) : une ligne sans cadre sous le viseur, là où l'on regarde
+   (avant : un pavé à gauche des boutons) ; en orange quand la pose est refusée (plus de tourelle libre) */
+#aLab {
+  position: fixed;
+  left: 50%;
+  top: calc(50% + 16px);
+  transform: translateX(-50%);
+  max-width: min(440px, 72vw);
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow:
+    0 1px 3px #000,
+    0 0 6px #000;
+  pointer-events: none;
+}
+#aLab b,
+#aLab small {
+  font: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#aLab b:not(:empty) + small:not(:empty)::before {
+  content: '\00a0·\00a0'; /* V4.6 : un seul espace de chaque côté (avant : un trou de 5 px en plus) */
+}
+#aLab small:empty,
+#aLab b:empty {
+  display: none;
+}
+#aLab.poor {
+  color: #ffb15a;
+}
+.sm #pads {
+  transform: scale(0.88);
+  transform-origin: 100% 100%;
+}
+.sm #act {
+  left: 43%;
+}
+/* mode fuite : 5 outils (la Masse en plus) : la barre glisse un peu à gauche et l'étiquette d'action s'étroitise, pour ne pas se chevaucher */
+/* le compte de planches reste lisible pendant qu'on tient le bouton */
+html.mOut #bFire.on small {
+  color: var(--fg);
+  text-shadow: 0 1px 3px #000;
+}
+html.mOut:not(.sm) #act {
+  left: calc(50% - 56px);
+}
+html.mOut.sm .slot {
+  width: 52px;
+}
+/* ---- les écrans : menu de départ, fin, grande carte (.veil, .card) */
+.veil {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 12, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  touch-action: pan-y;
+  padding-block: calc(10px + var(--saT, env(safe-area-inset-top, 0px))) calc(10px + var(--saB, env(safe-area-inset-bottom, 0px)));
+  padding-left: max(16px, var(--saL, env(safe-area-inset-left, 0px)));
+  padding-right: max(16px, var(--saR, env(safe-area-inset-right, 0px)));
+}
+.card {
+  background: var(--panel-solid);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  width: min(660px, 100%);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.card h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 26px;
+  margin: 0;
+  letter-spacing: 0.03em;
+}
+.card h1 em {
+  font-style: normal;
+  color: var(--danger);
+}
+.card h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 16px;
+  margin: 0;
+}
+.card p {
+  margin: 0;
+  color: var(--mute);
+  line-height: 1.4;
+}
+.card p b {
+  color: var(--fg);
+}
+.ver {
+  font-family: var(--display);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--mute);
+}
+.row {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.rowl {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.solid {
+  background: var(--gold);
+  color: #1b1505;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 15px;
+  touch-action: manipulation;
+}
+.ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 600;
+  touch-action: manipulation;
+}
+.ghost.sel {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+#start .card > .row:first-child {
+  position: sticky;
+  top: -10px;
+  z-index: 2;
+  background: var(--panel-solid);
+  margin: -14px -16px 0;
+  padding: 14px 16px 8px;
+  border-radius: 14px 14px 0 0;
+  box-shadow: 0 6px 10px -8px rgba(0, 0, 0, 0.6);
+}
+/* la campagne, comme dans L'Île des Cinq : une colonne par type, le niveau 1 en bas (plus gros) */
+#sCamp .cst {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+  align-items: stretch;
+  min-width: 0;
+}
+#sCamp .cst > b {
+  text-align: center;
+  color: var(--c);
+  font-family: var(--display);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+#sCamp .tchip {
+  touch-action: manipulation;
+  padding: 4px 6px;
+  text-align: center;
+  border-color: color-mix(in srgb, var(--c) 55%, transparent);
+}
+#sCamp .tchip[data-l='1'] {
+  padding-block: 9px;
+}
+#sCamp .tchip.lock {
+  opacity: 0.3;
+}
+#sCamp .tchip.done {
+  color: var(--c);
+}
+#sCamp .tchip.sel {
+  color: var(--gold);
+  border-color: var(--gold);
+  background: rgba(255, 207, 90, 0.12);
+}
+#sCampD {
+  color: var(--mute);
+  flex: 1;
+  min-width: 180px;
+  text-align: right;
+}
+.grid5 {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+.grid6 {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+/* V4.8 : l'élément des balles (menu) ; la puce choisie prend la couleur de l'élément */
+.elrow {
+  align-items: center;
+  margin-top: 6px;
+}
+.elrow button.sel {
+  border-color: var(--c, var(--line));
+  color: #fff;
+}
+.elrow #sElD {
+  flex-basis: 100%;
+  color: var(--mute);
+}
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.wpk {
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  padding: 5px 5px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+  touch-action: manipulation;
+  color: var(--fg);
+  font: inherit;
+}
+.wpk img {
+  width: 100%;
+  aspect-ratio: 240/90;
+  object-fit: contain;
+  border-radius: 7px;
+  background: radial-gradient(ellipse at 50% 55%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.04) 72%);
+  pointer-events: none;
+}
+.wpk b {
+  font-family: var(--display);
+  font-size: 13.5px;
+  color: var(--c);
+}
+.wpk small {
+  font-size: 10.5px;
+  color: var(--mute);
+  font-variant-numeric: tabular-nums;
+}
+.wpk.cur {
+  border-color: var(--c);
+  background: rgba(255, 255, 255, 0.12);
+}
+.wpk:active {
+  background: rgba(255, 255, 255, 0.14);
+}
+.pick {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--c);
+  border-radius: 10px;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+  touch-action: manipulation;
+  color: var(--fg);
+  font: inherit;
+}
+.pick b {
+  font-family: var(--display);
+  font-size: 15px;
+  color: var(--c);
+}
+.pick small {
+  font-size: 10.5px;
+  color: var(--mute);
+  line-height: 1.3;
+}
+.pick em {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fg);
+}
+.pick .kit {
+  color: var(--gold);
+  font-weight: 600;
+}
+.pick.cur {
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 0 2px var(--c);
+}
+.pick:active {
+  background: rgba(255, 255, 255, 0.14);
+}
+.card .tchip {
+  touch-action: manipulation;
+}
+.card .note {
+  font-size: 12px;
+  color: var(--mute);
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+.kpi {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.kpi span {
+  display: flex;
+  flex-direction: column;
+}
+.kpi small {
+  color: var(--mute);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.kpi b {
+  font-family: var(--display);
+  font-size: 20px;
+}
+/* grande carte et ses réglages */
+#mapV {
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 14px;
+  overflow: hidden;
+  background: rgba(10, 10, 12, 0.93);
+}
+#mapOpt {
+  flex: none;
+  width: min(270px, 44%);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow: auto;
+  touch-action: pan-y;
+}
+#mapOpt h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 16px;
+  margin: 0;
+}
+#mapOpt .ghost {
+  text-align: left;
+}
+#mapOpt .solid {
+  margin-top: auto;
+}
+#mapBox {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#mapC {
+  height: 100%;
+  max-height: 100%;
+  aspect-ratio: 1;
+  max-width: 100%;
+}
+/* l'arbre d'améliorations */
+#tree {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 40% 45%, #262a31 0, #121418 70%);
+  overflow: hidden;
+  touch-action: none;
+}
+#tMap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1200px;
+  height: 1050px;
+  transform-origin: 0 0;
+}
+#tMap > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.tn {
+  position: absolute;
+  width: 66px;
+  height: 66px;
+  margin: -33px 0 0 -33px;
+  border-radius: 50%;
+  border: 2px solid var(--c);
+  background: #181b20;
+  color: var(--fg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  touch-action: none;
+}
+.tn span {
+  font-size: 9.5px;
+  font-weight: 600;
+  line-height: 1.05;
+  text-align: center;
+  max-width: 58px;
+}
+.tn em {
+  font-style: normal;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 10px;
+  color: var(--c);
+}
+.tn.spec {
+  border-radius: 12px;
+  border-width: 3px;
+}
+.tn.root {
+  width: 84px;
+  height: 84px;
+  margin: -42px 0 0 -42px;
+  border-width: 3px;
+}
+.tn.lock {
+  opacity: 0.35;
+  border-style: dashed;
+}
+.tn.lock span,
+.tn.lock em {
+  display: none;
+}
+.tn.lock::after {
+  content: '?';
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--c);
+}
+.tn.own {
+  background: color-mix(in srgb, var(--c) 22%, #181b20);
+}
+.tn.max {
+  background: var(--c);
+  color: #14161a;
+}
+.tn.max em {
+  color: #14161a;
+}
+.tn.can {
+  box-shadow: 0 0 0 3px rgba(255, 207, 90, 0.55);
+}
+.tn.sel {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+#tHud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  padding-block: calc(8px + var(--saT, env(safe-area-inset-top, 0px))) calc(10px + var(--saB, env(safe-area-inset-bottom, 0px)));
+  padding-left: max(16px, var(--saL, env(safe-area-inset-left, 0px)));
+  padding-right: max(16px, var(--saR, env(safe-area-inset-right, 0px)));
+}
+#tHudIn {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+#tHudIn > * {
+  pointer-events: auto;
+}
+#tTop {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 7px 12px;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  font-family: var(--display);
+  font-weight: 700;
+}
+#tTop b {
+  color: var(--gold);
+  font-size: 18px;
+}
+#tInfo {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: min(280px, 46%);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--panel-solid);
+}
+#tInfo h2 {
+  font-family: var(--display);
+  font-size: 16px;
+  margin: 0;
+}
+#tInfo p {
+  margin: 0;
+  color: var(--mute);
+  font-size: 13px;
+  line-height: 1.35;
+}
+#tInfo .fx {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 15px;
+}
+#tInfo .fx i {
+  font-style: normal;
+  color: var(--ok);
+}
+#tInfo .solid {
+  padding: 9px 12px;
+  font-size: 14px;
+}
+#tInfo .solid:disabled {
+  background: #3a3d42;
+  color: var(--mute);
+}
+#tClose {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+/* V1.5 : la légende est au-dessus de « Retour » : le haut à gauche accueille la branche de la masse (x = −4,15) */
+#tLeg {
+  position: absolute;
+  left: 0;
+  bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--mute);
+  padding: 6px 9px;
+}
+#tLeg i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 5px;
+  background: var(--c);
+}
+/* l'attribut hidden l'emporte toujours */
+[hidden] {
+  display: none !important;
+}
+/* ---- V4.2 : le Guide « Règles » (regles.js) : le bouton qui apparaît à côté de lui (comme « Boutique ») et sa fiche à cinq onglets
+   (le même panneau qu'au lobby : #guideV, lignes .srow). La fiche tient sur l'écran du téléphone : seules les lignes défilent. */
+#bRules {
+  position: absolute;
+  right: 0;
+  top: 34px;
+  pointer-events: auto;
+  padding: 6px 10px;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--gold);
+  border-color: var(--gold);
+}
+#bTree:not([hidden]) ~ #bRules {
+  top: 64px;
+}
+#guideV .card {
+  box-sizing: border-box;
+  width: min(840px, 100%);
+  max-height: 100%;
+  gap: 8px;
+}
+#guideV h1 {
+  font-size: 21px;
+}
+#guTabs {
+  justify-content: flex-start;
+  gap: 6px;
+}
+#guB {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  touch-action: pan-y;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  align-content: start;
+  gap: 7px;
+}
+.srow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.srow span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.srow b {
+  font-family: var(--display);
+  font-size: 14px;
+}
+.srow small {
+  color: #ddd5c6;
+  font-size: 12.5px;
+  line-height: 1.3;
+}

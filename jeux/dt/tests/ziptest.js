@@ -1,0 +1,21 @@
+// V3.6 : tyroliennes du toit aux passerelles des avenues ; bouton Saut → « Tyrolienne », « Lâcher » ; captures
+const {chromium}=require('playwright');const path=require('path');
+(async()=>{const b=await chromium.launch({args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});const errs=[];
+  const ctx=await b.newContext({viewport:{width:966,height:366},hasTouch:true,isMobile:true});const p=await ctx.newPage();p.on('pageerror',e=>errs.push(e.message));
+  await p.goto('file://'+path.resolve('test3d.html'));await p.waitForTimeout(800);
+  let ok=0,ko=0;const T=(n,c,x)=>{c?ok++:ko++;console.log((c?'OK  ':'RATÉ')+' '+n+(x!==undefined?' — '+x:''));};
+  const cdp=await ctx.newCDPSession(p);const tap=async sel=>{const bb=await (await p.$(sel)).boundingBox();await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:bb.x+bb.width*.75,y:bb.y+bb.height*.3,id:5}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});};
+  const lbl=()=>p.evaluate(()=>document.getElementById('bJump').firstChild.nodeValue);
+  await p.evaluate(()=>{__dt.save.mode='out';__dt.newGame(2);document.getElementById('big').style.display='none';const P=__dt.S.p,Z=ZIPS[0];P.x=Z.a[0]-.8;P.z=Z.a[2]+1.3;P.yaw=Math.atan2(-Z.n[0],-Z.n[1])+.25;P.pitch=-.05;});await p.waitForTimeout(500);
+  T('V4.7 : sans la case Tyrolienne, Saut reste « Saut »',await lbl()==='Saut',await lbl());
+  await p.evaluate(()=>{__dt.save.lv.m_tyro=1;__dt.S.P=derive(__dt.save.lv);});await p.waitForTimeout(300);
+  T('au poteau du toit, face au câble : « Tyrolienne »',await lbl()==='Tyrolienne',await lbl());await p.screenshot({path:'shots/105-tyrolienne-depart.png'});
+  await tap('#bJump');await p.waitForTimeout(250);T('on glisse : « Lâcher »',await p.evaluate(()=>!!__dt.S.p.zip)&&await lbl()==='Lâcher');
+  await p.waitForFunction(()=>__dt.S.p.zip&&__dt.S.p.zip.s>18,null,{timeout:15000});await p.evaluate(()=>{__dt.S.p.pitch=-.35;});await p.waitForTimeout(150);await p.screenshot({path:'shots/106-tyrolienne-vol.png'});
+  await p.waitForFunction(()=>!__dt.S.p.zip,null,{timeout:20000});await p.waitForTimeout(200);
+  T('arrivé sur la passerelle de l\'avenue nord',await p.evaluate(()=>Math.abs(__dt.S.p.y-PASSY)<.05&&__dt.S.p.z<-50),await p.evaluate(()=>__dt.S.p.y.toFixed(2)+' '+__dt.S.p.z.toFixed(1)));
+  await p.evaluate(()=>{__dt.S.p.yaw=0;__dt.S.p.pitch=-.3;});await p.waitForTimeout(300);await p.screenshot({path:'shots/107-passerelle.png'});
+  await p.evaluate(()=>{__dt.S.p.yaw=Math.PI;__dt.S.p.pitch=0;});await p.waitForTimeout(250);T('demi-tour sur la passerelle : « Tyrolienne » (retour)',await lbl()==='Tyrolienne',await lbl());
+  await p.evaluate(()=>{openMap();});await p.waitForTimeout(250);await p.screenshot({path:'shots/108-carte-tyroliennes.png'});await p.evaluate(()=>{document.getElementById('mapV').hidden=true;});
+  await p.evaluate(()=>{__dt.save.mode='in';__dt.newGame(2);});await p.waitForTimeout(300);T('Ils arrivent : pas de passerelle',await p.evaluate(()=>floorAt(0,-57.25,10)===0&&zipSpot(__dt.S)===null));
+  console.log(errs.length?errs.join('\n'):'erreurs 0');console.log(ok+' OK, '+ko+' ratés');await b.close();})();

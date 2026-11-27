@@ -1,0 +1,6 @@
+cases propres aux héros: 42 · problèmes 0 · coût moyen de la partie propre à un héros 2152 éclats
+hard+joueur    héros  0: gagne 1/4 · vague moy 6.0 · cœur 1.5
+hard+joueur    héros 15: gagne 4/4 · vague moy 10.0 · cœur 20.0
+normal+joueur  héros  0: gagne 0/3 · vague moy 10.0 · cœur 0.0
+normal+joueur  héros 30: gagne 3/3 · vague moy 20.0 · cœur 26.0
+invasion vague 6 : front le plus large 198 m · ennemis en même temps 24 · immobiles 0 · répartition route/champs/éventail 40 % / 30 % / 30 % · fin prep null

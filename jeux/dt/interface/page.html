@@ -1,0 +1,91 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Dernier Toit. V4.9</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Barlow:wght@400;600&display=swap">
+<!-- Dernier Toit : squelette de la page. build.py colle interface/style.css au marqueur CSS, et dans le script :
+     l'interface (interface/ordre.txt), le kit 3D, les règles, les sons et l'affichage. Voir interface/LISEZMOI.md. -->
+<style>
+/*@CSS@*/
+</style>
+
+<!-- la scène : la vue 3D (#game) ; le HUD par-dessus (#hud) ; les écrans (arbre, carte, menu, fin) couvrent le jeu -->
+<div id="stage">
+<canvas id="game" tabindex="0"></canvas>
+<div id="vig"></div>
+<div id="hud"><div id="hudIn">
+  <canvas id="mini" width="208" height="208"></canvas>
+  <button id="devB">DEV</button><div id="fps"></div><div id="devP"></div>
+  <div id="stats" class="panel"><span id="sCity" hidden><small>Ville</small><b>100</b></span><span id="sHp"><small>Vie</small><b>100</b></span><span id="sCash"><small>$</small><b>0</b></span><span id="sDay"><small>Jour</small><b>1</b></span><span id="sLeft" hidden><small>Zombies</small><b>0</b></span><span id="sIn" hidden><small>Dedans</small><b>0</b></span><span id="sLv"><small>Niv.</small><b>Toit</b></span></div>
+  <button id="bTree" class="panel" hidden>Améliorations</button>
+  <button id="bRules" class="panel" hidden>Règles</button>
+  <div id="wave" class="panel"><div class="wh" id="wT"></div><div class="wi" id="wI"></div><div id="wBar" hidden><i></i></div><button id="go">Lancer le jour</button></div>
+  <div id="scope"></div>
+  <div id="cross"></div>
+  <!-- V4.5 : l'étiquette d'action, une ligne sous le viseur (modèle : L'Île des Cinq V1.2) -->
+  <span id="aLab" hidden><b></b><small></small></span>
+  <div id="hurt"></div>
+  <div id="edges"></div>
+  <div id="floats"></div>
+  <div id="big"><b></b><small></small></div>
+  <div id="toast"></div>
+  <div id="joy"><div id="knob"></div></div>
+  <div id="act"><div id="hp"><i id="hpF"></i><i id="hpS"></i><span id="hpT"></span></div><div id="sub" hidden></div><div id="hot"></div></div>
+  <!-- commandes universelles (commandes.js) : bouton libre, Sneak, Compétence, Ultime le long de l'arc ; quart de rond Tir / Saut -->
+  <div id="pads">
+    <button id="bFree" class="pad vh"><b></b><small></small></button><button id="bSneak" class="pad">Sneak</button><button id="bAb" class="pad">Missile<small></small></button><button id="bUlt" class="pad">Onde<small></small></button>
+    <div id="padMain"><button id="bFire" class="pad"><b>Tir</b><small></small></button><button id="bJump" class="pad">Saut</button></div>
+  </div>
+</div></div>
+
+<!-- l'arbre d'améliorations (arbre.js) -->
+<div id="tree" hidden>
+  <div id="tMap"><svg id="tSvg"></svg></div>
+  <div id="tHud"><div id="tHudIn">
+    <div id="tTop" class="panel"><span>Améliorations</span><b id="tCash">0 $</b></div>
+    <div id="tLeg" class="panel"></div>
+    <div id="tInfo" class="panel"></div>
+    <button class="solid" id="tClose">Retour</button>
+  </div></div>
+</div>
+
+<!-- la grande carte et les réglages (carte.js) -->
+<div id="mapV" class="veil" hidden><div id="mapOpt"></div><div id="mapBox"><canvas id="mapC" width="720" height="720"></canvas></div></div>
+
+<!-- V4.2 : la fiche des règles du Guide (regles.js), le même panneau qu'au lobby : cinq onglets, « Retour », et le tuto pas à pas à sa gauche -->
+<div id="guideV" class="veil" hidden><div class="card">
+  <div class="row"><h1 id="guT">Règles</h1><span class="rowl"><button class="ghost" id="guA" hidden></button><button class="solid" id="guX">Retour</button></span></div>
+  <div class="row" id="guTabs"></div>
+  <div id="guB"></div>
+</div></div>
+
+<!-- le menu de départ (menu.js) -->
+<div id="start" class="veil"><div class="card">
+  <div class="row"><h1>Dernier <em>Toit</em> <span class="ver">V4.9</span></h1><span class="rowl"><button class="ghost" id="sTree">Améliorations</button><button class="solid" id="sGo">Commencer</button></span></div>
+  <p id="sP1"></p>
+  <div class="rowl" id="sMode"></div>
+  <h2 id="sHeroT">Choisis ton héros</h2>
+  <div class="grid6" id="sGrid"></div>
+  <div class="row" id="sCampH"><h2>Campagne</h2><small id="sCampD"></small></div>
+  <div class="grid5" id="sCamp"></div>
+  <h2 id="sArmT">Choisis ton arme</h2>
+  <div class="grid3" id="sArms"></div>
+  <div class="rowl elrow" id="sElA"></div>
+  <div class="row"><span class="rowl" id="sDays"></span><div class="kpi" id="sKpi"></div></div>
+  <div class="row"><p style="flex:1;min-width:200px">Chaque journée la horde double. Si tu perds, tu gardes ton argent : améliore-toi et repars. Mêmes commandes que dans L'Île des Cinq.</p><span class="rowl"><button class="ghost" id="sSnd"></button><button class="ghost" id="sDev"></button></span></div>
+</div></div>
+
+<!-- l'écran de fin (menu.js) -->
+<div id="endV" class="veil" hidden><div class="card">
+  <h1 id="eT"></h1><p id="eP"></p><div class="kpi" id="eKpi"></div>
+  <div class="row"><span class="rowl"><button class="ghost" id="eTree">Améliorations</button><button class="ghost" id="eMenu">Menu</button></span><span class="rowl" id="eBtns"></span></div>
+</div></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// l'interface d'abord (les sons lisent la sauvegarde dès le chargement) ; le lancement attend la fin du script (interface/boucle.js)
+/*@UI@*/
+/*@GFX@*/
+/*@SIM@*/
+/*@SOUND@*/
+/*@SCENE@*/
+</script>

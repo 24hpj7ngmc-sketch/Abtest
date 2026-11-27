@@ -1,0 +1,52 @@
+# L'ordre d'assemblage du script du jeu (lu par build.py). Une ligne = un fichier de src/, ou un repère :
+#   @sim … @/sim : les règles de L'Île des Cinq, testables hors navigateur (les bancs de simulation lisent ce qu'il y a entre les deux)
+#   @ouvre … @ferme : la fonction qui enferme tout le reste de la page
+#   @gfx : l'atelier 3D (gfx/kit.js, gfx/models/*.js, puis dt/mains.js et dt/photos.js venus de Dernier Toit)
+# L'ordre compte : un fichier peut se servir de ce qui est déclaré au-dessus de lui dès son chargement.
+@sim
+regles/tables.js
+regles/carte.js
+regles/terrassement.js
+regles/ennemis.js
+regles/defenses.js
+regles/heros.js
+regles/joueur.js
+regles/armes.js
+regles/bots-chantier.js
+regles/bots.js
+regles/boucle.js
+regles/ciel.js
+regles/auto.js
+regles/reseau.js
+@/sim
+@ouvre
+interface/base.js
+interface/armes.js
+interface/modes.js
+@gfx
+sons/sound.js
+affichage/scene.js
+affichage/modeles.js
+affichage/decor.js
+affichage/themes.js
+affichage/armurier.js
+affichage/ambiance.js
+affichage/entites.js
+affichage/animations.js
+affichage/effets.js
+affichage/vie.js
+interface/hud.js
+interface/commandes.js
+interface/tutoriel.js
+interface/partie.js
+interface/arsenal.js
+interface/multi.js
+interface/bots-marchand.js
+interface/tactile.js
+interface/minicarte.js
+interface/carte.js
+interface/guide.js
+interface/reperes.js
+interface/ciel.js
+interface/boucle.js
+@ferme
