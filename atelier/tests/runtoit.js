@@ -9,10 +9,10 @@ const {chromium}=require('playwright');const path=require('path');
  await G(tl=>{DernierToit.troisJs=tl;},'file://'+path.resolve('gfx/three-lite.js'));
  // ---------- les armes
  step='armes';
- const A=await G(()=>{const g=__g();return{ile:g.armsOf('ile').join(),toit:g.armsOf('toit').join(),vm:Object.keys(g.MODELS).filter(k=>k.startsWith('vm.')).length,
+ const A=await G(()=>{const g=__g();return{ile:g.armsOf('ile').join(),toit:g.armsOf('toit').join(),vm:Object.keys(g.MODELS).filter(k=>k.startsWith('vm.')).length,vmn:Object.keys(g.MODELS).filter(k=>k.startsWith('vm.')),
    tabs:Object.keys(g.WT.pompe.gt).join(),lance:g.WT.lance.nodes.map(n=>n.id).join()};});
  ok('les six armes servent dans les deux jeux',A.ile==='pistolet,assaut,sniper,fusil,pompe,lance'&&A.toit===A.ile,A);
- ok('plus aucun modèle d\'arme en main dans la page du lobby (ils sont dans les mini-jeux)',A.vm===0,A);
+ ok('V12.7 : les modèles des armes sont au lobby (outil « Arme ») : les six armes en main existent',['pistolet','assaut','sniper','fusil','pompe','lance'].every(n=>A.vmn.includes('vm.'+n)),A);
  ok('chaque arme a son arbre de Dernier Toit ; le lance-flammes n\'a ni critique ni perforant, il a sa brûlure',A.tabs==='ile,toit'&&A.lance==='d1,c1,r1,x1',A);
  // ---------- le portail
  step='portail';

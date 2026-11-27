@@ -11,7 +11,8 @@ function resize() {
   }
 }
 let last = performance.now(),
-  bob = 0;
+  bob = 0,
+  spk = 0;
 function frame(now) {
   requestAnimationFrame(frame);
   let dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
@@ -322,17 +323,22 @@ function frame(now) {
     }
     $('joy').classList.toggle('sprint', h.sprint);
     const mv = Math.hypot(inp.f, inp.r) * (h.y > 0 ? 0 : 1);
-    bob += dt * mv * (h.sprint ? 15 : 11);
+    // V2.3 : la course de Dernier Toit : balancement 9 (marche) ou 13 (sprint) par seconde, facteur de sprint lissé (spk), roulis et champ de vision
+    if (mv > 0.1) bob += dt * (h.sprint ? 13 : 9) * mv;
+    spk += ((h.sprint ? 1 : 0) - spk) * Math.min(1, dt * 7);
     if (shake > 0) shake = Math.max(0, shake - dt);
     const sk = calm ? 0 : shake * 0.5;
     camera.position.set(
       h.x + (Math.random() - 0.5) * sk,
-      Math.max(0.3, h.y + h.eye) + Math.sin(bob) * 0.05 * mv + (Math.random() - 0.5) * sk,
+      Math.max(0.3, h.y + h.eye) +
+        Math.sin(bob) * (h.sprint ? 0.06 : 0.035) * Math.min(1, mv) +
+        (Math.random() - 0.5) * sk,
       h.z
     );
     camera.rotation.y = h.yaw;
     camera.rotation.x = h.pitch;
-    const fov0 = (camera.aspect < 1 ? 86 : 72) + (h.sprint ? 8 : 0),
+    camera.rotation.z = calm ? 0 : Math.sin(bob * 0.5) * 0.014 * spk;
+    const fov0 = (camera.aspect < 1 ? 86 : 72) + 8 * spk,
       zm = aimZoom(),
       fovT = zm > 1 ? (2 * Math.atan(Math.tan((fov0 * Math.PI) / 360) / zm) * 180) / Math.PI : fov0;
     if (Math.abs(fovT - fovNow) > 0.05) {

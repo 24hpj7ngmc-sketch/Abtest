@@ -34,7 +34,6 @@ function gameWeap(w) {
     sim.m[k] = (sim.m[k] || 0) + (n[k] || 0) - (o[k] || 0);
   aimSet(false);
   fireQ = false;
-  setGun(sim.hero.el);
   $('hot').querySelector('.slot[data-t=pistolet] small').textContent = WT[w].short;
   armApply();
   drawSub();

@@ -641,7 +641,9 @@ button:focus-visible {
   width: auto;
   vertical-align: -4px;
   margin-right: 5px;
-  background: #c9d3d8;
+  background: linear-gradient(135deg, #c9d3d8 58%, var(--ec, #c9d3d8));
+  border: 2px solid var(--ec, transparent);
+  box-shadow: 0 0 6px var(--ec, transparent);
   border-radius: 4px;
   padding: 1px 2px;
 }

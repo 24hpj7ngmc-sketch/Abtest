@@ -91,6 +91,8 @@ function etatPropre(d) {
       n: nomPropre(p.n),
       h: herosPropre(p.h),
       w: mainPropre(p.w),
+      // V5.0 : l'élément de son arme (clé de ELKEYS, sinon vide : on prend alors son héros)
+      e: typeof p.e === 'string' && ELKEYS.includes(p.e) ? p.e : '',
       x: nbPropre(p.x, -500, 500, 0),
       y: nbPropre(p.y, -50, 200, 0),
       z: nbPropre(p.z, -500, 500, 0),
@@ -391,6 +393,7 @@ function multiPublie() {
     n: MULTI.moi.nom,
     h: S.hero || '',
     w: tool === 'fusil' ? S.weap : tool,
+    e: ELKEYS.includes(S.elArme) ? S.elArme : '',
     x: r2(p.x),
     y: r2(p.y),
     z: r2(p.z),
@@ -450,7 +453,7 @@ function multiPublie() {
   versLobby({ dt: 'etat', d });
 }
 // les autres joueurs à dessiner (affichage/joueurs.js) : un tableau neuf à chaque appel, un objet neuf par joueur
-// [{ id, nom, heros, arme, x, y, z, yaw, pitch, tire, aTerre }] ; places lissées ; nom nettoyé (12 caractères) ; heros : clé de HEROS ou '' ;
+// [{ id, nom, heros, arme, el (V5.0 : élément de son arme ou ''), x, y, z, yaw, pitch, tire, aTerre }] ; places lissées ; nom nettoyé (12 caractères) ; heros : clé de HEROS ou '' ;
 // arme : clé de WEAP ou 'masse' | 'marteau' | 'leurre' | 'frappe' ; [] sans multi
 function joueursDistants() {
   const r = [];
@@ -464,6 +467,7 @@ function joueursDistants() {
       nom: j.nom,
       heros: j.heros,
       arme: p.w,
+      el: p.e || '',
       x: v.x,
       y: v.y,
       z: v.z,

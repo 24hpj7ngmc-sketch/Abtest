@@ -26,10 +26,12 @@ const mixC = (a, b, t) => {
   return rvbA.map((v, i) => Math.round(v + (rvbB[i] - v) * t)).reduce((r, v) => r * 256 + v, 0);
 };
 // manches de veste teintées à la couleur du héros, gants tactiques sombres (armes, marteau, masse) ; gris neutres sans héros
+// V5.0 : les armes à feu prennent la couleur de l'élément de l'arme (S.elArme : opts.elementArme du lobby, sinon le choix du menu), sinon celui du héros
 let gearK = '';
 function heroGear() {
   const hero = S && S.hero,
-    cle = hero || '';
+    el = hero ? (ELKEYS.includes(S.elArme) ? S.elArme : HEROS[hero] ? hero : null) : null,
+    cle = (hero || '') + '|' + (el || '');
   if (cle === gearK || typeof gfxGuns !== 'function') return;
   gearK = cle;
   if (!hero) {
@@ -38,7 +40,7 @@ function heroGear() {
   }
   const couleur = parseInt(HEROS[hero].c.slice(1), 16),
     manche = mixC(couleur, 0x30353b, 0.5);
-  gfxGuns({ sleeve: manche, sleeveD: mixC(manche, 0, 0.35), glove: 0x3a3732, gloveD: 0x24221f });
+  gfxGuns({ sleeve: manche, sleeveD: mixC(manche, 0, 0.35), glove: 0x3a3732, gloveD: 0x24221f }, el);
 }
 // nouvelle partie au jour `day` (endless : la partie sans fin après la victoire)
 function newGame(day, endless) {

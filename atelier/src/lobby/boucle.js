@@ -7,6 +7,9 @@ function lobTurn(dx, dy) {
 function lobbyTick(dt, now) {
   const t = now / 1000,
     free = !lobOv();
+  // la course, comme dans Dernier Toit (V12.7) : sprint lissé (LB.spk), balancement de la tête (LB.bob), pas, roulis, champ de vision
+  LB.spr = false;
+  LB.mg = 0;
   // déplacement : mêmes commandes qu'en partie (joystick, sprint à fond, saut) ; on suit le relief
   if (free) {
     const mag = Math.hypot(joy.f, joy.r);
@@ -61,28 +64,41 @@ function lobbyTick(dt, now) {
       }
     }
     LB.eye += ((snk ? 1.1 : 1.7) - LB.eye) * Math.min(1, dt * 12);
-    LB.bob += dt * mag * (spr ? 15 : 11) * (LB.y > gy + 0.05 ? 0 : 1);
-    $('joy').classList.toggle('sprint', spr);
-    const ft = (lcam.aspect < 1 ? 86 : 72) + (spr ? 8 : 0);
-    if (Math.abs(ft - LB.fov) > 0.05) {
-      LB.fov += (ft - LB.fov) * Math.min(1, dt * 8);
-      lcam.fov = LB.fov;
-      lcam.updateProjectionMatrix();
+    LB.spr = spr;
+    LB.mg = mag;
+    if (mag > 0.1 && !fly && LB.y <= gy + 0.05) {
+      LB.bob += dt * (spr ? 13 : 9) * mag;
+      const pas = Math.floor(LB.bob / Math.PI);
+      if (pas !== LB.pas) {
+        LB.pas = pas;
+        SND.play('step');
+      }
     }
+    $('joy').classList.toggle('sprint', spr);
   }
   jumpQ = false;
+  LB.spk += ((LB.spr ? 1 : 0) - LB.spk) * Math.min(1, dt * 7);
   lcam.aspect = aspect;
   if (lcam.userData.a !== lcam.aspect) {
     lcam.userData.a = lcam.aspect;
     lcam.updateProjectionMatrix();
   }
-  lcam.position.set(LB.x, LB.eye + LB.y + Math.sin(LB.bob) * 0.05 * Math.hypot(joy.f, joy.r), LB.z);
+  // champ de vision : +8° en sprint
+  const ft = (lcam.aspect < 1 ? 86 : 72) + 8 * LB.spk;
+  if (Math.abs(ft - LB.fov) > 0.05) {
+    LB.fov += (ft - LB.fov) * Math.min(1, dt * 14);
+    lcam.fov = LB.fov;
+    lcam.updateProjectionMatrix();
+  }
+  lcam.position.set(LB.x, LB.eye + LB.y + Math.sin(LB.bob) * (LB.spr ? 0.06 : 0.035) * Math.min(1, LB.mg), LB.z);
   lcam.rotation.y = LB.yaw;
   lcam.rotation.x = LB.pitch;
+  lcam.rotation.z = Math.sin(LB.bob * 0.5) * 0.014 * LB.spk;
+  armeFrame(dt);
   lsky.position.copy(lcam.position);
   document.documentElement.classList.toggle('lfly', flying());
   if (!save.dev && !$('lDevP').hidden) $('lDevP').hidden = true;
-  $('lBar').classList.toggle('quiet', LB.tool === 'main' && now - barT > 2600);
+  $('lBar').classList.toggle('quiet', (LB.tool === 'main' || LB.tool === 'arme') && now - barT > 2600);
   if (now - (LB.mt || 0) >= 120) {
     LB.mt = now;
     lobMini(mg, 208);
@@ -198,6 +214,8 @@ function lobbyTick(dt, now) {
     '|' +
     tWeap +
     wLevel(tWeap) +
+    wEl(tWeap) +
+    (LA.ins >= 0 ? 'i' : '') +
     '|' +
     (save.evo || 1) +
     '|' +
@@ -224,6 +242,9 @@ function lobbyTick(dt, now) {
       } else if (LB.tool === 'pelle') {
         t1 = LMODES[LB.mode];
         w = t1;
+      } else if (LB.tool === 'arme') {
+        t1 = WT[tWeap].short + ' · ' + EL[wEl(tWeap)].n;
+        w = 'Montrer';
       } else if (near) {
         w = near.k === 'guide' ? 'Parler' : near.k === 'portal' || near.k === 'maison' ? 'Entrer' : 'Ouvrir';
         t1 =

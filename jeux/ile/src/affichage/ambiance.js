@@ -373,6 +373,17 @@ for (const k of ['pelle', 'marteau']) {
   camera.add(g);
   held[k] = g;
 }
+// V2.3 : en course (c = facteur de sprint lissé, 0 à 1), l'objet en main est baissé, tourné sur le côté, et balance avec les pas (la pose de Dernier Toit)
+function runPose(m, c) {
+  if (c <= 0.01) return;
+  const w = Math.sin(bob * 0.5);
+  m.position.x += 0.05 * c;
+  m.position.y -= 0.07 * c + Math.abs(w) * 0.02 * c;
+  m.position.z += 0.05 * c;
+  m.rotation.x -= 0.38 * c;
+  m.rotation.y += 0.55 * c;
+  m.rotation.z += 0.3 * c + w * 0.06 * c;
+}
 function handsTick(h, dt) {
   const cd0 = 0.26 * (1 - (h.m.hCd || 0)),
     kw = Math.min(0.14, cd0 * 0.6),
@@ -387,8 +398,8 @@ function handsTick(h, dt) {
     const a = aimK,
       q = 1 - a;
     gun.position.set(
-      H.p[0] * q + AIMP[0] * a,
-      (H.p[1] + Math.sin(bob) * 0.01 * q) * q + AIMP[1] * a,
+      H.p[0] * q + AIMP[0] * a + Math.sin(bob * 0.5) * 0.008 * q,
+      H.p[1] * q + AIMP[1] * a + Math.abs(Math.cos(bob * 0.5)) * 0.006 * q,
       H.p[2] * q + AIMP[2] * a + kick * 0.06 * (1 - 0.5 * a)
     );
     gun.rotation.set((H.r[0] || 0) * q + kick * 0.11 * (1 - 0.6 * a), (H.r[1] || 0) * q, (H.r[2] || 0) * q); // en visée l'arme vient au centre, la mire sous le réticule
@@ -414,6 +425,7 @@ function handsTick(h, dt) {
       gun.rotation.x += rc * 0.03;
       gun.position.y -= rc * 0.006;
     }
+    runPose(gun, a > 0.05 ? 0 : spk);
   }
   swing = Math.max(0, swing - dt * 4);
   for (const k in held) {
@@ -421,8 +433,9 @@ function handsTick(h, dt) {
       Q = HOLD[k];
     m.visible = tool === k;
     if (m.visible) {
-      m.position.set(Q.p[0], Q.p[1] + Math.sin(bob) * 0.012, Q.p[2]);
+      m.position.set(Q.p[0] + Math.sin(bob * 0.5) * 0.008, Q.p[1] + Math.abs(Math.cos(bob * 0.5)) * 0.006, Q.p[2]);
       m.rotation.set((Q.r[0] || 0) - swing * (k === 'pelle' ? 0.9 : 1.2), Q.r[1] || 0, Q.r[2] || 0);
+      runPose(m, spk * (1 - 0.6 * (swing > 0 ? 1 : 0)));
     }
   }
 } // petit coup d'outil à chaque action

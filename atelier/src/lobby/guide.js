@@ -132,7 +132,7 @@ const GSTEPS = [
   },
   {
     t: () =>
-      'Le Marteau pose des décors et déplace tes bâtiments ; la Pelle, à côté, modèle le terrain. Reprends la Main pour continuer.',
+      'Le Marteau pose des décors et déplace tes bâtiments ; la Pelle, à côté, modèle le terrain, et l’outil Arme montre ton arme à la couleur de son élément. Reprends la Main pour continuer.',
     ok: () => LB.tool === 'main'
   },
   {
@@ -279,7 +279,7 @@ function guideTopics() {
         ],
         [
           'Bâtir',
-          'Le Marteau pose des décors et déplace tes bâtiments (le bouton libre range ou tourne). La Pelle monte, creuse et aplanit le terrain.'
+          'Le Marteau pose des décors et déplace tes bâtiments (le bouton libre range ou tourne). La Pelle monte, creuse et aplanit le terrain. L’outil Arme sort ton arme, à la couleur de son élément : Action la montre, et les autres joueurs la voient dans la main de ton avatar.'
         ]
       ]
     ],

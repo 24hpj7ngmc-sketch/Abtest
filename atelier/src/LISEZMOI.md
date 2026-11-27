@@ -55,6 +55,7 @@ L'Île céleste : le lobby, son village, ses bâtiments, le Guide, les deux port
 - `guide.js` (445 lignes) : Le Guide du lobby : la visite pas à pas du village, ses sujets quand on lui reparle.
 - `toit.js` (341 lignes) : Dernier Toit derrière le deuxième portail : panneau, bonus emportés, ouverture, paie au retour (toitFin), écran de retour.
 - `outils.js` (343 lignes) : La barre d'outils du lobby : main, marteau, pelle ; viser, tracer, agir (lobAct).
+- `arme.js` : L'outil Arme (V12.7) : l'arme du joueur en main à la couleur de son élément, qui suit la course ; « Montrer » ; ce que les autres joueurs en voient (armeNet, armePub).
 - `dev.js` (113 lignes) : Le mode dev du lobby : raccourcis de test.
 - `carte.js` (262 lignes) : La carte du lobby : mini-carte, grande carte et tous les réglages (son, mode de tir, saut auto, mode dev, multi).
 - `batiments.js` (144 lignes) : Les panneaux des bâtiments : hall des héros, maison, marchand céleste, musée.

@@ -720,7 +720,7 @@ function drawTree() {
     $('tArms').innerHTML =
       RY.map(q =>
         q.A.length
-          ? `<div class="ray"><span>${q.n > 1 && q.n === NG ? 'Partout' : q.t}</span>${q.A.map(w => `<button class="tchip${w === tWeap ? ' sel' : ''}" data-w="${w}">${w === tWeap ? wPic(w) : ''}${WT[w].short} · ${q.A.length > 4 ? '' : 'niv. '}${wLevel(w)}</button>`).join('')}</div>`
+          ? `<div class="ray"><span>${q.n > 1 && q.n === NG ? 'Partout' : q.t}</span>${q.A.map(w => `<button class="tchip${w === tWeap ? ' sel' : ''}" data-w="${w}">${wPic(w)}${WT[w].short} · ${q.A.length > 4 ? '' : 'niv. '}${wLevel(w)}</button>`).join('')}</div>`
           : `<div class="ray off"><span>${q.t}</span><em>aucune arme</em></div>`
       ).join('') +
       `<div class="ray tabs"><span>Arbre</span>${[['gen', 'Général']]

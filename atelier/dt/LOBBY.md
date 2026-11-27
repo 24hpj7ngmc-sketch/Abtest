@@ -50,6 +50,12 @@ DernierToit.fermer(); // retirer le jeu sans attendre le joueur (aucun « fin »
 - `sansFin` : partie sans fin (après une victoire, « Continuer sans fin » lance une nouvelle partie, qui enverra son propre `fin`) ;
 - « Rejouer » à l'écran de fin relance une partie dans l'iframe : un `fin` par partie, à récompenser chacun.
 
+## V5.0 : des couleurs d'armes pour chaque élément
+
+Rien à changer côté lobby : `opts.elementArme` (V4.8) colore désormais aussi l'arme vue en main (les six armes à feu : carcasse, pièces sable et vert armée
+teintées ; acier, verre et gants inchangés). Absent ou inconnu : la couleur de l'élément du héros. `DernierToit.version` vaut `'V5.0'`.
+En multi, chaque téléphone publie en plus l'élément de son arme (champ `e`, facultatif : un téléphone qui ne l'envoie pas est dessiné à la couleur de son héros).
+
 ## Ajouts de la V4.2 (demande du lobby : `claude/demande-dernier-toit-synchro.md`)
 
 `DernierToit.accepte = ['rang', 'argent', 'heros', 'balles', 'niveaux']` : ce que le jeu sait lire en plus (le lobby s'y règle).

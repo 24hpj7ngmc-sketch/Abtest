@@ -1,5 +1,10 @@
 # Dernier Toit — notes de fabrication (V1.0, 19/11/2026)
 
+## V5.0 (28/11/2026) : des couleurs d'armes pour chaque élément
+Demande de Frédéric : « Des couleurs d'armes pour chaque élément. » L'arme en main (et celle des autres joueurs en multi) prend la couleur de l'élément de l'arme
+(opts.elementArme du lobby, sinon le choix du menu, sinon le héros) : modèles `vm.*` teintés par `ctx.el` (gfx/models/mains.js), cache de `prepM` par élément.
+Réseau : champ `e` (élément de l'arme) dans l'état publié, vérifié à la réception. Règles, sons, écran et commandes inchangés.
+
 Demande de Frédéric : « Recrée-moi le jeu Wait, They Can Climb le plus fidèlement possible, à la 1re personne. Ça nous servira de base pour un projet à venir. »
 Nom propre (« Dernier Toit ») : le titre et les visuels du jeu d'origine appartiennent à son studio (babia). Les mécaniques sont reprises.
 

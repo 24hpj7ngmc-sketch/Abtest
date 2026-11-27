@@ -3,7 +3,11 @@
 // DernierToit, qui ouvre le jeu dans un cadre par-dessus l'île (contrat : dt/LOBBY.md). Ici : le panneau du portail (héros, arme, ce qu'on emporte), la conversion de ce que le lobby
 // apporte en « bonus », la pause du lobby pendant la partie (frame() ne fait plus rien, le son est suspendu), les récompenses à chaque partie finie, et le retour devant le portail.
 // Le lobby ne touche jamais à la sauvegarde de Dernier Toit (localStorage « dernier-toit-v1 »).
-const wPic = w => (typeof WPHOTO === 'object' && WPHOTO[w] ? `<img class="wpic" src="${WPHOTO[w]}" alt="">` : ''),
+// la photo d'une arme, encadrée à la couleur de son élément (V12.7 : celui qu'on a choisi pour elle, sinon celui du héros joué)
+const wPic = w =>
+    typeof WPHOTO === 'object' && WPHOTO[w]
+      ? `<img class="wpic" src="${WPHOTO[w]}" alt="" style="--ec:${elc(wEl(w))}" title="${EL[wEl(w)].n}">`
+      : '',
   dtOk = () => typeof DernierToit === 'object' && !!DernierToit;
 // TR : la visite en cours (héros, arme, jour de départ, gains cumulés)
 let TR = null;

@@ -152,7 +152,7 @@ function islVisit(peer, isl, who) {
     VISIT.on = true;
   }
   VISIT.peer = peer;
-  if (LB.tool !== 'main') {
+  if (LB.tool !== 'main' && LB.tool !== 'arme') {
     LB.tool = 'main';
     LB.a = null;
     lobBar();
@@ -190,16 +190,49 @@ function islHome(why) {
     toastT = 4;
   }
 }
-function avMake(el) {
+// aw : l'arme qu'il tient (armeNet) ou rien. Avec une arme : le gardien sans son pistolet à cristal, l'arme de son élément devant l'épaule droite, les bras qui la tiennent (V12.7)
+function avMake(el, aw) {
   const g = new THREE.Group(),
-    m = mdlOf('hero.avatar', elCtx(el), el, { cast: false }),
+    m = mdlOf(aw ? 'hero.avatar.arme' : 'hero.avatar', elCtx(el), el, { cast: false }),
     pr = m.userData.prep,
     l = lobLabel(3.3, 1.1);
+  let vis = null,
+    gun = null;
+  if (aw) {
+    const N = m.userData.nodes;
+    N.armL.rotation.order = N.armR.rotation.order = 'YXZ';
+    vis = new THREE.Group();
+    vis.position.set(0.12, 1.4, 0);
+    gun = armeInst(aw.a, aw.el, el).g;
+    gun.scale.setScalar(0.9);
+    gun.position.set(0.07, -0.06, -0.42);
+    vis.add(gun);
+    m.add(vis);
+  }
   g.add(m);
   l.position.y = (pr.labelY || (pr.max ? pr.max[1] * (pr.scale || 1) : 2)) + 0.95;
   g.add(l);
   lob.add(g);
-  return { g, m, l, el, x: 0, y: 0, z: 0, yaw: 0, tx: 0, ty: 0, tz: 0, tyaw: 0, w: 0 };
+  return {
+    g,
+    m,
+    l,
+    el,
+    aw: aw ? aw.k : '',
+    vis,
+    gun,
+    ix: 0,
+    exT: -1,
+    x: 0,
+    y: 0,
+    z: 0,
+    yaw: 0,
+    tx: 0,
+    ty: 0,
+    tz: 0,
+    tyaw: 0,
+    w: 0
+  };
 }
 function lobNetSt(st, x) {
   npub(Object.assign({ st }, x || {}));
@@ -429,7 +462,9 @@ function lobNet(dt) {
       LN.pubT = 0;
       const io = VISIT.on ? VISIT.peer : LN.me,
         lp = [r1(LB.x), r1(LB.y), r1(LB.z), Math.round(LB.yaw * 100) / 100],
-        s = lp.join() + tHero + io + LN.ls + LN.nm;
+        aw = armePub(),
+        ix = aw && LA.ins >= 0 ? 1 : 0,
+        s = lp.join() + tHero + io + LN.ls + LN.nm + aw + ix;
       if (s !== LN.pubS || LN.pubF > 1) {
         LN.pubS = s;
         LN.pubF = 0;
@@ -442,7 +477,9 @@ function lobNet(dt) {
           io,
           nm: LN.nm,
           tt: null,
-          dn: null
+          dn: null,
+          aw,
+          ix
         });
       }
     }
@@ -468,17 +505,21 @@ function lobNet(dt) {
     if (!on || !LB.on) continue;
     here[p.peer] = 1;
     let o = LN.av[p.peer];
-    if (!o || o.el !== el) {
+    // l'arme qu'il tient (absente chez un téléphone plus ancien : rien)
+    const aw = armeNet(pr.aw);
+    if (!o || o.el !== el || o.aw !== (aw ? aw.k : '')) {
+      const old = o;
       if (o) lob.remove(o.g);
       else if (now - LN.t0 > 4000) {
         toast((nm || EL[el].hero) + " arrive sur l'île");
         toastT = 3;
       }
-      o = LN.av[p.peer] = avMake(el);
-      o.x = q[0];
-      o.y = q[1];
-      o.z = q[2];
-      o.yaw = q[3];
+      o = LN.av[p.peer] = avMake(el, aw);
+      o.x = old ? old.x : q[0];
+      o.y = old ? old.y : q[1];
+      o.z = old ? old.z : q[2];
+      o.yaw = old ? old.yaw : q[3];
+      if (old) o.w = old.w;
     }
     lobText(
       o.l,
@@ -497,6 +538,23 @@ function lobNet(dt) {
     const sp = Math.hypot(o.x - px, o.z - pz) / Math.max(dt, 0.001);
     o.w += ((sp > 0.5 ? 1 : 0.12) - o.w) * Math.min(1, dt * 8);
     K.pose(o.m, t, o.x * 0.3 + o.z * 0.3, o.w);
+    if (o.vis) {
+      // les bras tiennent l'arme ; quand il la montre (ix), elle se lève et pivote comme chez lui
+      const ix = pr.ix === 1 ? 1 : 0;
+      if (ix && !o.ix) o.exT = 0;
+      o.ix = ix;
+      if (o.exT >= 0) {
+        o.exT += dt;
+        if (o.exT >= INSPECT) o.exT = -1;
+      }
+      const ev = armeEnv(o.exT / INSPECT),
+        N = o.m.userData.nodes;
+      N.armR.rotation.set(1.39 + 0.25 * ev, 0.25, 0);
+      N.armL.rotation.set(1.45 + 0.25 * ev, -0.62 + 0.3 * ev, 0);
+      o.vis.rotation.x = 0.25 * ev;
+      o.gun.rotation.y = 1.1 * ev;
+      o.gun.position.x = 0.07 - 0.1 * ev;
+    }
     o.g.position.set(o.x, o.y + Math.abs(Math.sin(t * 6 + o.x * 0.3 + o.z * 0.3)) * 0.05 * o.w, o.z);
     o.g.rotation.y = o.yaw;
   }

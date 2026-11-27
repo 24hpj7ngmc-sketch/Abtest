@@ -57,4 +57,6 @@ MODELS['hero.avatar']=ctx=>{const P=ctx.P||K.EL.feu,b=K.make(71),aL=K.make(72),a
   return{parts:[{name:'body',b},{name:'armL',b:aL,parent:'body',pivot:[-.3,1.42,0],anim:[{k:'rot',axis:'x',amp:.35,sp:6}]},
       {name:'armR',b:aR,parent:'body',pivot:[.3,1.42,0],anim:[{k:'rot',axis:'x',amp:.35,sp:6,ph:PI}]}],
     bake:{ground:.2,groundH:.6,map:{s:'m'}},scale:1,labelY:2.15};};
+// V12.7 : le gardien qui tient une arme (vue par les autres joueurs du salon) : le même corps, sans son pistolet à cristal (les cinq dernières pièces du bras droit) ; l'arme vm.* de armes.js est posée par le lobby
+MODELS['hero.avatar.arme']=ctx=>{const r=MODELS['hero.avatar'](ctx);r.parts[2].b.items.splice(4);return r;};
 }

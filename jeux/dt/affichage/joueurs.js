@@ -213,11 +213,13 @@ function joueurCorps(r, h) {
   r.arme = null;
 }
 // son arme (au premier passage et quand elle change) : vm.<arme> un peu réduite, la poignée devant l'épaule droite ; l'éclair à la bouche
-function joueurArme(r, a) {
+// V5.0 : el = l'élément de son arme (sa couleur) ; vide ou inconnu : celui de son héros
+function joueurArme(r, a, el) {
   if (r.gun) r.visee.remove(r.gun);
-  const pr = prepM('vm.' + a, { H: joueurGants(r.heros) }),
+  const pr = prepM('vm.' + a, { H: joueurGants(r.heros), el }),
     A = JOUEUR_ARMES[a];
   r.arme = a;
+  r.elArme = el;
   r.gun = K.inst(pr, { cast: false, recv: false });
   r.gun.scale.setScalar(0.9);
   r.gun.position.set(0.07, -0.06, -0.42);
@@ -268,7 +270,9 @@ function joueurPose(r, e, dt) {
   const h = JOUEUR_HEROS.indexOf(e.heros) >= 0 ? e.heros : 'feu',
     a = Object.prototype.hasOwnProperty.call(JOUEUR_ARMES, e.arme) ? e.arme : 'fusil';
   if (h !== r.heros) joueurCorps(r, h);
-  if (a !== r.arme) joueurArme(r, a);
+  // V5.0 : l'élément de son arme vient du réseau : une clé connue de JOUEUR_HEROS, sinon celui de son héros
+  const el = typeof e.el === 'string' && JOUEUR_HEROS.indexOf(e.el) >= 0 ? e.el : h;
+  if (a !== r.arme || el !== r.elArme) joueurArme(r, a, el);
   const nom = joueurNom(e.nom);
   if (nom !== r.nom || r.labH !== r.heros) {
     r.nom = nom;

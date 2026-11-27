@@ -1,5 +1,11 @@
 # Notes de travail — L'Île des Cinq (le mini-jeu, dans son propre atelier)
 
+## V2.3 (28 nov. 2026) — la course de Dernier Toit, armes à la couleur de leur élément
+- **Course** : même sensation que Dernier Toit (affichage/boucle.js et armes.js de `jeux/dt`). `interface/boucle.js` : balancement `bob` +9/s à la marche, +13/s en sprint (seulement si on avance), amplitude 0,035 / 0,06, facteur de sprint lissé `spk` (dt*7), roulis `sin(bob*0,5)*0,014*spk`, champ de vision +8*`spk`. `affichage/ambiance.js` : `runPose` baisse et tourne l'arme, la pelle et le marteau en sprint (hors visée, moins pendant un coup d'outil) ; léger balancement au repos.
+- **Couleurs** : `gfx/armes/mains.js` recopié de `jeux/dt/gfx/models/mains.js` (`coulEl(ctx)` : `ctx.el` teinte carcasse et pièces). `setGun(h.wEl)` passait déjà l'élément de l'arme : seul le fichier manquait. Le cache (`prepOf`) est par arme et par élément. Les `setGun(héros)` redondants de hud.js et partie.js sont retirés (`armApply` pose l'élément de l'arme, sinon celui du héros).
+- Coéquipiers, bots, esclaves : leur modèle `hero.avatar` n'a pas d'arme dans les mains : rien à teinter, aucun champ réseau créé.
+- Test : `tests/runcourse.js`.
+
 ## ÉTAT ACTUEL (27 nov. 2026) — V2.2 : voies, ultime teinté, rôles des ennemis, campagne du Vent — À LIRE EN PREMIER
 Seconde moitié de la demande du lobby (`claude/demande-ile-roles-elements.md`) ; tout est dans `LOBBY.md` (« Les voies ») et `claude/reponse-ile-roles-elements.md`.
 - **Voies** : `heroMods` (interface/armes.js) pose `m.voA` / `m.voB` d'après `opts.voie` (héros joué seulement) et ne garde que les cases de la branche. Ces clés passent dans `HK` (multi.js) : l'hôte connaît la voie de chacun. Règle : ce qui touche les ennemis se joue chez l'hôte (avec `h.m` du coéquipier), ce qui touche son propre héros (vie, recharge, cadence, bouclier) chez chacun (`b.mine`, `h === s.hero`). Exceptions passées par le réseau : renvoi du Gardien (événement `reflect` → action `rf`), bouclier de la Soigneuse (7e case de `hl`). Code : heros.js (`charge`, Plongeur dans `brambles`, Lame/Escarmoucheur dans `dash`, Artilleur dans `fireball`, Soigneuse/Entraveuse dans `tide`/`deluge`), joueur.js (`hurtHero`, `gardNear`, `heroHpOf`, cadence du Mitrailleur, tir chargé, champs `sf iso exe esc col psp` des balles), boucle.js (`auraStep`, `isolated`, poison contagieux).

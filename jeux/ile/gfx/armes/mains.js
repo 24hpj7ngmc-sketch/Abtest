@@ -1,6 +1,6 @@
 // ===================== DERNIER TOIT — les modèles tenus en main (vus à la première personne) =====================
 // Contenu : les 6 armes à feu (vm.fusil, vm.pistolet, vm.assaut, vm.sniper, vm.pompe, vm.lance), le marteau (vm.marteau), la masse (vm.masse),
-// le leurre (vm.leurre) et la radio de la frappe aérienne (vm.radio), avec les gants et les manches du joueur.
+// le leurre (vm.leurre), la radio de la frappe aérienne (vm.radio) et le grappin (vm.grappin, V4.7), avec les gants et les manches du joueur.
 // Repris de L'Île des Cinq : vm.pelle (pas utilisée par Dernier Toit) et hero.avatar (l'avatar des coéquipiers ; V4.3 : le corps des
 // autres joueurs, affichage/joueurs.js ; il a besoin de SH, gfx/models/shared.js, repris tel quel de l'atelier du lobby).
 // Attend : le kit K (gfx/kit.js) et l'objet MODELS (créé par build.py) ; aucune donnée des règles.
@@ -115,6 +115,23 @@
     OD_D = 0x3d4530,
     VERRE = 0x0e2a36,
     ROUGE = 0xff3424;
+  // V5.0 : la couleur de l'élément de l'arme (ctx.el, une clé de K.EL) teinte la carcasse (polymère), les pièces sable et vert armée ;
+  // l'acier, le verre, les gants ne changent pas. Sans ctx.el (ou clé inconnue) : les couleurs d'avant, à l'identique (même forme, mêmes graines).
+  const coulEl = ctx => {
+    const E = ctx && ctx.el && K.EL[ctx.el];
+    if (!E) return [NO, NO_L, NO_D, SA, SA_L, SA_D, OD, OD_L, OD_D];
+    return [
+      K.mix(NO, E.main, 0.6),
+      K.mix(NO_L, E.light, 0.55),
+      K.mix(NO_D, E.dark, 0.35),
+      K.mix(SA, E.main, 0.55),
+      K.mix(SA_L, E.light, 0.5),
+      K.mix(SA_D, E.dark, 0.45),
+      K.mix(OD, E.main, 0.55),
+      K.mix(OD_L, E.light, 0.5),
+      K.mix(OD_D, E.dark, 0.45)
+    ];
+  };
   const ZR = [-PI / 2, 0, 0]; // couche l'axe Y d'une forme le long de −Z : le haut d'un cylindre ou d'un profil tourné regarde vers l'avant
   // tube creux le long de Z (optiques) : ext et int = profils [[rayon, distance vers l'avant], …] de l'arrière vers l'avant, p = centre de l'arrière
   const creux = (b, ext, int, p, o) => b.add(K.lathe([int[0], ...ext, ...int.slice().reverse()], 10), Object.assign({ p, r: ZR }, o));
@@ -263,6 +280,7 @@
   // ---------------------------------------------------------------- vm.pistolet : pistolet semi-automatique (carcasse de polymère, culasse d'acier, organes de visée à points blancs), tenu à deux mains
   MODELS['vm.pistolet'] = ctx => {
     const H = teinte(ctx),
+      [NO, NO_L, NO_D, SA, SA_L, SA_D, OD, OD_L, OD_D] = coulEl(ctx),
       b = K.make(91),
       TH = -0.36,
       BY = 0.058,
@@ -361,6 +379,7 @@
   // ---------------------------------------------------------------- vm.assaut : fusil d'assaut compact (carcasse sable, garde-main à rail, chargeur courbe, viseur point rouge), poignée avant
   MODELS['vm.assaut'] = ctx => {
     const H = teinte(ctx),
+      [NO, NO_L, NO_D, SA, SA_L, SA_D, OD, OD_L, OD_D] = coulEl(ctx),
       b = K.make(92),
       TH = -0.36,
       BY = 0.088,
@@ -491,6 +510,7 @@
   // ---------------------------------------------------------------- vm.sniper : fusil de précision à verrou (crosse vert armée, longue lunette, bipied replié, levier de culasse à boule)
   MODELS['vm.sniper'] = ctx => {
     const H = teinte(ctx),
+      [NO, NO_L, NO_D, SA, SA_L, SA_D, OD, OD_L, OD_D] = coulEl(ctx),
       b = K.make(93),
       TH = -0.3,
       BY = 0.082,
@@ -628,6 +648,7 @@
   // ---------------------------------------------------------------- vm.fusil : fusil de combat semi-automatique, « le fusil » du jeu (noir, long garde-main, chargeur droit, viseur holographique et sans loupe)
   MODELS['vm.fusil'] = ctx => {
     const H = teinte(ctx),
+      [NO, NO_L, NO_D, SA, SA_L, SA_D, OD, OD_L, OD_D] = coulEl(ctx),
       b = K.make(81),
       TH = -0.36,
       BY = 0.088,
@@ -736,6 +757,7 @@
   // crosse fixe, porte-cartouches sur le flanc gauche, mire à œilleton et guidon). Le garde-main et la main gauche forment la pièce « pompe » : affichage/tirs.js (gunFx) la fait reculer puis revenir après chaque tir.
   MODELS['vm.pompe'] = ctx => {
     const H = teinte(ctx),
+      [NO, NO_L, NO_D, SA, SA_L, SA_D, OD, OD_L, OD_D] = coulEl(ctx),
       b = K.make(95),
       pb = K.make(96),
       TH = -0.36,
@@ -869,6 +891,7 @@
   // La flamme de la veilleuse est la pièce « veil » (pivot à sa base) : affichage/tirs.js (gunFx) la fait vaciller.
   MODELS['vm.lance'] = ctx => {
     const H = teinte(ctx),
+      [NO, NO_L, NO_D, SA, SA_L, SA_D, OD, OD_L, OD_D] = coulEl(ctx),
       b = K.make(97),
       vb = K.make(98),
       TH = -0.36,
@@ -1358,6 +1381,26 @@
     b.add(K.cyl(0.006, 0.004, 0.12, 5), { p: [0.02, 0.17, 0], c: 0x1e2124 });
     b.add(K.box(0.04, 0.03, 0.004), { p: [0, 0.09, -0.019], c: 0x7adf8a, ch: 'g', jit: 0 });
     for (let k = 0; k < 3; k++) b.add(K.box(0.04, 0.004, 0.004), { p: [0, 0.03 - k * 0.012, -0.019], c: 0x1e2124, jit: 0 });
+    poing(b, 0.028);
+    return { parts: [{ name: 'body', b }], bake: { ground: 0 } };
+  };
+  // V4.7 (Dernier Toit) : le grappin tenu en main : corps et poignée de pistolet, tube de lancement, bobine jaune, crochet à trois griffes
+  MODELS['vm.grappin'] = () => {
+    const b = K.make(91);
+    b.add(K.box(0.05, 0.06, 0.19), { p: [0, 0.06, -0.07], c: 0x3a3f45, c2: 0x4a5058, ch: 's' });
+    b.add(K.box(0.034, 0.1, 0.045), { p: [0, 0, 0], r: [0.25, 0, 0], c: 0x2a2d31 });
+    b.add(K.cyl(0.024, 0.024, 0.15, 8), { p: [0, 0.08, -0.22], r: [PI / 2, 0, 0], c: 0x6b7178, ch: 's' });
+    b.add(K.cyl(0.028, 0.028, 0.035, 10), { p: [0, 0.075, -0.06], r: [0, 0, PI / 2], c: 0xffb020, ch: 'g', jit: 0 });
+    b.add(K.cyl(0.007, 0.007, 0.05, 6), { p: [0, 0.08, -0.31], r: [PI / 2, 0, 0], c: 0xb8bec4 });
+    for (let k = 0; k < 3; k++) {
+      const a = k * 2.094 + 0.5;
+      b.add(K.box(0.008, 0.008, 0.045), {
+        p: [Math.cos(a) * 0.022, 0.08 + Math.sin(a) * 0.022, -0.345],
+        r: [-Math.sin(a) * 0.7, Math.cos(a) * 0.7, 0],
+        c: 0xd0d5da,
+        ch: 's'
+      });
+    }
     poing(b, 0.028);
     return { parts: [{ name: 'body', b }], bake: { ground: 0 } };
   };

@@ -40,9 +40,10 @@ const {chromium}=require('playwright');const path=require('path');
   T('pompe en visée : œilleton et guidon sur le réticule (< 1,5 px)',ad.ads>.99&&Math.abs(ad.rear.dx)<1.5&&Math.abs(ad.rear.dy)<1.5&&Math.abs(ad.front.dx)<1.5&&Math.abs(ad.front.dy)<1.5,
     'œilleton '+ad.rear.dx.toFixed(2)+' / '+ad.rear.dy.toFixed(2)+' px, guidon '+ad.front.dx.toFixed(2)+' / '+ad.front.dy.toFixed(2)+' px (G.ads '+ad.ads.toFixed(3)+')');
   // le point orange du guidon, vu au centre de l'image (lecture des pixels juste après le dessin)
-  let pix=await p.evaluate(()=>{__adv(1,true);const gl=renderer.getContext?renderer.getContext():renderer.gl,W=gl.drawingBufferWidth,Hh=gl.drawingBufferHeight,R=24,a=new Uint8Array((2*R+1)*(2*R+1)*4);
+  // V5.0 : le héros est Braise (feu) : l'arme en main serait orange partout ; on la passe un instant à l'eau pour ne repérer que le guidon
+  let pix=await p.evaluate(()=>{gfxGuns(G.H,'eau');__adv(1,true);const gl=renderer.getContext?renderer.getContext():renderer.gl,W=gl.drawingBufferWidth,Hh=gl.drawingBufferHeight,R=24,a=new Uint8Array((2*R+1)*(2*R+1)*4);
     gl.readPixels(Math.round(W/2)-R,Math.round(Hh/2)-R,2*R+1,2*R+1,gl.RGBA,gl.UNSIGNED_BYTE,a);let n=0,sx=0,sy=0;
-    for(let j=0;j<=2*R;j++)for(let i=0;i<=2*R;i++){const o=(j*(2*R+1)+i)*4;if(a[o]>150&&a[o]>a[o+1]*1.4&&a[o+1]>40&&a[o+2]<100){n++;sx+=i-R;sy+=j-R;}}return{n,x:n?sx/n:0,y:n?-sy/n:0,W,Hh};});
+    for(let j=0;j<=2*R;j++)for(let i=0;i<=2*R;i++){const o=(j*(2*R+1)+i)*4;if(a[o]>150&&a[o]>a[o+1]*1.4&&a[o+1]>40&&a[o+2]<100){n++;sx+=i-R;sy+=j-R;}}gfxGuns(G.H,'feu');return{n,x:n?sx/n:0,y:n?-sy/n:0,W,Hh};});
   T('pompe en visée : le point orange du guidon est au centre de l\'image',pix.n>0&&Math.abs(pix.x)<3&&Math.abs(pix.y)<3,JSON.stringify(pix));
   await shot('112-pompe-visee');
   // un coup : éclair agrandi, plombs (traçantes fines), puis la pompe recule et revient

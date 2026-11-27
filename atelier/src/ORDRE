@@ -27,6 +27,7 @@ lobby/etat.js
 lobby/guide.js
 lobby/toit.js
 lobby/outils.js
+lobby/arme.js
 lobby/dev.js
 lobby/carte.js
 lobby/batiments.js

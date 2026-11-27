@@ -80,7 +80,6 @@ function begin(el, mode) {
   $('bSneak').classList.remove('on');
   $('end').hidden = true;
   setTheme(sim.camp ? sim.camp.el : '');
-  setGun(el);
   aimSet(false);
   fireQ = false;
   $('hot').querySelector('.slot[data-t=pistolet] small').textContent = WT[tWeap].short;

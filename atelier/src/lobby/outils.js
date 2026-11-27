@@ -1,6 +1,6 @@
 // [lobby/outils.js] La barre d'outils du lobby : main, marteau, pelle ; viser, tracer, agir (lobAct).
 // ---- barre d'outils du lobby : la main (entrer, parler), le marteau (bâtir, ranger), la pelle (monter, creuser, aplanir le terrain)
-const LTOOLS = { main: 'Main', marteau: 'Marteau', pelle: 'Pelle' },
+const LTOOLS = { main: 'Main', marteau: 'Marteau', pelle: 'Pelle', arme: 'Arme' },
   LMODES = { up: 'Monter', down: 'Creuser', flat: 'Aplanir' };
 $('lHot').innerHTML = Object.keys(LTOOLS)
   .map(
@@ -26,6 +26,15 @@ $('lHot')
     } else if (k === 'marteau') {
       g.rect(7, 6, 34, 15);
       g.rect(21, 21, 6, 23);
+    } else if (k === 'arme') {
+      // un pistolet de profil : le canon, la culasse, la poignée et le pontet
+      g.rect(4, 11, 40, 11);
+      g.rect(8, 22, 14, 4);
+      g.moveTo(26, 22);
+      g.lineTo(37, 22);
+      g.lineTo(32, 42);
+      g.lineTo(23, 42);
+      g.closePath();
     } else {
       g.rect(14, 20, 22, 22);
       for (let i = 0; i < 4; i++) g.rect(14 + i * 5.7, 7 + (i % 3 ? 0 : 4), 4.6, 16);
@@ -44,7 +53,7 @@ $('lHot')
   }); // retoucher la pelle efface le point A
 function lobBar() {
   const el = $('lSub');
-  el.hidden = LB.tool === 'main';
+  el.hidden = LB.tool === 'main' || LB.tool === 'arme';
   for (const b of $('lHot').children) b.classList.toggle('sel', b.dataset.t === LB.tool);
   if (el.hidden) return;
   if (LB.tool === 'pelle')
@@ -102,7 +111,7 @@ function lobBar() {
     } catch (_) {}
 }
 function lobTool(k) {
-  if (VISIT.on && k !== 'main') {
+  if (VISIT.on && k !== 'main' && k !== 'arme') {
     toast(VISITNO);
     toastT = 3.5;
     k = 'main';
@@ -245,6 +254,10 @@ function lobAct(n) {
       vilTake(B);
       toast(CAT[B.t].n + ' : rangé' + (B.c ? ' · +' + B.c + ' or' : ''));
     }
+    return;
+  }
+  if (LB.tool === 'arme') {
+    if (n === 1) armeShow();
     return;
   }
   if (LB.tool === 'main' && n === 2) {

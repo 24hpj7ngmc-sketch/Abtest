@@ -4,7 +4,7 @@
 // le réticule), balancement de la marche, recul, sprint (arme baissée, de travers), objet qui recule près d'un mur, coup de masse,
 // coups de marteau sur les planches. Les effets des tirs (éclair de bouche, pompe, lance-flammes) sont dans tirs.js.
 // Attend des règles : S.p, S.swing, S.swingT (coup de masse), S.plankT (planche en cours), viewDir, rayWall ; de l'interface : V.tool, V.ads,
-// V.scope, V.bobT, et l'appel gfxGuns(couleurs) quand le héros change (interface : heroGear).
+// V.scope, V.bobT, et l'appel gfxGuns(couleurs, élément) quand le héros change (interface : heroGear).
 // Fournit : gfxGuns (interface), mainsInit (gfxInit), mainsFrame et reculFrame (gfxFrame), G.vm / G.vmCur / G.tip / G.aimP / G.vmPos (lus par tirs.js et les tests).
 
 // les objets en main (cachés), leurs poses de repos [x, y, z, rx, ry, rz], puis les armes à feu (gfxGuns) et l'éclair de bouche
@@ -53,7 +53,7 @@ function mainsInit() {
   G.fr = 0;
   G.vmFlash = new THREE.Mesh(new THREE.IcosahedronGeometry(0.05, 0), matAdd(0xffd070));
   G.vmFlash.visible = false;
-  gfxGuns(G.H);
+  gfxGuns(G.H, G.el);
   G.vm.fusil.add(G.vmFlash);
   G.vmFlash.position.set(G.tip.fusil[0], G.tip.fusil[1], G.tip.fusil[2]);
 }
@@ -80,10 +80,15 @@ function grappinFrame(S) {
 }
 // les armes en main aux couleurs du héros : hc = {sleeve, sleeveD, glove, gloveD} (0xrrggbb ou '#rrggbb' ; rien = gris neutres).
 // À rappeler quand le héros change. Les armes, le marteau et la masse sont refaits (gants et manches), l'objet en main reste visible.
-function gfxGuns(hc) {
+// V5.0 : el = la clé d'élément de l'arme (K.EL) : les six armes à feu prennent sa couleur (le cache de prepM en tient compte) ; rien : comme avant.
+function gfxGuns(hc, el) {
   G.H = hc || null;
+  G.el = typeof el === 'string' && K.EL[el] ? el : null;
   for (const k in G.gun) {
-    const pr = prepM('vm.' + k, hc ? { H: hc } : null),
+    const ctx = {};
+    if (hc) ctx.H = hc;
+    if (G.el) ctx.el = G.el;
+    const pr = prepM('vm.' + k, hc || G.el ? ctx : null),
       old = G.vm[k],
       o = K.inst(pr, { cast: false, recv: false });
     o.visible = old ? old.visible : false;
