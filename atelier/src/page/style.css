@@ -1,0 +1,1524 @@
+/* Layout : la vue 3D occupe tout l'écran ; le HUD est un calque — infos en haut, commandes sous les pouces en bas. Jeu tactile uniquement. */
+:root {
+  color-scheme: dark;
+  --ink: #0a1b24;
+  --panel: rgba(8, 28, 38, 0.8);
+  --panel-solid: #0d2a37;
+  --line: rgba(170, 225, 235, 0.24);
+  --fg: #ecf7f8;
+  --mute: #a2c0c7;
+  --gold: #ffcf5a;
+  --danger: #ff7a6b;
+  --feu: #ff6a3d;
+  --eau: #3fa9ff;
+  --bois: #5fd068;
+  --terre: #cf9a5c;
+  --elec: #ffd93b;
+  --display: 'Chakra Petch', 'Trebuchet MS', sans-serif;
+  --body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  background: var(--ink);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 14px;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+}
+/* paysage forcé : téléphone tenu droit = la scène entière est tournée d'un quart de tour */
+#stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+.rot #stage {
+  inset: auto;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  transform: rotate(90deg) translateY(-100%);
+}
+.rot #hud,
+.rot #tHud,
+.rot .veil {
+  padding-block: 8px 10px;
+  padding-left: max(16px, env(safe-area-inset-top, 0px));
+  padding-right: max(16px, env(safe-area-inset-bottom, 0px));
+}
+.rot .grid5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.ver {
+  font-family: var(--display);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--mute);
+}
+
+#game {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+  outline: none;
+}
+#hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  padding-block: calc(8px + env(safe-area-inset-top, 0px)) calc(10px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+#hudIn {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+#mini {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(8, 28, 38, 0.55);
+}
+
+/* la lunette du sniper : un disque de vue au milieu, le reste noir, un réticule fin */
+
+/* l'aperçu de la vague s'efface derrière la lunette */
+
+/* au centre exact de la vue (le centre de l'écran), pas au centre de la zone utile : c'est là que partent les balles */
+
+#toast {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translateX(-50%);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 18px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transition: opacity 0.3s;
+  text-align: center;
+  white-space: nowrap;
+}
+#toast.on {
+  opacity: 1;
+}
+
+#joy {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  background: rgba(8, 28, 38, 0.3);
+}
+#joy.sprint {
+  border-color: var(--gold);
+}
+#knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin: -23px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+}
+#joy.sprint #knob {
+  background: var(--gold);
+}
+#pads {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  pointer-events: none;
+}
+#pads .pad {
+  pointer-events: auto;
+}
+.pad {
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  background: rgba(8, 28, 38, 0.5);
+  font-family: var(--display);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  line-height: 1.1;
+  padding: 0;
+}
+.pad.on {
+  background: rgba(255, 255, 255, 0.3);
+}
+#bFire {
+  width: 62px;
+  height: 62px;
+  font-size: 13px;
+  border-color: var(--hero, #fff);
+}
+#bJump {
+  width: 84px;
+  height: 84px;
+  font-size: 15px;
+}
+
+#bSneak {
+  width: 54px;
+  height: 54px;
+  font-size: 12px;
+}
+#bSneak.on {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.tchip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 11px;
+  background: var(--panel-solid);
+  color: var(--mute);
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.tchip.sel {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.veil {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 18, 25, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  touch-action: pan-y;
+  padding-block: calc(10px + env(safe-area-inset-top, 0px)) calc(10px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.card {
+  background: var(--panel-solid);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  width: min(640px, 100%);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.card h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 24px;
+  margin: 0;
+  letter-spacing: 0.02em;
+  text-wrap: balance;
+}
+.card h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 16px;
+  margin: 0;
+}
+.card p {
+  margin: 0;
+  color: var(--mute);
+  line-height: 1.4;
+}
+.cycle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  font-weight: 600;
+  font-size: 13px;
+}
+.cycle span {
+  color: var(--mute);
+}
+.grid5 {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+@media (max-width: 520px) {
+  .grid5 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.pick {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--c);
+  border-radius: 10px;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+  touch-action: manipulation;
+}
+.pick b {
+  font-family: var(--display);
+  font-size: 15px;
+  color: var(--c);
+}
+.pick small {
+  font-size: 11px;
+  color: var(--mute);
+  line-height: 1.3;
+}
+.pick em {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fg);
+}
+.pick:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.pick:not(:disabled):active {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.solid {
+  background: var(--gold);
+  color: #1b1505;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 15px;
+  touch-action: manipulation;
+}
+
+.dv {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 7px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  touch-action: manipulation;
+}
+.dv.on {
+  border-color: var(--elec);
+  color: var(--elec);
+}
+/* grilles d'amélioration */
+#tree {
+  position: fixed;
+  inset: 0;
+  background: var(--ink);
+}
+#tScroll {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  display: flex;
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
+  padding: 76px 24px 70px;
+}
+#tMap {
+  position: relative;
+  flex: none;
+  width: 940px;
+  height: 640px;
+  margin: auto;
+}
+#tMap > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+#tree button {
+  touch-action: pan-x pan-y;
+}
+.tn {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border-radius: 9px;
+  border: 2px solid var(--c);
+  background: #10222c;
+  color: var(--c);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.tn svg {
+  position: static;
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tn.cap {
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  border-radius: 50%;
+  border-width: 3px;
+}
+.tn.root {
+  border-radius: 50%;
+  cursor: default;
+}
+.tn.lock {
+  opacity: 0.38;
+  border-style: dashed;
+}
+.tn.own {
+  box-shadow: inset 0 0 0 40px rgba(255, 255, 255, 0.1);
+}
+.tn.max {
+  background: var(--c);
+  color: #10222c;
+}
+.tn.sel {
+  outline: 3px solid var(--fg);
+  outline-offset: 3px;
+}
+.pips {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 3px;
+}
+.pips i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3a4d56;
+}
+.pips i.on {
+  background: var(--c);
+}
+.tl {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c);
+  white-space: nowrap;
+}
+#tHud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  padding-block: calc(8px + env(safe-area-inset-top, 0px)) calc(10px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+#tHudIn {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+#tHudIn > * {
+  pointer-events: auto;
+}
+#tTop {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 58%;
+}
+#tHeroes {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+#tArms {
+  display: flex;
+  gap: 5px 10px;
+  flex-wrap: wrap;
+  width: 100%;
+  align-items: center;
+}
+#tArms .ray {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 3px 4px 3px 9px;
+  border-radius: 999px;
+  background: var(--panel-solid);
+  border: 1px solid var(--line);
+}
+#tArms .ray > span {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--mute);
+  text-transform: uppercase;
+}
+#tArms .ray.tabs {
+  border-color: var(--gold);
+}
+#tree.arme #tTitle {
+  display: none;
+}
+#tArms .ray.off {
+  padding-right: 9px;
+  opacity: 0.6;
+}
+#tArms .ray.off em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--mute);
+}
+#tArms .tchip {
+  touch-action: manipulation;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+#tArms .tchip.sel {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+.tn .tb {
+  position: absolute;
+  right: -9px;
+  top: -9px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: #10222c;
+  border: 1px solid var(--c);
+  font-family: var(--display);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 9px;
+  color: var(--c);
+}
+#tHeroes .tchip {
+  background: var(--panel-solid);
+  touch-action: manipulation;
+}
+#tHeroes .tchip.sel {
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 0 0 2px currentColor;
+}
+.tcur {
+  display: flex;
+  gap: 7px;
+  align-items: baseline;
+  padding: 7px 11px;
+  font-weight: 600;
+}
+.tcur b {
+  font-family: var(--display);
+  color: var(--gold);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.tcur small {
+  color: var(--mute);
+}
+#tInfo {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: min(270px, 52%);
+  padding: 9px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: var(--panel-solid);
+}
+.ti-n {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 14px;
+}
+.ti-v {
+  color: #8ff0b0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ti-r {
+  display: flex;
+  justify-content: space-between;
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.ti-h {
+  color: var(--mute);
+  font-size: 13px;
+}
+#tInfo .solid {
+  padding: 8px 12px;
+  font-size: 14px;
+}
+#tClose {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+#sArms .tchip,
+#dtArms .tchip {
+  touch-action: manipulation;
+}
+.wpic {
+  height: 18px;
+  width: auto;
+  vertical-align: -4px;
+  margin-right: 5px;
+  background: #c9d3d8;
+  border-radius: 4px;
+  padding: 1px 2px;
+}
+#tArms .wpic {
+  height: 15px;
+  vertical-align: -3px;
+}
+#tArms .ray {
+  flex-wrap: wrap;
+  border-radius: 16px;
+}
+/* la campagne : une colonne par type, le niveau 1 en bas (plus gros), comme sur le dessin de Frédéric */
+.camp .cst {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+  align-items: stretch;
+  min-width: 0;
+}
+.camp .cst > b {
+  text-align: center;
+  color: var(--c);
+  font-family: var(--display);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+.camp .tchip {
+  touch-action: manipulation;
+  padding: 4px 6px;
+  text-align: center;
+  border-color: color-mix(in srgb, var(--c) 55%, transparent);
+}
+.camp .tchip[data-l='1'] {
+  padding-block: 9px;
+}
+.camp .tchip.lock {
+  opacity: 0.62;
+  border-style: dashed;
+}
+.camp .tchip.done {
+  color: var(--c);
+}
+.camp .tchip.sel {
+  color: var(--gold);
+  border-color: var(--gold);
+  background: rgba(255, 207, 90, 0.12);
+}
+#dtRangD,
+#sCampD {
+  color: var(--mute);
+  flex: 1;
+  min-width: 180px;
+  text-align: right;
+}
+#lGrp {
+  position: absolute;
+  left: 50%;
+  top: 58px;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  white-space: nowrap;
+  max-width: calc(100% - 260px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 3;
+}
+#lGrp[hidden] {
+  display: none;
+}
+#sMq,
+#netMq,
+#netNm {
+  justify-content: flex-start;
+  gap: 6px;
+}
+#netMq[hidden] {
+  display: none;
+}
+#netName {
+  max-width: 230px;
+}
+#mqCode,
+#mq2,
+#netName {
+  flex: 1;
+  min-width: 120px;
+  font: inherit;
+  font-size: 16px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.25);
+  color: inherit;
+  -webkit-user-select: text;
+  user-select: text;
+  touch-action: auto;
+}
+#sMode,
+#sArms,
+#dtArms {
+  justify-content: flex-start;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+#dtRang .cst {
+  grid-column: 1 / -1;
+}
+#sArms span,
+#dtArms span {
+  color: var(--mute);
+  font-weight: 600;
+}
+#sMode span {
+  color: var(--mute);
+  font-weight: 600;
+}
+#sMode small {
+  color: var(--mute);
+  flex: 1;
+  min-width: 180px;
+}
+#sMode .tchip {
+  touch-action: manipulation;
+}
+
+#mini {
+  pointer-events: auto;
+}
+/* carte en grand à droite, options de la partie à gauche */
+#mapV {
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 14px;
+  overflow: hidden;
+  background: rgba(5, 18, 25, 0.93);
+}
+#mapOpt {
+  flex: none;
+  width: min(260px, 42%);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow: auto;
+  touch-action: pan-y;
+}
+#mapOpt h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 16px;
+  margin: 0;
+}
+#mapOpt p {
+  margin: 0;
+  color: var(--mute);
+}
+#mapOpt .solid {
+  margin-top: auto;
+}
+#mapBox {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#mapC {
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(8, 28, 38, 0.55);
+}
+.ob {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel-solid);
+  padding: 10px 12px;
+  font-weight: 600;
+  font-size: 13px;
+  touch-action: manipulation;
+}
+.ob b {
+  font-family: var(--display);
+  color: var(--gold);
+}
+
+/* barre d'outils façon Minecraft : un appui prend l'outil, un second le range */
+
+.slot {
+  width: 66px;
+  height: 56px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0;
+}
+.slot canvas {
+  width: 24px;
+  height: 24px;
+}
+.slot small {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--mute);
+  font-variant-numeric: tabular-nums;
+}
+.slot.sel {
+  border-color: var(--gold);
+  background: rgba(255, 207, 90, 0.16);
+}
+.slot.sel small {
+  color: var(--gold);
+}
+/* roulette des éléments, en arc au-dessus du pouce droit */
+
+#gBub {
+  position: absolute;
+  left: 116px;
+  top: 0;
+  width: 300px;
+  max-width: calc(100% - 550px);
+  min-width: 230px;
+  box-sizing: border-box;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 10px 8px;
+  border-color: var(--gold);
+}
+#gBub[hidden] {
+  display: none;
+}
+@media (max-width: 830px) {
+  #gBub {
+    top: 54px;
+    max-width: none;
+    width: min(300px, calc(100% - 126px));
+  }
+}
+#gBub .th {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+#gBub b {
+  font-family: var(--display);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+}
+#gBub span {
+  font-size: 12.5px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+#gBub button {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 11px;
+  font-size: 11px;
+  color: var(--mute);
+  touch-action: manipulation;
+}
+#gBub button.end {
+  align-self: flex-end;
+  background: var(--gold);
+  color: #1b1505;
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+#guTabs {
+  justify-content: flex-start;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+#guTabs .tchip {
+  touch-action: manipulation;
+}
+#guB {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+#guB .srow small {
+  font-size: 12.5px;
+  color: #cfe0e6;
+}
+
+/* vie du héros : barre au-dessus de la barre d'outils, voile rouge quand il encaisse, message quand il est à terre */
+
+.pick .kit {
+  color: var(--gold);
+  font-weight: 600;
+}
+.pick .pts {
+  color: var(--fg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 600;
+  touch-action: manipulation;
+}
+.ghost.hot {
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 12px rgba(255, 207, 90, 0.45);
+}
+
+/* ---- le Sanctuaire céleste (lobby) : on cache l'interface de combat, on garde le joystick et le saut */
+
+#lobH {
+  display: none;
+}
+.lobby #lobH {
+  display: block;
+}
+#lTop {
+  pointer-events: auto;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  gap: 14px;
+  padding: 6px 12px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: rgba(14, 18, 48, 0.78);
+  border-color: rgba(200, 190, 255, 0.3);
+}
+#lTop span {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+#lTop small {
+  font-family: var(--body);
+  font-weight: 600;
+  color: #b9b6de;
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+#lTop #lGold {
+  color: var(--gold);
+}
+#lHot .slot,
+#lSub .tchip {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+#lDevP {
+  position: absolute;
+  z-index: 30;
+  left: 64px;
+  top: 58px;
+  pointer-events: auto;
+  padding: 7px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 5px;
+  width: min(450px, 74%);
+  max-height: calc(100% - 70px);
+  overflow: auto;
+  touch-action: pan-y;
+  background: var(--panel-solid);
+}
+#lBar {
+  position: absolute;
+  left: 43%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: center;
+}
+#lHot {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 12px;
+  background: rgba(14, 18, 48, 0.78);
+  border: 1px solid rgba(200, 190, 255, 0.3);
+}
+#lSub {
+  display: flex;
+  gap: 6px;
+  max-width: 340px;
+  overflow-x: auto;
+  touch-action: pan-x;
+  padding: 2px;
+  scrollbar-width: none;
+}
+#lSub::-webkit-scrollbar {
+  display: none;
+}
+#lSub .tchip {
+  touch-action: pan-x;
+  flex: none;
+}
+#lSub .tchip b {
+  color: var(--gold);
+  font-family: var(--display);
+}
+#lSub .tchip.done {
+  opacity: 0.5;
+}
+#lSub .tchip.sp {
+  border-style: dashed;
+  color: var(--fg);
+}
+.lobby .veil {
+  background: rgba(8, 10, 34, 0.6);
+}
+.srow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.srow span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.srow b {
+  font-family: var(--display);
+  font-size: 15px;
+}
+.srow small {
+  color: var(--mute);
+  font-size: 12px;
+  line-height: 1.3;
+}
+.srow button {
+  flex: none;
+  min-width: 92px;
+  font-variant-numeric: tabular-nums;
+}
+.srow button:disabled {
+  opacity: 0.45;
+}
+#shopB {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+#shopB h2 {
+  margin-top: 4px;
+}
+.gold {
+  color: var(--gold);
+  font-family: var(--display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+#lootB {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+@media (max-width: 520px) {
+  #lootB {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.lcell {
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  opacity: 0.6;
+}
+.lcell.has {
+  border: 1px solid var(--gold);
+  opacity: 1;
+  background: rgba(255, 207, 90, 0.08);
+}
+.lcell b {
+  font-family: var(--display);
+  font-size: 13px;
+  line-height: 1.2;
+}
+.lcell small {
+  font-size: 11px;
+  color: var(--mute);
+  line-height: 1.3;
+}
+.lcell em {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold);
+}
+.lcell:not(.has) em {
+  color: var(--mute);
+}
+#lootS {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.pick.cur {
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 0 2px var(--c);
+}
+#eGain {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+#eGain .tchip {
+  color: var(--fg);
+}
+#eGain .tchip.sel {
+  color: var(--gold);
+}
+/* ---- commandes universelles (V8.1) : la même disposition au lobby et dans chaque mini-jeu, la seule pour tout le jeu.
+   Haut gauche : la mini-carte (on la touche : grande carte et petits réglages). Haut droite : les chiffres. Bas centre : la barre d'outils, effacée quand on ne s'en sert pas.
+   Bas droite (V8.3) : un quart de rond calé dans le coin, coupé en diagonale : Action en bas (le long du bord bas), Saut en haut (le long du bord droit).
+   Le long de son arc, du bas vers le haut : Sneak, Compétence, Ultime ; le bouton libre (selon la situation) est en bas, à gauche de Sneak.
+   Rien au-dessus de Saut : c'est là que le pouce droit tourne la caméra. Le coin est le vrai coin de l'écran : ces boutons sortent du cadre de l'interface
+   et entrent dans les marges du téléphone (--edge à droite, --low en bas, 8 px au-dessus du bord). Écran tourné (.rot) : on reste dans le cadre. */
+:root {
+  --edge: calc(0px - max(16px, env(safe-area-inset-right, 0px)));
+  --low: calc(-2px - env(safe-area-inset-bottom, 0px));
+}
+.rot {
+  --edge: 0px;
+  --low: 0px;
+}
+#pads {
+  display: block;
+  width: 0;
+  height: 0;
+  right: var(--edge);
+  bottom: var(--low);
+}
+
+#padMain {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 124px;
+  height: 124px;
+  box-sizing: border-box;
+  border: solid rgba(255, 255, 255, 0.42);
+  border-width: 2px 0 0 2px;
+  border-radius: 100% 0 0 0;
+  overflow: hidden;
+  pointer-events: auto;
+}
+#padMain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 1px),
+    rgba(255, 255, 255, 0.42) calc(50% - 1px),
+    rgba(255, 255, 255, 0.42) calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+}
+#padMain .pad {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  background: rgba(8, 28, 38, 0.36);
+}
+#padMain .pad.on {
+  background: rgba(255, 255, 255, 0.3);
+}
+#bFire {
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 34px 14px 16px;
+  text-align: center;
+  font-size: 13px;
+}
+#bJump {
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 45px 14px 0 0;
+  font-size: 14px;
+}
+#bFire b {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: -0.01em;
+}
+#bFree,
+#bSneak {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  font-size: 9.5px;
+  background: rgba(8, 28, 38, 0.36);
+}
+#bSneak {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+#bFree {
+  right: 181px;
+  bottom: 0;
+}
+#bSneak {
+  right: 128px;
+  bottom: 0;
+}
+
+#bFree b {
+  font-size: 9px;
+  letter-spacing: -0.03em;
+}
+#bFree b {
+  font-weight: 700;
+}
+.pad small {
+  display: block;
+  font-family: var(--body);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--mute);
+  white-space: nowrap;
+}
+.pad small:empty {
+  display: none;
+}
+.pad.vh {
+  visibility: hidden;
+}
+.pad.arm {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.2);
+}
+.pad.idle {
+  opacity: 0.5;
+}
+#bFire.go {
+  color: var(--gold);
+  background: rgba(74, 54, 8, 0.68);
+}
+#bFire.poor {
+  color: var(--mute);
+}
+#bFree {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+#bFree.on {
+  border-color: var(--bois);
+  color: var(--bois);
+}
+
+#aLab {
+  position: absolute;
+  right: 237px;
+  bottom: 2px;
+  width: max-content;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  max-width: 150px;
+  padding: 5px 9px;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: right;
+}
+#aLab b {
+  font-family: var(--display);
+  font-weight: 700;
+}
+#aLab small {
+  color: var(--mute);
+  font-size: 11px;
+}
+#aLab small:empty,
+#aLab b:empty {
+  display: none;
+}
+#aLab.poor b {
+  color: var(--danger);
+}
+
+#lTop {
+  left: auto;
+  right: 0;
+  gap: 12px;
+}
+#lBar {
+  bottom: 0;
+}
+.slot {
+  width: 58px;
+  height: 46px;
+}
+.slot canvas {
+  width: 20px;
+  height: 20px;
+}
+#lHot {
+  transition:
+    opacity 0.35s,
+    background-color 0.35s,
+    border-color 0.35s;
+}
+#lBar.quiet #lHot {
+  opacity: 0.3;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+/* le choix d'arme n'apparaît que barre d'outils réveillée */
+#lDevP {
+  top: 112px;
+}
+/* petits écrans (moins de 800 px de large) : boutons du haut un peu plus petits, étiquette au-dessus d'eux */
+.sm #pads {
+  transform: scale(0.88);
+  transform-origin: 100% 100%;
+}
+.sm #aLab {
+  right: 0;
+  bottom: 150px;
+}
+.sm #lTop {
+  gap: 9px;
+  padding: 5px 9px;
+}
+
+/* V11.3 : la croix qui ferme un panneau de portail reste en haut, le bouton qui lance la partie reste en bas */
+.row.head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--panel-solid);
+  padding-block: 4px;
+}
+.fx {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  flex: none;
+}
+.row.go {
+  position: sticky;
+  bottom: 0;
+  background: var(--panel-solid);
+  padding-block: 8px 2px;
+  margin-top: 2px;
+}
+.row.go .solid {
+  flex: 1;
+  padding-block: 13px;
+  font-size: 17px;
+}
+
+/* V11.4 : le portrait du héros en haut de sa carte */
+.hpic {
+  width: 100%;
+  max-width: 76px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+/* V12.1 : six héros par rangée ; la rangée « Son élément » d'une arme ; le bouton de départ grisé quand le jeu ne connaît pas le héros */
+.grid5.g6,
+.rot .grid5.g6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+@media (max-width: 520px) {
+  .grid5.g6 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.row.wel,
+#tWel {
+  justify-content: flex-start;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.row.wel span {
+  color: var(--mute);
+  font-weight: 600;
+}
+.row.wel .tchip,
+#tWel .tchip {
+  padding: 5px 10px;
+}
+.row.wel .tchip.sel,
+#tWel .tchip.sel {
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 0 2px currentColor inset;
+}
+.solid.off {
+  opacity: 0.5;
+}
+
+/* V12.2 : le choix de la voie au Hall */
+#hallVoie {
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+#hallVoie h2,
+#hallVoie small {
+  flex-basis: 100%;
+  margin: 0;
+}
+#hallVoie small {
+  color: var(--mute);
+}
+#hallVoie .tchip {
+  flex: 1;
+  min-width: 220px;
+  text-align: left;
+  padding: 8px 12px;
+  border-color: var(--c);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+#hallVoie .tchip b {
+  color: var(--c);
+}
+#hallVoie .tchip span {
+  color: var(--mute);
+  font-size: 12px;
+}
+#hallVoie .tchip.sel {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 2px var(--c) inset;
+}

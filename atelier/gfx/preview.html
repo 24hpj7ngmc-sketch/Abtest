@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset=utf8><style>html,body{margin:0;background:#111}canvas{display:block}</style></head><body><canvas id=c></canvas>
+<script src="three-lite.js"></script><script src="kit.js"></script><script>var MODELS={};</script>
+<script>
+// aperçu d'un modèle : mêmes lumières que le jeu, sol d'herbe + bande de chemin, plusieurs vues sur une planche
+window.runPreview=function(cfg){
+  K.init(THREE);const cv=document.getElementById('c'),TW=cfg.tw||560,TH=cfg.th||380,views=cfg.views,cols=cfg.cols||2,rows=Math.ceil(views.length/cols);
+  const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});renderer.setPixelRatio(1);renderer.setSize(TW,TH);renderer.shadowMap.enabled=true;
+  const scene=new THREE.Scene();scene.background=new THREE.Color(cfg.bg||0x9fcdea);scene.fog=new THREE.Fog(0xc2e6f2,120,480);
+  scene.add(new THREE.HemisphereLight(0xe2efff,0x8c9478,.68));const SUN=new THREE.Vector3(50,46,-64).normalize(),sun=new THREE.DirectionalLight(0xfff0d2,1.0);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0006;sun.shadow.normalBias=.05;scene.add(sun);scene.add(sun.target);
+  if(cfg.ground!==false){const g=new THREE.Mesh(new THREE.CircleGeometry(160,40),new THREE.MeshLambertMaterial({color:0x5d9a4c}));g.rotation.x=-Math.PI/2;g.receiveShadow=true;scene.add(g);
+    const p=new THREE.Mesh(new THREE.BoxGeometry(4.2,.12,160),new THREE.MeshLambertMaterial({color:0xb39062}));p.position.set(cfg.pathX===undefined?-9:cfg.pathX,.02,0);p.receiveShadow=true;scene.add(p);}
+  // modèle(s)
+  const names=cfg.names,ctxs=cfg.ctxs,insts=[];let tris=0;const mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9],report=[];
+  names.forEach((nm,i)=>{const f=MODELS[nm];if(!f)throw new Error('modèle inconnu : '+nm+' (connus : '+Object.keys(MODELS).join(', ')+')');const ctx=Object.assign({K,el:'feu'},ctxs[i]||{});ctx.P=K.EL[ctx.el]||K.EL.feu;
+    const rec=f(ctx),pr=K.prep(rec,rec.bake||{}),o=K.inst(pr);const sp=cfg.spacing===undefined?Math.max(2,(pr.max[0]-pr.min[0])+1.2):cfg.spacing;o.position.x=(i-(names.length-1)/2)*sp;if(ctx.y)o.position.y=+ctx.y;if(ctx.ry)o.rotation.y=+ctx.ry;if(ctx.scale||rec.scale)o.scale.setScalar(+(ctx.scale||rec.scale));
+    K.pose(o,cfg.t||0,0,1);scene.add(o);insts.push(o);tris+=pr.tris;const sc=+(ctx.scale||rec.scale)||1;
+    for(let a=0;a<3;a++){mn[a]=Math.min(mn[a],pr.min[a]*sc+(a===0?o.position.x:a===1?o.position.y:0));mx[a]=Math.max(mx[a],pr.max[a]*sc+(a===0?o.position.x:a===1?o.position.y:0));}
+    report.push(nm+(ctx.el?' ['+ctx.el+']':'')+' : '+pr.tris+' triangles · '+pr.parts.map(p=>p.name+' '+p.tris+' ('+Object.keys(p.gs).join('')+')').join(', ')+' · boîte x '+pr.min[0].toFixed(2)+'…'+pr.max[0].toFixed(2)+'  y '+pr.min[1].toFixed(2)+'…'+pr.max[1].toFixed(2)+'  z '+pr.min[2].toFixed(2)+'…'+pr.max[2].toFixed(2));});
+  if(cfg.fp){ // outil tenu en main : même cadrage que le jeu (caméra à 1,70 m qui regarde vers -Z, champ 72°, écran 844×390)
+    const o=insts[0],h=cfg.fp;scene.remove(o);const camF=new THREE.PerspectiveCamera(72,TW/TH,.1,700);camF.position.set(0,1.7,0);scene.add(camF);camF.add(o);o.position.set(h[0],h[1],h[2]);o.rotation.set(h[3]||0,h[4]||0,h[5]||0);
+    sun.target.position.set(0,0,0);sun.position.set(SUN.x*200,SUN.y*200,SUN.z*200);{const c=sun.shadow.camera;c.left=-20;c.right=20;c.top=20;c.bottom=-20;c.near=1;c.far=460;}
+    const sheet=document.createElement('canvas');sheet.width=TW*2;sheet.height=TH*2;const g2=sheet.getContext('2d');
+    [[0,0,'en main, regard droit'],[.5,-.35,'en regardant vers le bas à droite'],[-2.2,.1,'à contre-jour'],[1.2,.25,'en regardant vers le haut']].forEach((q,i)=>{camF.rotation.order='YXZ';camF.rotation.y=q[0];camF.rotation.x=q[1];renderer.render(scene,camF);g2.drawImage(cv,(i%2)*TW,Math.floor(i/2)*TH);
+      g2.fillStyle='rgba(0,0,0,.55)';g2.fillRect((i%2)*TW,Math.floor(i/2)*TH,TW,18);g2.fillStyle='#fff';g2.font='12px sans-serif';g2.fillText(q[2],(i%2)*TW+6,Math.floor(i/2)*TH+13);});
+    cv.style.display='none';document.body.appendChild(sheet);sheet.id='sheet';return{report,tris,size:[mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2]],calls:renderer.info.render.calls,shaderErrors:window.__shaderErrors||[]};}
+  if(cfg.ref!==false){const m=new THREE.Mesh(new THREE.BoxGeometry(.5,1.7,.3),new THREE.MeshLambertMaterial({color:0xdddddd}));m.position.set(mx[0]+1.2,.85,0);m.castShadow=true;scene.add(m);} // repère : la taille du joueur (1,70 m)
+  const cx=(mn[0]+mx[0])/2,cy=(mn[1]+mx[1])/2,cz=(mn[2]+mx[2])/2,size=Math.max(mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2]),cam=new THREE.PerspectiveCamera(cfg.fov||50,TW/TH,.1,900);
+  sun.target.position.set(cx,0,cz);sun.position.set(cx+SUN.x*200,SUN.y*200,cz+SUN.z*200);{const c=sun.shadow.camera,s=Math.max(12,size*1.6);c.left=-s;c.right=s;c.top=s;c.bottom=-s;c.near=1;c.far=460;}
+  const sheet=document.createElement('canvas');sheet.width=TW*cols;sheet.height=TH*rows;const g2=sheet.getContext('2d');
+  views.forEach((v,i)=>{ // v = {az (degrés, 0 = face au modèle, côté +Z), el (degrés), d (distance, en multiples de la taille), ty (hauteur visée), eye (hauteur fixe de l'œil), label}
+    const d=((v.d||1.7)*size+(v.dAdd||0))*(cfg.zoom||1),az=(v.az||0)*Math.PI/180,el=(v.el===undefined?12:v.el)*Math.PI/180,tx=cx+(v.tx||0),ty=v.ty===undefined?cy:v.ty,tz=cz+(v.tz||0);
+    let px=tx+Math.sin(az)*Math.cos(el)*d,py=ty+Math.sin(el)*d,pz=tz+Math.cos(az)*Math.cos(el)*d;if(v.eye!==undefined){py=v.eye;}cam.position.set(px,Math.max(.15,py),pz);cam.fov=v.fov||cfg.fov||50;cam.updateProjectionMatrix();cam.lookAt(tx,ty,tz);
+    renderer.render(scene,cam);g2.drawImage(cv,(i%cols)*TW,Math.floor(i/cols)*TH);g2.fillStyle='rgba(0,0,0,.55)';g2.fillRect((i%cols)*TW,Math.floor(i/cols)*TH,TW,18);g2.fillStyle='#fff';g2.font='12px sans-serif';g2.fillText(v.label||('vue '+(i+1)),(i%cols)*TW+6,Math.floor(i/cols)*TH+13);});
+  cv.style.display='none';document.body.appendChild(sheet);sheet.id='sheet';
+  return{report,tris,size:[mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2]],calls:renderer.info.render.calls,shaderErrors:window.__shaderErrors||[]};};
+</script></body></html>

@@ -1,0 +1,44 @@
+# L'ordre d'assemblage du script du lobby (lu par build.py). Une ligne = un fichier de src/, ou un repère :
+#   @ouvre … @ferme : la fonction qui enferme tout le script de la page
+#   @gfx : l'atelier 3D (gfx/kit.js, gfx/models/*.js, puis dt/photos.js, les photos des armes venues de Dernier Toit)
+# L'ordre compte : un fichier peut se servir de ce qui est déclaré au-dessus de lui dès son chargement.
+@ouvre
+interface/tables.js
+interface/roles.js
+interface/progression.js
+interface/armes.js
+interface/modes.js
+@gfx
+sons/sound.js
+affichage/scene.js
+affichage/modeles.js
+interface/commandes.js
+interface/multi.js
+interface/tactile.js
+lobby/base.js
+lobby/terrain.js
+lobby/portails.js
+lobby/chemins.js
+lobby/village.js
+lobby/evolution.js
+lobby/recoltes.js
+lobby/taverne.js
+lobby/etat.js
+lobby/guide.js
+lobby/toit.js
+lobby/outils.js
+lobby/dev.js
+lobby/carte.js
+lobby/batiments.js
+lobby/gains.js
+lobby/boucle.js
+lobby/multi.js
+lobby/toit-multi.js
+lobby/ile.js
+lobby/paysage.js
+lobby/paysage-chemins.js
+lobby/habitants.js
+lobby/paysage-vie.js
+interface/guide.js
+interface/boucle.js
+@ferme
