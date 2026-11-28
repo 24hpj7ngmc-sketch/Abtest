@@ -9,24 +9,31 @@
 {
   const { PAL } = K,
     PI = Math.PI,
-    E = K.EL.feu;
-  const ROUGE = 0xc0322a,
-    ROUGE_D = 0x82201a,
-    BRIQUE = E.dark,
-    ORANGE = E.main,
-    ORANGE_L = E.light,
-    FEU = E.glow,
     OR = PAL.gold,
     OR_D = PAL.goldD,
     CUIR = 0x6b4030,
     GANT = 0x93603e,
-    JUPE = K.mix(ORANGE, ROUGE, 0.45),
-    DOUBLURE = K.mix(ORANGE, BRIQUE, 0.35),
     CUIR_D = 0x46291e,
-    PANT = 0x5a2a22,
     PEAU = PAL.skin,
-    CHEVEUX = 0xe0521f,
     HY = 1.67;
+  // V12.9 : Braise est Mage, son élément se choisit au Hall : la tenue, les flammes et les runes prennent la palette de ctx.el.
+  // Au Feu, les couleurs d'origine à l'identique. palBraise(el) remplit les couleurs ci-dessous avant chaque fabrication.
+  let ELK, E, ROUGE, ROUGE_D, BRIQUE, ORANGE, ORANGE_L, FEU, JUPE, DOUBLURE, PANT, CHEVEUX;
+  const palBraise = el => {
+    const feu = !K.EL[el] || el === 'feu';
+    ELK = feu ? 'feu' : el;
+    E = K.EL[ELK];
+    ROUGE = feu ? 0xc0322a : K.mix(E.main, E.dark, 0.55);
+    ROUGE_D = feu ? 0x82201a : K.mix(E.dark, E.deep, 0.45);
+    BRIQUE = E.dark;
+    ORANGE = E.main;
+    ORANGE_L = E.light;
+    FEU = E.glow;
+    JUPE = K.mix(ORANGE, ROUGE, 0.45);
+    DOUBLURE = K.mix(ORANGE, BRIQUE, 0.35);
+    PANT = feu ? 0x5a2a22 : K.mix(0x3a3530, E.deep, 0.5);
+    CHEVEUX = feu ? 0xe0521f : K.mix(E.main, E.light, 0.25);
+  };
   // plaque : polygone [[x, y], …] dans le plan de face, épaisseur ep vers l'avant (−Z) à partir de o.p
   const plaque = (b, pts, ep, o) =>
     b.group({ p: o.p, r: o.r || [0, 0, 0] }, b =>
@@ -64,6 +71,7 @@
       jit: 0
     });
   MODELS['hero.braise'] = ctx => {
+    palBraise(ctx && ctx.el);
     const arme = !!ctx.arme,
       b = K.make(2601),
       aL = K.make(2602),
@@ -334,7 +342,8 @@
     // --- flammes vivantes au-dessus des mains (pièces animées : elles vacillent), et quelques braises
     const flamme = (f, sd) => {
       const x = sd * 0.365;
-      SH.flame(f, { p: [x, 1.05, -0.24], r: [0, sd * 0.6, 0], s: 0.42 });
+      // la magie de l'élément au-dessus de la main : flamme, goutte, pousse, cristal, éclair ou rafale (motifs de shared.js)
+      SH.motif(f, ELK, { p: [x, 1.05, -0.24], r: [0, sd * 0.6, 0], s: 0.42 });
       [
         [0.04, 0.3, 0.02, 0.018],
         [-0.05, 0.36, -0.01, 0.014],
