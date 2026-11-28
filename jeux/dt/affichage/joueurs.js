@@ -47,24 +47,28 @@ const JR = { l: [], n: 0 };
 // Le gardien (hero.avatar, ≈ 1,8 m, origine aux pieds, regarde vers −Z), sans y toucher : ses 8 premières pièces sont les jambes
 // (b.sym : jambe droite x > 0 puis jambe gauche), elles deviennent les pièces legR et legL (pivot aux hanches) ; les 5 dernières
 // pièces du bras droit sont son pistolet à cristal, retirées (le joueur tient sa vraie arme). Graines 1311 et 1312 (neuves).
+// V5.1 : Braise (feu) a son propre modèle (gfx/models/braise.js). On demande la variante qui tient une arme (arme: 1 : bras tendus,
+// sans les flammes des mains) ; sa recette dit combien de premières pièces sont les jambes (jambes, moitié droite puis moitié gauche)
+// et combien de pièces du bras droit garder (mainD). Sans ces champs (le gardien) : 8 et 4, comme avant. Les pivots sont ceux de la recette.
 MODELS['joueur.corps'] = ctx => {
   const el = JOUEUR_HEROS.indexOf(ctx.el) >= 0 ? ctx.el : 'feu',
-    r = MODELS['hero.avatar']({ P: K.EL[el], el }),
+    r = MODELS['hero.avatar']({ P: K.EL[el], el, arme: 1 }),
     corps = r.parts[0].b,
     brasD = r.parts[2].b,
     jG = K.make(1311),
     jD = K.make(1312),
-    jambes = corps.items.splice(0, 8);
-  for (let i = 0; i < 4; i++) jD.items.push(jambes[i]);
-  for (let i = 4; i < 8; i++) jG.items.push(jambes[i]);
-  brasD.items.splice(4);
+    nj = r.jambes || 8,
+    jambes = corps.items.splice(0, nj);
+  for (let i = 0; i < nj / 2; i++) jD.items.push(jambes[i]);
+  for (let i = nj / 2; i < nj; i++) jG.items.push(jambes[i]);
+  brasD.items.splice(r.mainD === undefined ? 4 : r.mainD);
   return {
     parts: [
       { name: 'body', b: corps },
       { name: 'legL', b: jG, parent: 'body', pivot: [-0.11, 0.76, 0] },
       { name: 'legR', b: jD, parent: 'body', pivot: [0.11, 0.76, 0] },
-      { name: 'armL', b: r.parts[1].b, parent: 'body', pivot: [-0.3, 1.42, 0] },
-      { name: 'armR', b: brasD, parent: 'body', pivot: [0.3, 1.42, 0] }
+      { name: 'armL', b: r.parts[1].b, parent: 'body', pivot: r.parts[1].pivot || [-0.3, 1.42, 0] },
+      { name: 'armR', b: brasD, parent: 'body', pivot: r.parts[2].pivot || [0.3, 1.42, 0] }
     ],
     bake: r.bake
   };

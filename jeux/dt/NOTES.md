@@ -1,5 +1,11 @@
 # Dernier Toit — notes de fabrication (V1.0, 19/11/2026)
 
+## V5.1 (28/11/2026) : Braise, le Mage de feu, a son propre modèle 3D
+Demande de Frédéric : « Modélise-le vraiment en 3D. » `gfx/models/braise.js` (MODELS['hero.braise'], fichier commun aux trois jeux, collé par build.py après mains.js) ;
+`hero.avatar` le rend quand `el = 'feu'` (une ligne en tête). `joueur.corps` (affichage/joueurs.js) demande la variante `arme: 1` (bras tendus, sans flammes) et lit
+dans la recette `jambes` (12 pièces de jambes, droite puis gauche) et `mainD` (pièces du bras droit gardées) ; sans ces champs, le gardien comme avant (8 et 4).
+Règles, sons, écran, réseau inchangés. Non vérifié : le vrai three.js r128 et le téléphone.
+
 ## V5.0 (28/11/2026) : des couleurs d'armes pour chaque élément
 Demande de Frédéric : « Des couleurs d'armes pour chaque élément. » L'arme en main (et celle des autres joueurs en multi) prend la couleur de l'élément de l'arme
 (opts.elementArme du lobby, sinon le choix du menu, sinon le héros) : modèles `vm.*` teintés par `ctx.el` (gfx/models/mains.js), cache de `prepM` par élément.

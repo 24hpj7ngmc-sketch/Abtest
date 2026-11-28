@@ -7,6 +7,9 @@ Le jeu arrive en **un seul fichier**, `ile-pour-lobby.js`, à coller tel quel da
 
 Le jeu **n'écrit aucune sauvegarde**. Tout ce qui dure reste au lobby : or céleste, éclats, arbres des héros et des armes, campagne, défis, butin, réglages.
 
+## V2.4 (28/11/2026)
+Rien ne change dans le contrat. `IleDesCinq.version` vaut `'V2.4'`. Les coéquipiers, bots et esclaves qui incarnent Braise (feu) sont dessinés avec son propre modèle 3D, `MODELS['hero.braise']` (`gfx/models/braise.js`, le même fichier que celui du lobby et de Dernier Toit).
+
 ## V2.3 (28/11/2026)
 Rien ne change dans le contrat (`opts`, `rappels`, tables). `IleDesCinq.version` vaut `'V2.3'`. Côté joueur : la course est celle de Dernier Toit (balancement, roulis, champ de vision, arme baissée en sprint) et chaque arme en main prend la couleur de son élément (`opts.elements` ou le choix du début de partie ; sans élément : celui du héros).
 
@@ -14,7 +17,7 @@ Rien ne change dans le contrat (`opts`, `rappels`, tables). `IleDesCinq.version`
 
 | | |
 |---|---|
-| `IleDesCinq.version` | `'V2.3'` |
+| `IleDesCinq.version` | `'V2.4'` |
 | `IleDesCinq.HEROS`, `.ARMES` | les clés acceptées |
 | `IleDesCinq.accepte` | ce que le jeu sait lire : `mode, campagne, tuto, bonus, gains, reglages, multi, paie, elements, voie` |
 | `IleDesCinq.tables` | des tables du jeu en lecture seule (voir plus bas) |

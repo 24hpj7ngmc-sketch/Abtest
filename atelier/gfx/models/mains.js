@@ -7,7 +7,9 @@ const GANT=K.mix(PAL.dirt,PAL.sand,.36),GANT_D=K.shade(PAL.dirt,.86),CUIR=K.mix(
                                   // fente sous les lacets
 
 // ---------------------------------------------------------------- hero.avatar : le gardien vu par ses coéquipiers (≈ 1,8 m, regarde vers −Z)
-MODELS['hero.avatar']=ctx=>{const P=ctx.P||K.EL.feu,b=K.make(71),aL=K.make(72),aR=K.make(73),TUN=P.main;
+MODELS['hero.avatar']=ctx=>{
+  if(ctx.el==='feu'&&MODELS['hero.braise'])return MODELS['hero.braise'](ctx);
+  const P=ctx.P||K.EL.feu,b=K.make(71),aL=K.make(72),aR=K.make(73),TUN=P.main;
   // --- bottes à revers et jambes
   b.sym(sd=>{b.add(K.box(.13,.1,.27,.85,.75),{p:[sd*.11,.05,-.035],c:CUIR_D});
     b.add(K.cyl(.068,.075,.32,6),{p:[sd*.11,.24,0],c:CUIR_D,c2:CUIR});
@@ -58,5 +60,6 @@ MODELS['hero.avatar']=ctx=>{const P=ctx.P||K.EL.feu,b=K.make(71),aL=K.make(72),a
       {name:'armR',b:aR,parent:'body',pivot:[.3,1.42,0],anim:[{k:'rot',axis:'x',amp:.35,sp:6,ph:PI}]}],
     bake:{ground:.2,groundH:.6,map:{s:'m'}},scale:1,labelY:2.15};};
 // V12.7 : le gardien qui tient une arme (vue par les autres joueurs du salon) : le même corps, sans son pistolet à cristal (les cinq dernières pièces du bras droit) ; l'arme vm.* de armes.js est posée par le lobby
-MODELS['hero.avatar.arme']=ctx=>{const r=MODELS['hero.avatar'](ctx);r.parts[2].b.items.splice(4);return r;};
+// V12.8 : arme = 1 (Braise : bras tendus, sans flammes) ; mainD = ce que la recette garde du bras droit (le gardien : 4)
+MODELS['hero.avatar.arme']=ctx=>{const r=MODELS['hero.avatar'](Object.assign({},ctx,{arme:1}));r.parts[2].b.items.splice(r.mainD===undefined?4:r.mainD);return r;};
 }

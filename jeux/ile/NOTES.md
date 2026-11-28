@@ -1,5 +1,10 @@
 # Notes de travail — L'Île des Cinq (le mini-jeu, dans son propre atelier)
 
+## V2.4 (28 nov. 2026) — Braise, le Mage de feu, a son propre modèle 3D
+- Demande de Frédéric : « Modélise-le vraiment en 3D. » `gfx/models/braise.js` (MODELS['hero.braise'], fichier commun aux trois jeux, dans `ORDER` de build.py avant mains.js) ; `hero.avatar` (gfx/models/mains.js) le rend quand `el = 'feu'` (une ligne en tête). Les cinq autres héros ne changent pas.
+- Pièces : body, armL, armR (mêmes pivots que le gardien, `mateTick` les anime pareil), plus flamL et flamR (flammes des mains qui vacillent avec `K.pose`). 2704 triangles (gardien : 1278).
+- GARDE (build.py) remet toujours le hero.avatar de l'île après gfx/armes/mains.js. Non vérifié : le vrai three.js r128, le téléphone.
+
 ## V2.3 (28 nov. 2026) — la course de Dernier Toit, armes à la couleur de leur élément
 - **Course** : même sensation que Dernier Toit (affichage/boucle.js et armes.js de `jeux/dt`). `interface/boucle.js` : balancement `bob` +9/s à la marche, +13/s en sprint (seulement si on avance), amplitude 0,035 / 0,06, facteur de sprint lissé `spk` (dt*7), roulis `sin(bob*0,5)*0,014*spk`, champ de vision +8*`spk`. `affichage/ambiance.js` : `runPose` baisse et tourne l'arme, la pelle et le marteau en sprint (hors visée, moins pendant un coup d'outil) ; léger balancement au repos.
 - **Couleurs** : `gfx/armes/mains.js` recopié de `jeux/dt/gfx/models/mains.js` (`coulEl(ctx)` : `ctx.el` teinte carcasse et pièces). `setGun(h.wEl)` passait déjà l'élément de l'arme : seul le fichier manquait. Le cache (`prepOf`) est par arme et par élément. Les `setGun(héros)` redondants de hud.js et partie.js sont retirés (`armApply` pose l'élément de l'arme, sinon celui du héros).

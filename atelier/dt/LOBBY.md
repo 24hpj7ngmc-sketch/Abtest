@@ -50,6 +50,11 @@ DernierToit.fermer(); // retirer le jeu sans attendre le joueur (aucun « fin »
 - `sansFin` : partie sans fin (après une victoire, « Continuer sans fin » lance une nouvelle partie, qui enverra son propre `fin`) ;
 - « Rejouer » à l'écran de fin relance une partie dans l'iframe : un `fin` par partie, à récompenser chacun.
 
+## V5.1 : Braise a son propre modèle 3D
+
+Rien à changer côté lobby : les autres joueurs incarnant Braise (feu) sont dessinés avec `MODELS['hero.braise']` (gfx/models/braise.js, le même fichier que
+celui du lobby). `DernierToit.version` vaut `'V5.1'`.
+
 ## V5.0 : des couleurs d'armes pour chaque élément
 
 Rien à changer côté lobby : `opts.elementArme` (V4.8) colore désormais aussi l'arme vue en main (les six armes à feu : carcasse, pièces sable et vert armée

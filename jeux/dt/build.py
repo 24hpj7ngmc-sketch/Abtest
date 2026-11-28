@@ -13,7 +13,7 @@ def lit(dossier):
     noms=[l.strip() for l in open(os.path.join(dossier,'ordre.txt')) if l.strip() and not l.strip().startswith('#')]
     return '\n'.join(open(os.path.join(dossier,n)).read().rstrip('\n') for n in noms)
 kit=open('gfx/kit.js').read().replace("if(typeof module!=='undefined')module.exports=K;","")
-gfx='\n'.join([strip(kit).strip(),'const MODELS={};',strip(open('gfx/models/shared.js').read()).strip(),strip(open('gfx/models/mains.js').read()).strip(),strip(open('gfx/models/toit.js').read()).strip(),strip(open('gfx/models/pnj.js').read()).strip(),open('gfx/photos.js').read().strip()])
+gfx='\n'.join([strip(kit).strip(),'const MODELS={};',strip(open('gfx/models/shared.js').read()).strip(),strip(open('gfx/models/mains.js').read()).strip(),strip(open('gfx/models/braise.js').read()).strip(),strip(open('gfx/models/toit.js').read()).strip(),strip(open('gfx/models/pnj.js').read()).strip(),open('gfx/photos.js').read().strip()])
 regles=lit('regles')
 open('regles.js','w').write(regles+'\n')
 h=open('interface/page.html').read()
