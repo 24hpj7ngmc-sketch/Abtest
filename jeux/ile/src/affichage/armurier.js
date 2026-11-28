@@ -1,4 +1,4 @@
-// [affichage/armurier.js] L'étal du marchand d'armes (V2.0) : à 12 m du cœur, loin des chemins et des autres étals. On s'en approche, le bouton « Armes » apparaît (interface/arsenal.js).
+// [affichage/armurier.js] L'étal du marchand d'armes : à 12 m du cœur, loin des chemins et des autres étals. On s'en approche, le bouton « Armes » apparaît (interface/arsenal.js).
 const ARMP = (() => {
   let b = [-9, 7],
     bd = -1;
@@ -25,7 +25,7 @@ const ARMP = (() => {
     s = Math.sin(ry),
     at = (u, v) => [ARMP[0] + u * c + v * s, ARMP[1] - u * s + v * c];
   // la place est dégagée pour de bon (les buissons semés au hasard n'y reviennent pas à la partie suivante)
-  for (const [i, l] of DEC)
+  for (const [, l] of DEC)
     for (let k = l.length - 1; k >= 0; k--)
       if (Math.hypot(l[k].x - ARMP[0], l[k].z - ARMP[1]) < 4.2) {
         hideDec(l[k]);

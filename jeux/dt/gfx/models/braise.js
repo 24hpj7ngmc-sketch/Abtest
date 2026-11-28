@@ -1,7 +1,7 @@
 // BRAISE — le héros Mage de feu, vu par ses coéquipiers (V12.8). Fichier commun : copié à l'identique dans jeux/dt/gfx/models/ et jeux/ile/gfx/models/.
 // Même gabarit que le gardien (hero.avatar) : ≈ 1,8 m (pointe de la capuche ≈ 2,1 m), origine aux pieds, regarde vers −Z.
 // Pièces : body, armL, armR (pivots aux épaules, comme le gardien), puis flamL et flamR (les flammes des mains, qui vacillent).
-// En plus de la recette : jambes = nombre de premiers objets de body qui sont les jambes (jambe droite x > 0, puis la gauche, autant
+// En plus de la recette : pas (multiplicateur de l'amplitude de marche des jambes, 1 par défaut ; les longues robes en veulent moins) ; jambes = nombre de premiers objets de body qui sont les jambes (jambe droite x > 0, puis la gauche, autant
 // chacune) ; mainD = nombre d'objets du bras droit à garder quand il tient une arme (ce qui suit est tenu en main).
 // ctx.arme : il tient une arme (lobby, Dernier Toit) : bras tendus le long du corps, sans les flammes.
 // Langage des formes : triangles et pointes qui montent (capuche, épaulières, ourlets en langues de feu).
@@ -388,6 +388,14 @@
         }
       );
     }
-    return { parts, bake: { ground: 0.2, groundH: 0.6, map: { s: 'm' } }, scale: 1, labelY: 2.2, jambes, mainD };
+    return {
+      parts,
+      bake: { ground: 0.2, groundH: 0.6, map: { s: 'm' } },
+      scale: 1,
+      labelY: 2.2,
+      jambes,
+      pas: 0.5,
+      mainD
+    };
   };
 }

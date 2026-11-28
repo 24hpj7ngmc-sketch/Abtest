@@ -42,7 +42,7 @@ function snap(s) {
     cT: s.cT === undefined ? -1 : r1(s.cT), // vue du ciel : secondes avant la vague (-1 = pas de chrono), joueurs prêts / présents
     cR: s.cR || 0,
     cN: s.cN || 1,
-    sm: s.storms.map(st => [Math.round(st.x), Math.round(st.z), st.r || BAL.stormR]),
+    sm: s.storms.map(st => [Math.round(st.x), Math.round(st.z), st.r || BAL.stormR, ELS.indexOf(st.el || 'elec')]),
     hz: s.zones.filter(q => q.hero).map(q => [r1(q.x), r1(q.z), q.r, ELS.indexOf(q.el), r1(q.t), r1(q.pw || 1)]),
     ob: s.obj
       ? s.obj.k === 'bomb'
@@ -64,7 +64,7 @@ function snap(s) {
     e: s.enemies
       .map(e =>
         [
-          e.id.toString(36), // V2.0 (audit, problème 5) : identifiant, avancée, vie et position en base 36, pour qu'il en tienne plus dans l'état
+          e.id.toString(36), // identifiant, avancée, vie et position en base 36, pour qu'il en tienne plus dans l'état
           ELS.indexOf(e.el),
           e.path,
           Math.max(0, Math.round(e.d * 10)).toString(36),
@@ -79,7 +79,7 @@ function snap(s) {
             (e.mark > 0 ? 256 : 0),
           KK.indexOf(e.k || 'b')
         ]
-          .concat([Math.round(e.x).toString(36), Math.round(e.z).toString(36)]) // V2.0 : la position de tous (les aériens et les foreurs ne suivent plus un chemin connu de l'invité)
+          .concat([Math.round(e.x).toString(36), Math.round(e.z).toString(36)]) // la position de tous (les aériens et les foreurs ne suivent plus un chemin connu de l'invité)
           .join(',')
       )
       .join(';'),
@@ -92,7 +92,7 @@ function snap(s) {
           q.boss ? q.bt || 1 : 0,
           KK.indexOf(q.k || 'b'),
           q.bomb ? 1 : 0,
-          Number.isFinite(q.a) ? Math.round(q.a * 100) : '' // l'angle de sortie : un invité qui reprend la partie les fait encore arriver de partout (audit V2.0, problème 8)
+          Number.isFinite(q.a) ? Math.round(q.a * 100) : '' // l'angle de sortie : un invité qui reprend la partie les fait encore arriver de partout
         ].join(',')
       )
       .join(';'),
@@ -170,7 +170,15 @@ function applySnap(s, o) {
     ? o.sm
         .slice(0, 4)
         .filter(v => Array.isArray(v) && Number.isFinite(v[0] + v[1]))
-        .map(v => ({ x: v[0], z: v[1], r: Number.isFinite(v[2]) ? Math.min(40, v[2]) : BAL.stormR, t: 1, zap: 9 }))
+        .map(v => ({
+          x: v[0],
+          z: v[1],
+          r: Number.isFinite(v[2]) ? Math.min(40, v[2]) : BAL.stormR,
+          // l'élément du lanceur (4e valeur) ; absent ou douteux : Élec, comme avant
+          el: (Number.isInteger(v[3]) && ELS[v[3]]) || 'elec',
+          t: 1,
+          zap: 9
+        }))
     : [];
   {
     const ob = o.ob,
@@ -392,7 +400,7 @@ function applySnap(s, o) {
     .slice(0, 200)
     .map(r => ({ id: 'ru' + r[0] + '_' + r[1], x: +r[0] / 10, z: +r[1] / 10 }));
 }
-// l'état envoyé doit tenir dans la limite du salon (audit V2.0, problème 5) :
+// l'état envoyé doit tenir dans la limite du salon :
 // 1) la file d'attente est résumée par groupes au lieu d'être jetée (le reste de la vague arrive toujours si l'hôte change) ;
 // 2) s'il faut encore couper des ennemis : on garde les plus proches du cœur, puis une tranche qui tourne d'un envoi à l'autre parmi les autres
 //    (ceux qui sortent de la mer finissent donc toujours par être vus), et l'on dit lesquels manquent (eo) pour que l'invité les garde.

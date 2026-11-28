@@ -4,9 +4,9 @@
 const {spawnSync}=require('child_process'),path=require('path');
 const R=path.join(__dirname,'..');
 // règles seules (Node, rapides)
-const REGLES=['empreinte','v15test','herotest','v39sim','baltest','geotest','insidetest','invtest','stairtest','multiregles','v47regles','v48regles','v49regles'];
+const REGLES=['empreinte','v15test','herotest','v39sim','baltest','geotest','insidetest','invtest','stairtest','multiregles','v47regles','v48regles','v49regles','v56regles'];
 // dans la page de test (Chromium + moteur d'aperçu, lents)
-const PAGE=['run1','v15ui','armes','armes2','devtest','menutest','herofx','climbtest','shoptest','ziptest','v37test','variantes','portee','sndtest','sprinttest','images','ecrans','lobbytest','synchrotest','guidetest','joueurstest','multitest','athtest','grappintest','rolestest'];
+const PAGE=['run1','v15ui','armes','armes2','devtest','menutest','herofx','climbtest','shoptest','ziptest','v37test','variantes','portee','sndtest','sprinttest','images','ecrans','lobbytest','synchrotest','guidetest','joueurstest','multitest','athtest','grappintest','rolestest','couleurarme','elheros','elsorts','v56page'];
 const vite=process.argv.includes('vite'),liste=vite?REGLES:REGLES.concat(PAGE);
 let bilan=[],echec=0;
 for(const t of liste){const t0=Date.now(),r=spawnSync('node',[path.join(__dirname,t+'.js')],{cwd:R,encoding:'utf8',timeout:600000});

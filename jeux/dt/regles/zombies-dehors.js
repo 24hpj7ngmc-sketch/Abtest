@@ -291,7 +291,7 @@ function outWalk(S, i, dt, pace) {
     Z.x[i] += (dx / dl) * m;
     Z.z[i] += (dz / dl) * m;
   }
-  // V3.9 : en l'air (sauteur des fenêtres), on ne repasse pas au-dessus des balcons : les sprinteurs, très rapides, y arrivaient avant de toucher le sol
+  // en l'air (sauteur des fenêtres), on ne repasse pas au-dessus des balcons : les sprinteurs, très rapides, y arrivaient avant de toucher le sol
   if (Z.y[i] > 0.05) {
     const ax = Math.abs(Z.x[i]),
       az = Math.abs(Z.z[i]),

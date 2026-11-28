@@ -154,7 +154,7 @@ const SND = (() => {
     tick() {
       tone('sine', 880, 660, 0.04, 0.05);
     },
-    // un pas, discret (V12.7) : un souffle sourd et un petit coup grave
+    // un pas, discret : un souffle sourd et un petit coup grave
     step() {
       if (!ok('step', 90)) return;
       noise(0.06, 0.07, 'lowpass', 900, 300);

@@ -5,8 +5,7 @@
 // au plus max) ; joueursDistants ; seul l'hôte lance le jour, chez les deux ; l'invité voit les zombies de l'hôte ; un coup de l'invité
 // tue chez l'hôte ; la ville est la même ; un faux joueur aux données hostiles (nom nettoyé, rien dans la page) ; l'hôte part →
 // l'invité reprend ; un joueur qui arrive devient invité de la partie en cours ; la fin chez les deux (chacun son « fin »).
-// Les règles du multi (regles/multi.js) sont remplacées par tests/bouchon-multi.js tant qu'elles n'existent pas (__bouchon) ;
-// les vérifications sur les zombies ne dépendent pas de la forme exacte de l'instantané.
+// Les vérifications sur les zombies ne dépendent pas de la forme exacte de l'instantané.
 //   node tests/multitest.js
 const { chromium } = require('playwright');
 const path = require('path');
@@ -93,14 +92,13 @@ const fs = require('fs');
       8000
     )
   );
-  // le jeu d'un lobby (le cadre dans le cadre), une fois chargé ; le bouchon des règles du multi y est ajouté s'il le faut
+  // le jeu d'un lobby (le cadre dans le cadre), une fois chargé
   const jeu = async k => {
     let f = null;
     await attend(async () => {
       f = lob[k].childFrames()[0];
       return !!f && (await f.evaluate(() => typeof window.__dt === 'object' && !!S).catch(() => false));
     }, 15000);
-    await f.addScriptTag({ path: path.resolve('tests/bouchon-multi.js') });
     // les messages (toast) sont notés : un message peut en remplacer un autre avant qu'on le lise ;
     // la 3D n'est dessinée qu'à la demande (__rendu) : deux cadres 3D en logiciel (swiftshader) tournent à 2 ou 3 images par seconde,
     // sans elle à ~50 (ce test vérifie le tuyau, pas l'image : l'affichage des autres joueurs a son propre test)
@@ -148,7 +146,6 @@ const fs = require('fs');
   await lob.B.evaluate(() => lance({ heros: 'eau', arme: 'assaut', rang: 2, multi: { nom: 'Bob', depuis: 2000, max: 2500 } }));
   const fa = await jeu('A'),
     fb = await jeu('B');
-  console.log('     (règles du multi : ' + ((await fa.evaluate(() => window.__bouchon)) ? 'bouchon' : 'les vraies') + ')');
   await p.evaluate(() => (marche = true));
   await p.waitForTimeout(1200);
   const role = f =>
@@ -262,7 +259,7 @@ const fs = require('fs');
     'joueursDistants : Bob, ses champs',
     jd.length === 1 &&
       JSON.stringify(Object.keys(bob)) ===
-        JSON.stringify(['id', 'nom', 'heros', 'arme', 'x', 'y', 'z', 'yaw', 'pitch', 'tire', 'aTerre']) &&
+        JSON.stringify(['id', 'nom', 'heros', 'arme', 'el', 'elHeros', 'x', 'y', 'z', 'yaw', 'pitch', 'tire', 'aTerre']) &&
       bob.nom === 'Bob' &&
       bob.heros === 'eau' &&
       bob.arme === 'assaut' &&

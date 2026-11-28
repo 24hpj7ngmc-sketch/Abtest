@@ -2,14 +2,14 @@
 // la compétence de chaque héros
 function ability(s, h, a) {
   h = h || s.hero;
-  if (h.el === 'terre') return h.m.voB ? charge(s, h, a) : rempart(s, h); // V2.2 : Avant-garde, le Rempart devient une charge
+  if (h.el === 'terre') return h.m.voB ? charge(s, h, a) : rempart(s, h); // Avant-garde, le Rempart devient une charge
   if (h.el === 'elec') return dash(s, h, a);
   if (h.el === 'bois') return brambles(s, h, a);
   if (h.el === 'feu') return fireball(s, h, a);
   if (h.el === 'vent') return rafale(s, h, a);
   return tide(s, h, a);
 }
-// V2.6 : les sorts suivent l'élément choisi du héros (elOf). elState : l'effet d'état de cet élément sur un ennemi touché (le Feu brûle, l'Eau ralentit,
+// les sorts suivent l'élément choisi du héros (elOf). elState : l'effet d'état de cet élément sur un ennemi touché (le Feu brûle, l'Eau ralentit,
 // la Nature empoisonne, la Terre étourdit, l'Élec rebondit, le Vent soulève les petits). `c` compte les rebonds (6 au plus par sort). Les sorts l'appellent
 // à la place de l'effet de leur élément d'origine ; avec l'élément d'origine, ils gardent leur code d'avant, à l'identique.
 function elState(s, e, el, c) {
@@ -73,7 +73,7 @@ function dash(s, h, a) {
   const ex = x + fx * d,
     ez = z + fz * d;
   {
-    // V2.2 : Lame (spA2) achève sous 15 % de vie ; Escarmoucheur : chaque élimination rend une part de la recharge, et avec spB2 une élimination relance la Fulgurance.
+    // Lame (spA2) achève sous 15 % de vie ; Escarmoucheur : chaque élimination rend une part de la recharge, et avec spB2 une élimination relance la Fulgurance.
     // Chez un invité, l'hôte frappe ; l'invité ne fait qu'estimer les éliminations pour sa propre recharge.
     const dmg = BAL.dashDmg * (1 + h.m.abDmg) * (1 + 0.08 * (lvl(s, s.wave) - 1));
     let kills = 0;
@@ -187,7 +187,7 @@ function guardians(s, h) {
           type: 'archer',
           x,
           z,
-          els: tintEl(h) ? [elOf(h), tintEl(h), tintEl(h)] : [elOf(h), elOf(h), elOf(h)], // ultime teinté (V2.2) : les flèches gagnent l'élément de l'arme
+          els: tintEl(h) ? [elOf(h), tintEl(h), tintEl(h)] : [elOf(h), elOf(h), elOf(h)], // ultime teinté : les flèches gagnent l'élément de l'arme
           cd: 0.3,
           aim: 0,
           wy: 0,
@@ -311,7 +311,7 @@ function deluge(s, h) {
   s.events.push({ k: 'deluge', mine: h === s.hero, el: elOf(h) });
   return true;
 }
-// ---- Zéphyr (Vent), le Tireur (V2.1). Passif : ses balles font plus mal au-delà de BAL.zephFar m (+20 %, +5 points par niveau). Compétence : Bond. Ultime : Tir perçant.
+// ---- Zéphyr (Vent), le Tireur. Passif : ses balles font plus mal au-delà de BAL.zephFar m (+20 %, +5 points par niveau). Compétence : Bond. Ultime : Tir perçant.
 // Bond : une rafale le porte en arrière sur BAL.zephLen m (+kLen), s'arrête contre un obstacle ; avec kPush, elle repousse aussi les ennemis proches au départ.
 function rafale(s, h, a) {
   if (h.ab > 0 || s.over) return false;
@@ -357,7 +357,7 @@ function perce(s, h) {
     ex = h.x + fx * L,
     ez = h.z + fz * L,
     W = BAL.perceR + (h.m.uRad || 0),
-    el = ELS.includes(h.ce) ? h.ce : h.wEl || elOf(h); // V2.6 : l'élément choisi ; sans choix, comme avant (l'élément de l'arme)
+    el = ELS.includes(h.ce) ? h.ce : h.wEl || elOf(h); // l'élément choisi ; sans choix, comme avant (l'élément de l'arme)
   if (!s.client) {
     const d = BAL.perceDmg * (1 + (h.m.uDmg || 0)) * (1 + 0.08 * (lvl(s, s.wave) - 1));
     for (const e of s.enemies) {
@@ -373,7 +373,7 @@ function perce(s, h) {
   return true;
 }
 const ULT = { terre: quake, elec: storm, bois: guardians, feu: meteors, eau: deluge, vent: perce };
-// L'ULTIME TEINTÉ (V2.2) : l'ultime garde son effet et gagne celui de l'élément de l'arme en main (l'Onde de choc de Roc avec une arme de feu devient un séisme de lave).
+// L'ULTIME TEINTÉ : l'ultime garde son effet et gagne celui de l'élément de l'arme en main (l'Onde de choc de Roc avec une arme de feu devient un séisme de lave).
 // tintEl : l'élément qui teinte (rien si l'arme est de l'élément du héros) ; tintUlt l'applique aux ennemis touchés. r > 0 : un cercle à montrer ; r = 0 : toute l'île ; r < 0 : rien à montrer.
 const tintEl = h => (h.wEl && ELS.includes(h.wEl) && h.wEl !== elOf(h) ? h.wEl : '');
 function tintUlt(s, h, es, x, z, r, el) {
@@ -462,7 +462,7 @@ function quake(s, h) {
   for (const e of s.enemies) {
     if (e.hp <= 0 || e.k === 'air' || Math.hypot(e.x - h.x, e.z - h.z) > QR + (e.boss ? 2 : 0)) continue;
     hurtE(e, d * mult(E, e.el, e.boss, BAL.strong + s.m.strong), true, true);
-    // V2.7 (sa décision du 28/11) : l'Onde de choc étourdit quel que soit l'élément choisi ; l'effet de l'élément s'ajoute
+    // l'Onde de choc étourdit quel que soit l'élément choisi ; l'effet de l'élément s'ajoute
     if (E !== 'terre') elState(s, e, E, cn);
     if (e.boss) e.slow = Math.max(e.slow, QT);
     else {
@@ -476,7 +476,7 @@ function quake(s, h) {
   s.events.push({ k: 'quake', x: h.x, z: h.z, r: QR, el: E });
   return true;
 }
-// ---- Roc, voie Avant-garde (V2.2) : le Rempart devient une charge. Il fonce sur BAL.chargeLen m (+spB1), s'arrête contre un obstacle,
+// ---- Roc, voie Avant-garde : le Rempart devient une charge. Il fonce sur BAL.chargeLen m (+spB1), s'arrête contre un obstacle,
 // blesse et renverse (étourdit) ce qu'il traverse ; avec spB2, il renverse aussi tout ce qui est à BAL.chargeR m de son point d'arrivée. Recharge : BAL.chargeCd s.
 function charge(s, h, a) {
   if (h.ab > 0 || s.over) return false;
@@ -510,7 +510,7 @@ function charge(s, h, a) {
         end = h.m.spB2 && Math.hypot(e.x - ex, e.z - ez) < BAL.chargeR + (e.boss ? 2 : 0);
       if (!on && !end) continue;
       hurtE(e, dmg * mult(E, e.el, e.boss, BAL.strong + s.m.strong), false, true);
-      // V2.7 : la charge de l'Avant-garde renverse et étourdit quel que soit l'élément ; l'effet de l'élément s'ajoute
+      // la charge de l'Avant-garde renverse et étourdit quel que soit l'élément ; l'effet de l'élément s'ajoute
       if (E !== 'terre') elState(s, e, E, cn);
       if (e.boss) e.slow = Math.max(e.slow, 2);
       else {

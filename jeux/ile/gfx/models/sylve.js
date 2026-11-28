@@ -1,11 +1,11 @@
 // SYLVE — la héroïne Combattante, vue par ses coéquipiers. Fichier commun, sur le modèle de braise.js (même interface, même recette).
 // Même gabarit que le gardien : ≈ 1,8 m, origine aux pieds, regarde vers −Z ; plus fine que Braise, épaules étroites.
 // Pièces : body, armL, armR (pivots aux épaules, comme le gardien), puis motL (la magie de l'élément dans la main gauche, qui pulse).
-// En plus de la recette : jambes = nombre de premiers objets de body qui sont les jambes (jambe droite x > 0, puis la gauche, autant
+// En plus de la recette : pas (multiplicateur de l'amplitude de marche des jambes, 1 par défaut ; les longues robes en veulent moins) ; jambes = nombre de premiers objets de body qui sont les jambes (jambe droite x > 0, puis la gauche, autant
 // chacune) ; mainD = nombre d'objets du bras droit à garder quand elle tient une arme (ce qui suit est tenu en main).
 // ctx.arme : elle tient une arme (lobby, Dernier Toit) : bras le long du corps, sans la magie de la main.
 // Langage des formes : flèches et feuilles pointues (tassettes en feuilles, épaulière d'écailles, lames croisées, longue tresse au vent).
-// Couleurs : 60 % cuir teint et feuilles dans les tons de l'élément, 30 % cuir naturel, peau et cheveux auburn, 10 % or et acier.
+// Couleurs : 60 % cuir teint et feuilles dans les tons de l'élément, 30 % cuir naturel, peau et cheveux prune sombre (qui ne se confondent avec aucun élément), 10 % or et acier.
 {
   const { PAL } = K,
     PI = Math.PI,
@@ -26,8 +26,9 @@
     PL_L = K.mix(E.main, E.light, 0.4);
     LEG = K.mix(K.mix(E.dark, E.deep, 0.5), 0x4a3a30, 0.4);
     FOUL = K.mix(E.main, E.light, 0.6);
-    CHEVEUX = K.mix(0xb5532a, E.main, 0.15);
-    CHEVEUX_D = K.mix(0x7a3218, E.dark, 0.15);
+    // cheveux prune sombre, la même dans les six éléments : seule teinte qui se détache de l'armure feu, bois, eau, terre, foudre ou vent
+    CHEVEUX = 0x4a3668;
+    CHEVEUX_D = 0x2a1d3d;
   };
   // plaque : polygone [[x, y], …] dans le plan de face, épaisseur ep vers l'avant (−Z) à partir de o.p
   const plaque = (b, pts, ep, o) =>
@@ -359,6 +360,14 @@
         anim: [{ k: 'scl', axis: 'y', amp: 0.3, sp: 10 }]
       });
     }
-    return { parts, bake: { ground: 0.2, groundH: 0.6, map: { s: 'm' } }, scale: 1, labelY: 2.15, jambes, mainD };
+    return {
+      parts,
+      bake: { ground: 0.2, groundH: 0.6, map: { s: 'm' } },
+      scale: 1,
+      labelY: 2.15,
+      jambes,
+      pas: 1,
+      mainD
+    };
   };
 }

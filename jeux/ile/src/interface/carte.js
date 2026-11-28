@@ -49,7 +49,7 @@ function drawOpt(force) {
             persist();
           } else if (a === 'hire') {
             if (cielOn())
-              CIEL_BOUTIQUES[1].f(); // depuis le ciel, on n'a pas à marcher jusqu'à l'étal (audit écran n° 13)
+              CIEL_BOUTIQUES[1].f(); // depuis le ciel, on n'a pas à marcher jusqu'à l'étal
             else hireOpen();
             return;
           } else if (a === 'rules') {

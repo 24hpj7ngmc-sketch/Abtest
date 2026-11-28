@@ -3,7 +3,7 @@
 // Les mêmes boutons servent au lobby et dans chaque mini-jeu. `padSet` écrit le bouton Action, le bouton libre et l'étiquette posée à gauche d'Action.
 let freeK = '',
   barT = 0;
-// LA VISÉE (V8.9), comme sur les jeux de tir mobiles : le bouton libre devient « Viser » quand on a l'arme en main (un appui pour viser, un autre pour arrêter).
+// LA VISÉE, comme sur les jeux de tir mobiles : le bouton libre devient « Viser » quand on a l'arme en main (un appui pour viser, un autre pour arrêter).
 // En visée : zoom (WT[arme].zoom), caméra qui tourne moins vite, pas de sprint, arme ramenée au centre. Une arme à lunette (scope, le sniper) affiche la lunette plein écran ;
 // avec elle, tenir Tir vise aussi, et le coup part quand on relâche (fireQ). `aim` : bascule du bouton ; `aimHold` : visée tenue par Tir ; aimOn() : on vise.
 let aim = false,
@@ -16,7 +16,7 @@ function aimSet(v) {
   aim = !!v;
   if (!aim) aimHold = false;
 }
-// Petits boutons (libre, Compétence, Ultime) : il faut deux appuis rapprochés pour activer. Sneak, lui, répond au premier appui (V8.5). Un appui seul arme le bouton (liseré blanc) et ne fait rien :
+// Petits boutons (libre, Compétence, Ultime) : il faut deux appuis rapprochés pour activer. Sneak, lui, répond au premier appui. Un appui seul arme le bouton (liseré blanc) et ne fait rien :
 // le pouce qui tourne la caméra ne déclenche plus rien par accident. Un doigt posé sur un petit bouton puis glissé tourne d'ailleurs la caméra, comme partout.
 const DBL = 420;
 let dblId = '',

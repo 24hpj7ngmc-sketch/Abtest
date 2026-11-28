@@ -1,7 +1,7 @@
 // [lobby/base.js] L'Île céleste, le lobby : sa scène à part (ciel, nuages, lumière, caméra), étiquettes, îlots lointains ; VISIT (visite chez un autre joueur).
 // ---------- l'Île céleste : le lobby. Chaque joueur y bâtit son village, sculpte son relief, et part de là pour les mini-jeux ----------
 // Une scène à part (sa lumière, son ciel, sa caméra). On s'y promène avec les mêmes commandes que dans les mini-jeux.
-// VISIT (V10.5) : en visite sur l'île d'un autre joueur, save.vil et save.evo sont ceux de l'hôte le temps de la visite ; les siens attendent dans VISIT.mine. Voir « LE LOBBY À PLUSIEURS ».
+// VISIT : en visite sur l'île d'un autre joueur, save.vil et save.evo sont ceux de l'hôte le temps de la visite ; les siens attendent dans VISIT.mine. Voir « LE LOBBY À PLUSIEURS ».
 const VISIT = (window.__visit = { on: false, mine: null, peer: '' });
 const LSKY_F = `varying vec3 vDir;uniform vec3 sunDir;uniform float t;uniform vec3 cTop;uniform vec3 cMid;uniform vec3 cHor;uniform vec3 cAur;uniform vec3 cSun;uniform float kStar;
 void main(){vec3 d=normalize(vDir);float h=d.y;

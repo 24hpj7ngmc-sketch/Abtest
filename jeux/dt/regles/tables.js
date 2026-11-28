@@ -60,7 +60,7 @@ const ZT = [
   { n: 'Coureur', hp: 12, sp: 4.3, cl: 1.8, rs: 4.6, dps: 7, cash: 1, sc: 0.96, r: 0.38 },
   { n: 'Colosse', hp: 160, sp: 1.35, cl: 0.62, rs: 2.1, dps: 26, cash: 6, sc: 1.32, r: 0.62 },
   { n: 'Mastodonte', hp: 2400, sp: 1.15, cl: 0.52, rs: 1.9, dps: 70, cash: 150, sc: 2.25, r: 1.05 },
-  // V3.9 : les variantes (mode fuite seulement) : 4 sprinteur, 5 casseur, 6 porteur, 7 hurleur
+  // les variantes (mode fuite seulement) : 4 sprinteur, 5 casseur, 6 porteur, 7 hurleur
   { n: 'Sprinteur', hp: 10, sp: 6.3, cl: 2.2, rs: 5.5, dps: 6, cash: 2, sc: 0.95, r: 0.36 },
   { n: 'Casseur', hp: 90, sp: 1.75, cl: 0.8, rs: 2.4, dps: 18, cash: 5, sc: 1.12, r: 0.5 },
   { n: 'Porteur', hp: 55, sp: 2.3, cl: 0.9, rs: 3, dps: 8, cash: 30, sc: 1.02, r: 0.45 },

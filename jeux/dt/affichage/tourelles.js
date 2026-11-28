@@ -16,7 +16,7 @@ function tourellesInit(boite) {
   G.tur = {};
   G.miss = [];
 }
-// V2.5 : la portée de la tourelle visée au marteau, en cercle au sol (disque pâle + bord ; pour le mortier, aussi la distance minimale),
+// la portée de la tourelle visée au marteau, en cercle au sol (disque pâle + bord ; pour le mortier, aussi la distance minimale),
 // vue à travers le parapet et l'immeuble (depthTest coupé)
 function porteeInit() {
   G.rng = {};

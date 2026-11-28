@@ -1,4 +1,4 @@
-// [interface/ciel.js] La vue du ciel entre deux vagues (V2.0) : la caméra monte façon Clash of Clans, on pose, on améliore, on mure et on creuse au doigt, puis « Prêt ».
+// [interface/ciel.js] La vue du ciel entre deux vagues : la caméra monte façon Clash of Clans, on pose, on améliore, on mure et on creuse au doigt, puis « Prêt ».
 // Demande de Frédéric (25/11) : « à chaque fin de vague, l'écran se dézoome pour passer à une vue comme dans CoC, du ciel, et on a genre 30 s pour placer de nouvelles
 // défenses, améliorer les existantes et construire des murs / trous ». Le chrono et les prêts sont dans regles/ciel.js ; tout ce qu'on fait passe par les actions de send()
 // (pl, up, wl, dg, rdy), comme en vue normale : chez un invité, c'est l'hôte qui pose. En vue normale, marteau et pelle restent (sa réponse du 25/11).
@@ -46,10 +46,10 @@ const ciel = {
   g: null, // geste à deux doigts { d, h, mx, my }
   self: null,
   bk: '',
-  t0: 0, // l'heure de la montée : « Prêt » attend la fin de la montée et 1,5 s (audit écran n° 1)
+  t0: 0, // l'heure de la montée : « Prêt » attend la fin de la montée et 1,5 s
   mt: 0, // l'heure de mon dernier « Prêt », et le compte des prêts à ce moment-là (à plusieurs, en attendant la réponse de l'hôte)
   mr: 0,
-  wk: '' // la place de la roulette autour de l'endroit touché (audit écran n° 9)
+  wk: '' // la place de la roulette autour de l'endroit touché
 };
 const CIELT = { def: 'Défense', mur: 'Mur', fos: 'Fosse' };
 const cielOn = () => !!(ciel.on && sim && running);
@@ -72,7 +72,7 @@ const cielSel = new THREE.Mesh(
 cielSel.rotation.x = -Math.PI / 2;
 cielSel.visible = false;
 scene.add(cielSel);
-// l'arc de côte d'où viendra la vague (vagues 1 et 2), dessiné sur l'eau pendant le ciel (audit écran n° 11) ; refait (nouvel objet) quand l'arc change
+// l'arc de côte d'où viendra la vague (vagues 1 et 2), dessiné sur l'eau pendant le ciel ; refait (nouvel objet) quand l'arc change
 const cielArcM = new THREE.MeshBasicMaterial({ color: 0xffcf5a, transparent: true, opacity: 0.8, depthWrite: false });
 let cielArc = null;
 function cielArcTick() {
@@ -101,7 +101,7 @@ function cielArcTick() {
   }
   cielArc.visible = !!k;
 }
-// la roulette autour de l'endroit touché (audit écran n° 9) : un demi-cercle de cinq boutons au-dessus du point, gardé dans l'écran,
+// la roulette autour de l'endroit touché : un demi-cercle de cinq boutons au-dessus du point, gardé dans l'écran,
 // au-dessus de la rangée du bas, des boutiques et de « Prêt » ; null = la remettre au coin (vue normale)
 const CIELWR = 82; // le bouton conseillé grossit : de la place entre les six (V2.1 : 72 pour cinq)
 function cielWheelAt(P) {
@@ -221,7 +221,7 @@ function cielShopsDraw() {
     );
   ciel.bk = '';
 }
-// « Prêt » est sous le pouce qui tirait pendant la vague (audit écran n° 1) : rien pendant la montée et 1,5 s après,
+// « Prêt » est sous le pouce qui tirait pendant la vague : rien pendant la montée et 1,5 s après,
 // et deux appuis rapprochés quand cet appui lancerait la vague (seul, ou dernier à ne pas être prêt), comme Compétence et Ultime.
 // Retirer son « Prêt » ne demande qu'un appui.
 function cielPretOk(ev) {
@@ -254,7 +254,7 @@ function cielEnter() {
   ciel.pts = {};
   ciel.g = null;
   ciel.t0 = performance.now();
-  // nord en haut, comme la mini-carte (audit écran n° 11 : en suivant le regard du héros, l'île tournait à chaque montée) ;
+  // nord en haut, comme la mini-carte ;
   // la caméra part toujours des yeux du héros et se place au-dessus de lui
   ciel.yaw = 0;
   ciel.fx = h.x;
@@ -291,7 +291,7 @@ function cielLeave() {
     wheelCtx = null;
     $('wheel').hidden = true;
   }
-  // à plusieurs, la vague peut partir pendant qu'une boutique est ouverte : on la referme (audit écran n° 5)
+  // à plusieurs, la vague peut partir pendant qu'une boutique est ouverte : on la referme
   for (const id of ['armV', 'hireV', 'tree']) $(id).hidden = true;
 }
 // ---- caméra ----
@@ -483,7 +483,7 @@ function cielHud(now) {
     cielSel.position.set(T.x, (T.wy || 0) + 0.25, T.z);
     cielSel.material.color.setHex(0xffcf5a);
   } else cielSel.visible = false;
-  cielSel.scale.setScalar(Math.max(1, ciel.h / 45)); // de haut, l'anneau grandit pour rester visible (audit écran n° 19)
+  cielSel.scale.setScalar(Math.max(1, ciel.h / 45)); // de haut, l'anneau grandit pour rester visible
   if (ciel.sel && !T) {
     let x = ciel.sel.x,
       z = ciel.sel.z,
@@ -504,7 +504,7 @@ function cielHud(now) {
     ghostMat.color.setHex(gWhy ? 0xff6b5a : 0x7cf07a);
     ghost.visible = true;
     ghostSet(ciel.type, elOf(sim.hero));
-    // l'endroit choisi se voit de haut : l'anneau, vert ou rouge selon que la pose est permise (audit écran n° 19)
+    // l'endroit choisi se voit de haut : l'anneau, vert ou rouge selon que la pose est permise
     cielSel.visible = true;
     cielSel.position.set(x, gy + 0.25, z);
     cielSel.material.color.setHex(gWhy ? 0xff6b5a : 0x7cf07a);
@@ -568,7 +568,7 @@ function cielHud(now) {
     for (const b of $('cSub').children) {
       const v = String(placeCost(sim, b.dataset.k)),
         q = b.lastChild,
-        on = b.dataset.k === (T ? T.type : ciel.type); // la pastille suit la défense choisie (audit écran n° 14)
+        on = b.dataset.k === (T ? T.type : ciel.type); // la pastille suit la défense choisie
       if (q.textContent !== v) q.textContent = v;
       if (b._s !== on) {
         b._s = on;
@@ -588,7 +588,7 @@ function cielHud(now) {
   }
   const t = sim.cT,
     n = sim.cN || 1,
-    // juste après mon appui, l'hôte n'a pas encore répondu : je me compte moi-même (audit écran n° 22)
+    // juste après mon appui, l'hôte n'a pas encore répondu : je me compte moi-même
     r =
       ciel.me && n > 1 && performance.now() - ciel.mt < 1500
         ? Math.min(n, Math.max(sim.cR || 0, ciel.mr + 1))
@@ -600,7 +600,7 @@ function cielHud(now) {
         (n > 1 ? ' · ' + r + (r > 1 ? ' prêts' : ' prêt') + ' sur ' + n : '');
   setTxt('cReady', 'b', ciel.me ? 'Prêt ✓' : 'Prêt');
   setTxt('cReady', 'small', sm);
-  // le chrono en grand dans le titre de l'aperçu, et par-dessus une boutique ouverte (audit écran n° 5 et 22)
+  // le chrono en grand dans le titre de l'aperçu, et par-dessus une boutique ouverte
   if ($('wT')) setTxt('wT', '', t >= 0 ? 'dans ' + Math.ceil(t) + ' s' : 'aperçu');
   {
     const shop =

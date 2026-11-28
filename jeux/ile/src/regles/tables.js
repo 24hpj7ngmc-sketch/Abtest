@@ -1,10 +1,10 @@
 // [regles/tables.js] Les tables du jeu : éléments et héros, réglages d'équilibre (BAL), campagne et attaquants spéciaux, types de défenses, chemins.
-// SIX ÉLÉMENTS ET SIX RÔLES (V2.1, refonte du lobby du 27/11 : claude/refonte-roles-contrat.md). Un héros garde sa clé, qui est aussi son élément de prédilection ;
-// « bois » s'affiche « Nature » ; le Vent est nouveau (Zéphyr, le Tireur). `role` : la famille du héros, façon LoL.
+// SIX ÉLÉMENTS ET SIX RÔLES. Un héros garde sa clé, qui est aussi son élément de prédilection ;
+// « bois » s'affiche « Nature ». `role` : la famille du héros, façon LoL.
 const ELS = ['feu', 'eau', 'bois', 'terre', 'elec', 'vent'];
-// V2.5 : l'élément d'un héros = l'élément choisi au Hall (h.ce, une des six clés) ; sans choix (ou valeur douteuse), la clé du héros. La clé h.el reste son identité (kit, voies, nom, modèle).
+// l'élément d'un héros = l'élément choisi au Hall (h.ce, une des six clés) ; sans choix (ou valeur douteuse), la clé du héros. La clé h.el reste son identité (kit, voies, nom, modèle).
 const elOf = h => (h && ELS.includes(h.ce) ? h.ce : h.el);
-// les deux voies de chaque héros (V2.2, noms du lobby) : 'a' et 'b' ; le jeu les lit dans opts.voie
+// les deux voies de chaque héros (noms du lobby) : 'a' et 'b' ; le jeu les lit dans opts.voie
 const VOIEN = {
   terre: { a: 'Gardien', b: 'Avant-garde' },
   bois: { a: 'Colosse', b: 'Plongeur' },
@@ -22,7 +22,7 @@ const EL = {
   vent: { n: 'Vent', c: '#8fe6dc', hero: 'Zéphyr', role: 'Tireur' }
 };
 // La boucle des faiblesses, à six : Eau éteint le Feu, Feu brûle la Nature, Nature brise le Vent, Vent érode la Terre, Terre absorbe l'Élec, Élec électrocute l'Eau.
-// ×1,5 contre l'élément battu (BAL.strong, plus l'arbre du marchand), ×0,75 contre celui qui nous bat (×0,5 contre un boss), ×1 sinon, même élément compris. Avant (V2.0) : boucle à cinq, ×2 / ×0,5.
+// ×1,5 contre l'élément battu (BAL.strong, plus l'arbre du marchand), ×0,75 contre celui qui nous bat (×0,5 contre un boss), ×1 sinon, même élément compris.
 const BEATS = { eau: 'feu', feu: 'bois', bois: 'vent', vent: 'terre', terre: 'elec', elec: 'eau' };
 const WEAKTO = {};
 for (const k in BEATS) WEAKTO[BEATS[k]] = k;
@@ -76,7 +76,7 @@ const BAL = {
   perceDmg: 90,
   perceR: 1.5,
   perceLen: 110, // Zéphyr : Bond (recharge, longueur du bond, rayon du souffle avec kPush), passif (au-delà de zephFar m, +zephK de dégâts, +5 points par niveau pA), Tir perçant (dégâts, demi-largeur, longueur)
-  // LES VOIES (V2.2) : le kit de base ne change pas, la voie le modifie (claude/refonte-roles-contrat.md, point 6). Les cases spA1… arrivent du lobby, en valeurs brutes.
+  // LES VOIES : le kit de base ne change pas, la voie le modifie (claude/refonte-roles-contrat.md, point 6). Les cases spA1… arrivent du lobby, en valeurs brutes.
   gardR: 2,
   gardK: 0.3,
   gardRef: 2, // Roc Gardien : les alliés à gardR m (+spA1) de lui prennent −30 % ; Rempart large ; spA2 : il renvoie deux fois les coups reçus au contact
@@ -111,7 +111,7 @@ const BAL = {
   mitK: 0.1,
   mitRamp: 0.3,
   mitRampT: 3, // Zéphyr Mitrailleur : +10 % de cadence (+spB1) en courant ; spB2 : la cadence monte jusqu'à +30 % en 3 s de tir continu
-  // LES RÔLES DES ENNEMIS (V2.2) : l'assassin fonce sur un héros proche, le tireur et le mage tirent de plus loin, le tank attire les tirs des défenses
+  // LES RÔLES DES ENNEMIS : l'assassin fonce sur un héros proche, le tireur et le mage tirent de plus loin, le tank attire les tirs des défenses
   assR: 20,
   assT: 7,
   assRest: 5,
@@ -220,10 +220,8 @@ const BAL = {
   potWave: 30,
   potWaveG: 5
 }; // mode normal : pot commun des défenses au départ, puis versé à chaque vague (base + par vague)
-// mode normal : 20 vagues bien plus fournies (35 jusqu'à la V7.7 : trop long, le plaisir arrivait trop tard). La montée est la même qu'avant mais resserrée :
-// chaque vague fait grimper le niveau de difficulté de lvK (34/19), si bien que la vague 20 vaut l'ancienne 35. Ce qui n'est pas listé ici reprend les valeurs du dessus.
-// Or (V9.9, demande de Frédéric : « l'autonomie dépense tout l'or qu'on gagne ») : ce que tuent les défenses va au pot (potK = la moitié de la valeur, comme avant ; le pot en entier rendait le jeu plus facile, mesuré), qui paie l'autonomie (défenses automatiques, améliorations auto, bots et esclaves), et plus rien au joueur ;
-// ce que tuent les joueurs et les bots va en entier aux joueurs. L'or du joueur n'est plus dépensé que par lui. Avant la V9.9 : moitié-moitié, et les bots bâtissaient avec l'or du joueur.
+// mode normal : 20 vagues. Chaque vague fait grimper le niveau de difficulté de lvK (34/19), si bien que la vague 20 vaut la 35e de l'ancien format. Ce qui n'est pas listé ici reprend les valeurs du dessus.
+// Or : ce que tuent les défenses va au pot (potK = la moitié de la valeur), qui paie l'autonomie (défenses automatiques, améliorations auto, bots et esclaves) ; ce que tuent les joueurs et les bots va en entier aux joueurs. L'or du joueur n'est dépensé que par lui.
 const BALN = Object.assign({}, BAL, {
   waves: 20,
   lvK: 34 / 19,
@@ -244,7 +242,7 @@ const BALN = Object.assign({}, BAL, {
   potWaveG: 10
 });
 const bal = s => (s.mode === 'normal' ? BALN : BAL);
-// LA CAMPAGNE (V9.1) : un niveau = un type (un élément) + un rang de difficulté. Règles du mode normal, CAMPW vagues, 85 % des groupes dominants et tous les boss sont du type (environ deux ennemis sur trois),
+// LA CAMPAGNE : un niveau = un type (un élément) + un rang de difficulté. Règles du mode normal, CAMPW vagues, 85 % des groupes dominants et tous les boss sont du type (environ deux ennemis sur trois),
 // les ennemis ont CAMPK[rang-1] fois plus de vie ; mêmes 20 vagues et mêmes boss que le mode normal (Frédéric, 17/11 : « la base du jeu en 20 était très bien »). setCamp se pose juste après newSim. Plus tard : attaquants spéciaux et carte par type.
 const CAMPK = [1, 1.35, 1.8, 2.4],
   CAMPW = 20,
@@ -259,7 +257,7 @@ const CAMPS = { feu: 'inc', eau: 'soi', elec: 'bro', terre: 'gol', bois: 'sem', 
   FIREMAX = 24; // CAMPC : moins nombreux (le Golem compte pour quatre)
 // Eau, le Soigneur : chaque seconde il rend 8 % de leur vie aux ennemis à 6 m (1,5 % aux boss), pas à lui ni aux autres Soigneurs.   Élec, le Brouilleur : les défenses à 7 m de lui ne tirent plus.
 // Terre, le Golem : en mourant il se casse en trois Éclats rapides.   Bois, le Semeur : en mourant il laisse une Graine immobile ; si elle tient 5 s il repousse, une seule fois.
-// Vent, le Tourbillon (V2.2) : toutes les BAL.touCd s, une bourrasque pousse vers le cœur les ennemis autour de lui (il faut l'abattre en premier).
+// Vent, le Tourbillon : toutes les BAL.touCd s, une bourrasque pousse vers le cœur les ennemis autour de lui (il faut l'abattre en premier).
 const HEALR = 6,
   HEALK = 0.08,
   JAMR = 7,
@@ -508,16 +506,16 @@ const M0 = {
   eChain: 0,
   eChainD: 0,
   ePierce: 0,
-  eLift: 0, // V2.1 : les balles de Vent (ennemis traversés en plus, soulèvement plus long)
+  eLift: 0, // les balles de Vent (ennemis traversés en plus, soulèvement plus long)
   kPush: 0,
   voA: 0,
   voB: 0,
   spA1: 0,
   spA2: 0,
   spB1: 0,
-  spB2: 0, // V2.2 : la voie du héros (voA, voB : 1 si elle est choisie) et ses deux cases
-  uDmg: 0 // V2.1 : Zéphyr (le Bond repousse au départ ; Tir perçant plus fort)
-}; // arme, arbre du mini-jeu (boss, prime) et arbre d'élément des balles (V9.0) : tout à zéro = les règles d'avant
+  spB2: 0, // la voie du héros (voA, voB : 1 si elle est choisie) et ses deux cases
+  uDmg: 0 // Zéphyr (le Bond repousse au départ ; Tir perçant plus fort)
+}; // arme, arbre du mini-jeu (boss, prime) et arbre d'élément des balles : tout à zéro = les règles d'avant
 // une défense porte jusqu'à 3 éléments, chacun jusqu'au niveau 3 (9 améliorations). La portée ne grandit que sur les 3 premières.
 const MAXEL = 3,
   MAXLV = 3,

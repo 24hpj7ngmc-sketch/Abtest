@@ -28,7 +28,7 @@ function hpTex() {
   }
   return HPTEX;
 } // un carré blanc, teinté par la matière : la barre de vie des défenses de renfort
-// une ruine (V10.0) : ce qui reste d'une défense de renfort détruite ; un tas de pierres sombres et deux poutres, cuit en un seul maillage
+// une ruine : ce qui reste d'une défense de renfort détruite ; un tas de pierres sombres et deux poutres, cuit en un seul maillage
 function ruinView(q) {
   const sd = (Math.abs(Math.round(q.x * 7 + q.z * 13)) % 900) + 1,
     b = K.make(sd),
@@ -113,7 +113,7 @@ function pupView(p) {
   g.userData = { ic, gl, ring, ph: Math.random() * 6 };
   g.position.set(p.x, typeof topAt === 'function' ? Math.max(0, topAt(sim, p.x, p.z)) : 0, p.z);
   scene.add(g);
-  if (typeof SND !== 'undefined') SND.at('pupdrop', p.x, p.z);
+  SND.at('pupdrop', p.x, p.z);
   return g;
 }
 function pupTick(p, v, now) {

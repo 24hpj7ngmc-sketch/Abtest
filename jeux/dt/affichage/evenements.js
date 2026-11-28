@@ -6,7 +6,7 @@
 // dawn (le jour se lève, mode fuite : poussière au pied des façades), over (un zombie passe le parapet), masse (coup de masse) ;
 // wallhit, wallbreak, plank, tear (cloisons.js) ; les héros (heros-evenements.js) et les variantes (variantes.js) voient passer tous les événements.
 // Les autres (pkill, escape, prep, clear, dead…) ne concernent que l'interface et les sons.
-// sprint : coup de caméra au départ du sprint (prévu en V2.0, branché en V4.0 : plus doux que le bond de Volt).
+// sprint : coup de caméra au départ du sprint (plus doux que le bond de Volt).
 // Fournit : gfxEvent (interface).
 function gfxEvent(ev, S) {
   const k = ev.k;
@@ -129,9 +129,9 @@ function gfxEvent(ev, S) {
   } else if (k === 'over') {
     if (Math.random() < 0.5) emit('dust', ev.x, H + 1, ev.z, 0, 1, 0, 0.4, 0.15, 0.05);
   }
-  // V1.5 : cloisons touchées / cassées, planches posées / arrachées (voir cloisons.js)
+  // cloisons touchées / cassées, planches posées / arrachées (voir cloisons.js)
   else if (k === 'wallhit' || k === 'wallbreak' || k === 'plank' || k === 'tear') cloisonsEvent(ev, S, k);
-  // V1.5 : un coup de masse qui porte (dans un zombie : du sang ; la caméra encaisse)
+  // un coup de masse qui porte (dans un zombie : du sang ; la caméra encaisse)
   else if (k === 'masse') {
     if (ev.n || ev.wall) {
       G.shake = Math.max(G.shake, ev.wall ? 0.36 : 0.28);

@@ -213,7 +213,7 @@ const stormG = new THREE.CylinderGeometry(1, 1, 0.8, 24),
   stormM = new THREE.MeshBasicMaterial({ color: 0x2a2f45, transparent: true, opacity: 0.75, depthWrite: false }),
   stormR = new THREE.TorusGeometry(1, 0.02, 6, 48),
   stormRM = new THREE.MeshBasicMaterial({ color: 0xffe45c });
-// V2.6 : le nuage et son cercle prennent la palette de l'élément choisi (dark pour le nuage, main pour le cercle) ; Élec : les couleurs d'avant
+// le nuage et son cercle prennent la palette de l'élément choisi (dark pour le nuage, main pour le cercle) ; Élec : les couleurs d'avant
 const stormMs = {};
 function stormView(o) {
   const g = new THREE.Group(),

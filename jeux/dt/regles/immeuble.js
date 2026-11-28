@@ -2,7 +2,7 @@
 // Une seule description sert à tout : collisions du joueur, balles arrêtées par les murs, marche des zombies, et dessin (gfx/models/toit.js).
 // Repère : mètres, +Y en haut, immeuble centré sur l'origine ; façades à x = ±B et z = ±B (murs de 30 cm vers l'intérieur) ; le nord est vers −Z.
 // Niveau 0 = rez-de-chaussée (4,2 m sous plafond), puis 4 étages de 3,8 m, toit à H (niveau NLV).
-// V1.6 : immeuble agrandi (26 × 26 m au lieu de 18 × 18), plafonds plus hauts, grandes fenêtres, un grand hall autour de l'escalier à chaque étage.
+// Grand immeuble de 26 × 26 m, plafonds hauts, grandes fenêtres, un grand hall autour de l'escalier à chaque étage.
 // Tout est construit au chargement, dans des listes : BOX (boîtes), FLOORS (sols), OPEN (ouvertures des façades), ROOMS (pièces),
 // PANELS (morceaux de cloison cassables, aussi dans BOX), DOORS (portes qu'on peut barricader), puis SHOPS (boutiques) et ZIPS (tyroliennes).
 // Fournit aux autres dossiers : B, NLV, LVY, H, FACES, FACEN, facePt, BALD, BOX, FLOORS, OPEN, ROOMS, PANELS, DOORS, PLANKS_MAX,
@@ -37,7 +37,7 @@ const WALLT = 0.3,
   BALV = [1, 2, 3, 4],
   BALU = [-7.8, 0, 7.8],
   BALD = 2.4;
-// V1.7-1.8 : à chaque étage, un balcon (caillebotis métallique de 2,4 m) fait tout le tour de l'immeuble ; une porte-fenêtre par pièce de façade
+// à chaque étage, un balcon (caillebotis métallique de 2,4 m) fait tout le tour de l'immeuble ; une porte-fenêtre par pièce de façade
 const balDoor = (f, u) => BALU.includes(u) || (f === 1 && u === 2.6);
 // les bandes de pièces vont de ±6,5 m à la façade ; dedans, le hall autour de l'escalier
 const R1 = 6.5;
@@ -114,7 +114,7 @@ function faceBox(f, u0, u1, y0, y1, d0, d1, b, p, t, o) {
         if (o.u0 > u) faceBox(f, u, o.u0, y0, y1, -WALLT, 0, 1, 1, t);
         if (o.v0 > 0) faceBox(f, o.u0, o.u1, y0, y0 + o.v0, -WALLT, 0, 1, 1, t);
         if (o.v1 < h) faceBox(f, o.u0, o.u1, y0 + o.v1, y1, -WALLT, 0, 1, 1, t);
-        // on ne sort pas par les fenêtres ni par les rideaux (V3.7 : en mode fuite, les rideaux relevés laissent passer)
+        // on ne sort pas par les fenêtres ni par les rideaux (en mode fuite, les rideaux relevés laissent passer)
         if (o.k !== 'porte') faceBox(f, o.u0, o.u1, y0 + o.v0, y0 + o.v1 + 0.3, -WALLT, 0, 0, 1, 'bar', o.k === 'vol' ? { vol: 1 } : null);
         OPEN.push({ f, lv: k, u: o.u, u0: o.u0, u1: o.u1, y0: y0 + o.v0, y1: y0 + o.v1, k: o.k });
         u = o.u1;
@@ -205,7 +205,7 @@ function faceBox(f, u0, u1, y0, y1, d0, d1, b, p, t, o) {
     return k;
   };
   // un morceau de cloison cassable (a, b : début et fin le long du mur ; ax : 'x' si le mur court le long de x)
-  // V2.1 : trois étages par morceau — bas (0 à 1 m), milieu (1 à 2 m : le casser seul fait une fenêtre de tir sans ouvrir de passage), haut (2 m au plafond)
+  // trois étages par morceau — bas (0 à 1 m), milieu (1 à 2 m : le casser seul fait une fenêtre de tir sans ouvrir de passage), haut (2 m au plafond)
   const panel = (ax, c, a, b, ya, yb, tier, lv) => {
     const hp = tier === 'bas' || tier === 'milieu' ? 6 : 8,
       o =
@@ -389,7 +389,7 @@ function faceBox(f, u0, u1, y0, y1, d0, d1, b, p, t, o) {
       faceBox(f, -E2, E2, y, y + 2.6, BALD - 0.05, BALD + 0.05, 0, 1, 'bar');
     }
 })();
-// V3.5 : les boutiques (comme les « buy stations » de Warzone) : une sur le toit, une au rez-de-chaussée ; on s'en approche pour ouvrir les améliorations
+// les boutiques (comme les « buy stations » de Warzone) : une sur le toit, une au rez-de-chaussée ; on s'en approche pour ouvrir les améliorations
 // ry : sens de la façade avant (le modèle regarde vers +z quand ry = 0)
 const SHOPS = [
   { x: 4.6, y: H, z: -4.6, ry: -Math.PI / 2, n: 'le toit' },
@@ -399,7 +399,7 @@ for (const s of SHOPS) {
   const ax = Math.abs(Math.sin(s.ry)) > 0.5;
   addBox(s.x - (ax ? 0.5 : 0.85), s.x + (ax ? 0.5 : 0.85), s.y, s.y + 1.2, s.z - (ax ? 0.85 : 0.5), s.z + (ax ? 0.85 : 0.5), 0, 1, 'shop');
 }
-// V3.6 : les tyroliennes (comme dans Warzone) : du bord du toit jusqu'à une passerelle qui enjambe chaque avenue, à 57 m de l'immeuble (mode fuite)
+// les tyroliennes (comme dans Warzone) : du bord du toit jusqu'à une passerelle qui enjambe chaque avenue, à 57 m de l'immeuble (mode fuite)
 // ZIPS[i] : f façade, n normale, t direction le long de la façade ; a = pied du poteau sur le toit, b = pied du poteau sur la passerelle,
 // c = milieu de la passerelle ; le câble passe ZIPH au-dessus des pieds de poteau ; on y glisse dans les deux sens.
 // PASSD : distance du milieu des passerelles au centre ; PASSY : hauteur du tablier ; PASSW : demi-longueur du tablier ; ZIPU : décalage des poteaux

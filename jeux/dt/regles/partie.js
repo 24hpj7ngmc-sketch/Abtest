@@ -118,8 +118,7 @@ function newRun(save, startDay, seed) {
     // héros (mode fuite seulement) ; decoy : le leurre posé ; ult : charge de l'ultime (0 à 1) ; recharges du missile, du leurre, de la frappe
     hero: save.mode === 'out' ? (HEROS[save.hero] ? save.hero : 'feu') : null,
     // V5.2 : l'élément choisi du héros (lobby), sinon sa clé
-    elHeros:
-      save.mode !== 'out' ? null : ELKEYS.includes(elHerosLobby) ? elHerosLobby : HEROS[save.hero] ? save.hero : 'feu',
+    elHeros: save.mode !== 'out' ? null : ELKEYS.includes(elHerosLobby) ? elHerosLobby : HEROS[save.hero] ? save.hero : 'feu',
     decoy: null,
     ult: 0,
     misCd: 0,
@@ -243,7 +242,7 @@ function newRun(save, startDay, seed) {
 }
 
 // ---------------------------------------------------------------- les journées
-// V3.3 : jour 1 sans tourelle (mode fuite) : moins de zombies, qui sortent plus lentement, pour qu'on puisse le tenir seul au fusil et au héros
+// jour 1 sans tourelle (mode fuite) : moins de zombies, qui sortent plus lentement, pour qu'on puisse le tenir seul au fusil et au héros
 const J1 = { n: 70, dur: 70 };
 // taille de la horde du jour, et durée de sa sortie (s)
 const dayN = S => (turOff(S) ? J1.n : dayCount(S.day)),

@@ -6,7 +6,7 @@ const tutoG = () => {
     g = gs[0] || { el: 'feu' };
   return { el: g.el, path: sectOf((sim.varc || [PATHA[0]])[0]) }; // le chemin du côté d'où ils viennent (V2.0 : ils débarquent tout le long de la côte)
 };
-// le côté de l'île d'où vient la vague, comme l'aperçu le dit (audit écran n° 21 : « côté Nord » contre « NORD-OUEST » à l'écran)
+// le côté de l'île d'où vient la vague, comme l'aperçu le dit
 const tutoCote = () => {
   const A = sim.varc;
   return A && A[1] < 6.28 ? 'côté ' + coteOf(A[0]) : 'de partout';
@@ -61,7 +61,7 @@ const TUTO = [
     t: () => 'Bien visé. Marque les plus dangereux et laisse tes défenses finir la vague.',
     ok: () => sim.phase === 'prep' && sim.wave > 0
   },
-  // V2.0 (audit écran n° 6) : la vue du ciel, la grande nouveauté, s'apprend ici, sans chrono (ciel: vrai = interface/ciel.js monte la caméra)
+  // la vue du ciel, la grande nouveauté, s'apprend ici, sans chrono (ciel: vrai = interface/ciel.js monte la caméra)
   {
     ciel: true,
     t: () =>
@@ -140,7 +140,7 @@ function tutoEnd() {
   tutoHTML();
   if (sim) {
     if (!(save.dev && dev.god)) sim.god = false;
-    // la partie continue avec les vraies règles : le chrono du ciel revient (audit règles n° 7) ; cW = −1 relance une préparation neuve
+    // la partie continue avec les vraies règles : le chrono du ciel revient ; cW = −1 relance une préparation neuve
     sim.cNoT = false;
     sim.cW = -1;
     if (running) {

@@ -11,9 +11,7 @@ function hfxEvent(ev, S, k) {
   const R = Math.random;
   // V5.3 : l'élément choisi qui remplace celui du sort (ev.ec ; absent : celui d'origine). Les balles (zap de saut, souleve) gardent leurs couleurs
   hxSk(
-    ev.small || k === 'souleve'
-      ? null
-      : ev.ec,
+    ev.small || k === 'souleve' ? null : ev.ec,
     k === 'maree'
       ? 'eau'
       : k === 'ronces' || k === 'fleche' || k === 'plonge'
@@ -247,7 +245,8 @@ function hfxEvent(ev, S, k) {
         emit(hxK('spark'), ev.x1, ev.y1 - 0.6, ev.z1, Math.cos(a) * v, 2 + R() * 4, Math.sin(a) * v, 0.35 + R() * 0.2, 0.09, 0.02, sol);
       }
       if (ev.y1 < 1.6 && R() < 0.5 && !HXE) hxScorch(ev.x1, ev.z1, 1.1);
-    } else for (let i = 0; i < 3; i++) emit(hxK('spark'), ev.x1, ev.y1, ev.z1, (R() - 0.5) * 4, R() * 3, (R() - 0.5) * 4, 0.25, 0.06, 0.01, sol);
+    } else
+      for (let i = 0; i < 3; i++) emit(hxK('spark'), ev.x1, ev.y1, ev.z1, (R() - 0.5) * 4, R() * 3, (R() - 0.5) * 4, 0.25, 0.06, 0.01, sol);
   } else if (k === 'eclair') {
     // le bond de Volt : traînée (HX.dashD, 7 nombres : départ x y z, arrivée x z, âge, durée), deux arcs, étincelles, coup de caméra, voile jaune
     const D = HX.dashD,
@@ -407,7 +406,18 @@ function hfxEvent(ev, S, k) {
     hxRing(ev.x, 0.12, ev.z, 1, ev.r, 0.5, hxC(0x8f6a44, 'dark'), 0.85);
     for (let i = 0; i < 16; i++) {
       const a = R() * 6.283;
-      emit(hxK('rock'), ev.x + Math.cos(a) * 1.5, 0.3, ev.z + Math.sin(a) * 1.5, Math.cos(a) * 5, 3 + R() * 4, Math.sin(a) * 5, 1.2, 0.14, 0.08);
+      emit(
+        hxK('rock'),
+        ev.x + Math.cos(a) * 1.5,
+        0.3,
+        ev.z + Math.sin(a) * 1.5,
+        Math.cos(a) * 5,
+        3 + R() * 4,
+        Math.sin(a) * 5,
+        1.2,
+        0.14,
+        0.08
+      );
     }
   } else if (k === 'acheve') {
     // V4.9 : Lame, une exécution : éclat jaune

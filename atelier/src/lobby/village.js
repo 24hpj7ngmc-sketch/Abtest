@@ -486,7 +486,7 @@ function vilWhy(k, x, z) {
   return '';
 }
 
-// le héros du Hall change d'élément (V12.9) : son avatar est refait (même place) et son halo prend la couleur de l'élément choisi
+// le héros du Hall change d'élément : son avatar est refait (même place) et son halo prend la couleur de l'élément choisi
 function hallAv(H) {
   const ee = elH(H.el),
     p = H.av.parent,

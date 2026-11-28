@@ -1,4 +1,4 @@
-// ===================== DERNIER TOIT — l'affichage : les modèles des effets des héros (V3.0) =====================
+// ===================== DERNIER TOIT — l'affichage : les modèles des effets des héros =====================
 // Modèles low-poly cuits une fois par le kit, comme le décor (mais rangés ici, avec leurs effets) : le rempart de Roc (entier, abîmé),
 // la touffe de ronces et l'arbre gardien de Sylve, la flèche des gardiens, le météore de Braise, le pic de l'Onde de choc, le nuage d'orage de Volt.
 // Attend : K (gfx/kit.js), MODELS ; exécuté au chargement (les recettes, elles, ne sont appelées qu'au premier ultime ou compétence).
@@ -12,7 +12,9 @@ MODELS['hx.rempart'] = ctx => {
     R = K.rng(77 + bad * 5),
     al = ctx.el && ctx.el !== 'terre' && K.EL[ctx.el],
     E = al || K.EL.terre,
-    cols = al ? [E.main, K.mix(E.main, E.dark, 0.3), K.mix(E.main, E.dark, 0.55), E.light, K.mix(E.light, E.dark, 0.3)] : [E.main, 0xb7844c, 0x9c7044, E.light, 0xa98a62];
+    cols = al
+      ? [E.main, K.mix(E.main, E.dark, 0.3), K.mix(E.main, E.dark, 0.55), E.light, K.mix(E.light, E.dark, 0.3)]
+      : [E.main, 0xb7844c, 0x9c7044, E.light, 0xa98a62];
   for (let r = 0; r < 3; r++) {
     const n = r % 2 ? 5 : 6,
       w = 9 / n,
@@ -84,7 +86,8 @@ MODELS['hx.ronce'] = ctx => {
         6
       );
     b.add(K.tube(path, [0.08, 0.07, 0.06, 0.05, 0.04, 0.025, 0], 5), { c: E.deep, c2: E.dark });
-    for (let j = 1; j < 6; j++) b.add(K.cone(0.04, 0.2, 4), { p: path[j], r: [R() * 6.3, R() * 6.3, R() * 6.3], c: al ? E.glow : 0xb0503a });
+    for (let j = 1; j < 6; j++)
+      b.add(K.cone(0.04, 0.2, 4), { p: path[j], r: [R() * 6.3, R() * 6.3, R() * 6.3], c: al ? E.glow : 0xb0503a });
     const q = path[3];
     b.add(K.oct(0.15), { p: [q[0], q[1] + 0.05, q[2]], s: [1.4, 0.35, 0.8], r: [0, -a, 0], c: R() < 0.5 ? E.main : E.light });
   }
@@ -146,7 +149,12 @@ MODELS['hx.pic'] = ctx => {
   b.add(K.cone(0.4, 1.3, 5), { p: [0.55, 0.65, 0.2], r: [0, 0, -0.35], c: E.dark, c2: E.main });
   for (let k = 0; k < 4; k++) {
     const a = (k / 4) * K.TAU + 0.5;
-    b.add(K.rock(0.32, 61 + k, 0, 0.3), { p: [Math.cos(a) * 0.8, 0.08, Math.sin(a) * 0.8], s: [1, 0.6, 1], c: al ? E.dark : 0x6e5236, c2: E.main });
+    b.add(K.rock(0.32, 61 + k, 0, 0.3), {
+      p: [Math.cos(a) * 0.8, 0.08, Math.sin(a) * 0.8],
+      s: [1, 0.6, 1],
+      c: al ? E.dark : 0x6e5236,
+      c2: E.main
+    });
   }
   return b;
 };

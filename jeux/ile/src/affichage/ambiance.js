@@ -373,7 +373,7 @@ for (const k of ['pelle', 'marteau']) {
   camera.add(g);
   held[k] = g;
 }
-// V2.3 : en course (c = facteur de sprint lissé, 0 à 1), l'objet en main est baissé, tourné sur le côté, et balance avec les pas (la pose de Dernier Toit)
+// en course (c = facteur de sprint lissé, 0 à 1), l'objet en main est baissé, tourné sur le côté, et balance avec les pas (la pose de Dernier Toit)
 function runPose(m, c) {
   if (c <= 0.01) return;
   const w = Math.sin(bob * 0.5);

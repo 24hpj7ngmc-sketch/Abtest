@@ -140,7 +140,7 @@ const SND = (() => {
   }
   // des notes qui se suivent (fs en Hz, gap secondes entre deux)
   const arpege = (fs, gap, dur, vol, type) => fs.forEach((f, i) => tone(type || 'triangle', f, f, dur, vol, { d: i * gap }));
-  // V3.9 : le lance-flammes. Une boucle de souffle (bruit filtré) démarre au premier tic avec un « whoumf » d'allumage ; chaque tic (12 par seconde)
+  // le lance-flammes. Une boucle de souffle (bruit filtré) démarre au premier tic avec un « whoumf » d'allumage ; chaque tic (12 par seconde)
   // la maintient et programme sa retombée 0,12 s plus tard (annulée par le tic suivant) : elle s'éteint seule quand on lâche Tir. Coupée 0,8 s après le dernier tic.
   let boucle = null;
   function souffle() {
@@ -345,7 +345,7 @@ const SND = (() => {
     step() {
       noise(0.05, 0.03, 'lowpass', 650, 300);
     },
-    // V1.5 : cloisons qui cassent, masse, planches
+    // cloisons qui cassent, masse, planches
     // plâtre qui encaisse, un peu de poussière
     wallhit() {
       if (!cadence('wh', 45)) return;
@@ -401,7 +401,7 @@ const SND = (() => {
       noise(0.09, 0.18, 'highpass', 1800, 700, { d: 0.28 });
       tone('sine', 180, 70, 0.1, 0.18, { d: 0.28 });
     },
-    // V3.0 : les héros. Braise : la boule de feu part en grondant ; le météore siffle en tombant (l'impact, c'est « big »)
+    // les héros. Braise : la boule de feu part en grondant ; le météore siffle en tombant (l'impact, c'est « big »)
     fireball() {
       noise(0.5, 0.32, 'bandpass', 300, 1600, { q: 0.7, a: 0.03 });
       noise(0.35, 0.14, 'lowpass', 900, 250, { d: 0.06 });
@@ -498,7 +498,7 @@ const SND = (() => {
         tone('sine', 58, 28, 1.1, 0.38, { d: 0.04 });
       } else if (cadence('th2', 90)) noise(0.08, 0.28, 'highpass', 3000, 1200);
     },
-    // V3.9 : le cri du hurleur (strident et court : il monte, se casse, redescend en râlant ; pas plus d'un toutes les 0,25 s)
+    // le cri du hurleur (strident et court : il monte, se casse, redescend en râlant ; pas plus d'un toutes les 0,25 s)
     hurle() {
       if (!cadence('hurle', 250)) return;
       tone('sawtooth', 620, 1380, 0.22, 0.16, { lp: 3800, a: 0.03 });

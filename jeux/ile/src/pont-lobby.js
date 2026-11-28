@@ -120,8 +120,8 @@ const IleDesCinq = (() => {
   return {
     version: VERSION,
     ARMES: ['fusil', 'pistolet', 'assaut', 'sniper', 'pompe', 'lance'],
-    HEROS: ['feu', 'eau', 'bois', 'terre', 'elec', 'vent'], // V2.1 : Zéphyr ('vent') est jouable
-    accepte: ['mode', 'campagne', 'tuto', 'bonus', 'gains', 'reglages', 'multi', 'paie', 'elements', 'voie', 'elHeros'], // 'elements' : opts.elements, et les six branches « Élément des balles » dans bonus.mods ; 'voie' (V2.2) : opts.voie et ses cases spA1…spB2
+    HEROS: ['feu', 'eau', 'bois', 'terre', 'elec', 'vent'], // Zéphyr ('vent') compris
+    accepte: ['mode', 'campagne', 'tuto', 'bonus', 'gains', 'reglages', 'multi', 'paie', 'elements', 'voie', 'elHeros'], // 'elements' : opts.elements, et les six branches « Élément des balles » dans bonus.mods ; 'voie' : opts.voie et ses cases spA1…spB2
     tables: TABLES,
     ouvrir,
     fermer,

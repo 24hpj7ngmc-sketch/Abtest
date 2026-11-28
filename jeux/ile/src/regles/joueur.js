@@ -109,7 +109,7 @@ function gardNear(s, h) {
       return true;
   return false;
 }
-// la vie de départ d'un héros : la base, l'arbre du lobby, le bonus de son rôle (Roc, Volt), et la voie Colosse de Sylve (V2.2)
+// la vie de départ d'un héros : la base, l'arbre du lobby, le bonus de son rôle (Roc, Volt), et la voie Colosse de Sylve
 const heroHpOf = (el, m) =>
   BAL.heroHp + (m.hHp || 0) + (HPB[el] || 0) + (el === 'bois' && m.voA ? BAL.colHp + (m.spA1 || 0) : 0);
 // renvoie vrai si le héros est debout. À terre : il revient au cœur après BAL.respawn s, ou plus vite si un coéquipier reste à côté de lui.
@@ -263,7 +263,7 @@ function heroStep(s, h, inp, dt, move) {
   h.cd -= dt;
   h.ab = Math.max(0, h.ab - dt);
   if (h.shT > 0 && (h.shT -= dt) <= 0) h.shd = 0; // le bouclier d'eau s'efface
-  // V2.2 : vitesse mesurée (aussi pour un coéquipier, dont on ne reçoit que la position), temps depuis le dernier tir, durée du tir continu
+  // vitesse mesurée (aussi pour un coéquipier, dont on ne reçoit que la position), temps depuis le dernier tir, durée du tir continu
   const mvd =
     Math.hypot(h.x - (h.px === undefined ? h.x : h.px), h.z - (h.pz === undefined ? h.z : h.pz)) / Math.max(dt, 1e-3);
   h.px = h.x;
@@ -279,7 +279,7 @@ function heroStep(s, h, inp, dt, move) {
           : 1, // Zéphyr Mitrailleur : plus vite en courant, et de plus en plus vite en tirant (spB2)
       chg = h.el === 'vent' && m.voA && m.spA2 && h.lsT >= BAL.chargeT; // Zéphyr Sniper : après une pause, le tir est chargé
     h.lsT = 0;
-    h.cd = Math.max(h.cd, -dt) + (0.26 * (1 - m.hCd)) / (1 + ARMK.cad * armL(h, 'cad')) / mit; // cadence : le profil de l'arme et du lobby, puis le marchand d'armes ; le reste de l'image est gardé (audit V2.0, problème 10 : la cadence ne dépend plus des images par seconde)
+    h.cd = Math.max(h.cd, -dt) + (0.26 * (1 - m.hCd)) / (1 + ARMK.cad * armL(h, 'cad')) / mit; // cadence : le profil de l'arme et du lobby, puis le marchand d'armes ; le reste de l'image est gardé
     const cp = Math.cos(h.pitch),
       sy = Math.sin(h.pitch);
     let d = [fx * cp, sy, fz * cp],
@@ -303,7 +303,7 @@ function heroStep(s, h, inp, dt, move) {
         NP = m.hPel > 0 ? Math.round(m.hPel) + ARMK.pelL * ML : 1,
         NF = m.hPel > 0 ? 0 : ML, // tirs multiples : des balles en plus, en éventail de part et d'autre (le fusil à pompe gagne des plombs)
         el = h.wEl || elOf(h),
-        we = el, // V2.1 : la balle porte l'effet de l'élément de l'arme (avec sa branche de l'arbre « Élément des balles »)
+        we = el, // la balle porte l'effet de l'élément de l'arme (avec sa branche de l'arbre « Élément des balles »)
         he = elOf(h), // … et celui du héros (son passif : chaîne de Volt, poison de Sylve, éclats de Braise, ralenti d'Ondine)
         has = x => we === x || he === x,
         L0 =
@@ -349,7 +349,7 @@ function heroStep(s, h, inp, dt, move) {
             (1 + m.hDmg) *
             (pn >= NP ? ARMK.multiK : 1) *
             (h.wEl && h.wEl === elOf(h) ? 1 + BAL.predi : 1) *
-            (chg ? BAL.chargeK : 1), // prédilection (V2.1) : arme de l'élément du héros, +10 % ; tir chargé du Sniper (V2.2)
+            (chg ? BAL.chargeK : 1), // prédilection : arme de l'élément du héros, +10 % ; tir chargé du Sniper
           left: 1 + m.hPierce + (has('vent') ? 1 + (we === 'vent' ? m.ePierce || 0 : 0) : 0), // Vent : la balle traverse un ennemi de plus (et ePierce)
           lift: has('vent') ? BAL.ventLift + (we === 'vent' ? m.eLift || 0 : 0) : 0, // Vent : soulève les petits ennemis touchés
           ox: h.x,

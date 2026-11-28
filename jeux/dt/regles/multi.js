@@ -33,9 +33,8 @@ const MALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_
   MSTC = [0, 0, 2, 1, 0, 2, 0, 3],
   MCST = [1, 3, 5, 7],
   // ce que l'hôte ne garde pas des actions d'un invité (son voile, ses pièces, la boule de feu devant ses yeux, son refus)
-  MSANS = { pkill: 1, brasier0: 1, refus: 1, hult: 1, eclair: 1, rafale: 1 },
-  // V4.8 : les cases de l'arbre du héros (lobby) qu'un invité envoie avec sa compétence et son ultime (l'hôte les applique)
-  // (V4.9 : + spA1, spA2, spB1, spB2, les cases de sa voie ; l'action porte aussi sa voie et l'élément de son arme : mVoieEl)
+  MSANS = { pkill: 1, brasier0: 1, refus: 1, hult: 1, eclair: 1, rafale: 1, relance: 1, bouclier: 1 },
+  // les cases de l'arbre du héros (lobby, voie comprise) qu'un invité envoie avec sa compétence et son ultime (l'hôte les applique)
   MHMA = ['abRad', 'kDur', 'kWide', 'kLen', 'kPush', 'uRad', 'uDur', 'uExtra', 'uDmg', 'spA1', 'spA2', 'spB1', 'spB2'],
   // les bonus du héros à zéro (une compétence d'invité exécutée chez l'hôte n'a pas l'arbre du lobby de l'hôte)
   HM0 = (() => {
@@ -171,6 +170,12 @@ function encodeInstantane(S, invites, max) {
   secs.forEach((s, k) => {
     if (flags[k]) for (const b of s) W.push(b);
   });
+  // V5.6 : l'élément choisi des sorts, en fin de chaîne (après les zombies : un vieux décodeur s'arrête avant et ne le voit pas)
+  const ext = mSecEls(
+    S,
+    flags.map((f, k) => (f ? secs[k].els : null))
+  );
+  if (W.length + ext.length + 32 > maxBits) ext.length = 0;
   // les zombies : du plus proche d'un joueur au plus loin (la hauteur compte double : les étages)
   const anc = [[S.p.x, S.p.y, S.p.z]];
   if (Array.isArray(invites))
@@ -195,7 +200,7 @@ function encodeInstantane(S, invites, max) {
   // combien de proches (au plus 65 % de la place, plus s'il en reste), combien de lointains (estimation : 42 et 25 bits) ; puis on retire
   // jusqu'à ce que ça tienne (taille exacte calculée sans écrire : mTailleZ), et on écrit une seule fois
   const N = ord.length,
-    Bz = maxBits - W.length,
+    Bz = maxBits - W.length - ext.length,
     cN = 42,
     cF = 25;
   let Kn = N,
@@ -214,11 +219,12 @@ function encodeInstantane(S, invites, max) {
   mSecZombies(W, S, ord.slice(0, Kn), true);
   mSecZombies(W, S, ord.slice(Kn, Kn + Kf), false);
   // garde-fou (ne devrait jamais servir) : trop long, on n'envoie aucun zombie
-  if (W.length > maxBits) {
+  if (W.length + ext.length > maxBits) {
     W.length = W0;
     Kn = Kf = 0;
     mPut(W, 0, 32);
   }
+  for (const b of ext) W.push(b);
   const G = mChaine(W);
   S.mStat = { actifs: N, proches: Kn, lointains: Kf, car: G.length };
   return G;
@@ -255,6 +261,8 @@ function mSecMurs(S) {
 // ce que l'affichage dessine des héros : leurre, remparts, ronciers, gardiens, orages (le Sanctuaire est dans l'en-tête)
 function mSecEffets(S) {
   const W = [],
+    // l'élément choisi du lanceur de chaque effet, dans l'ordre d'écriture (mSecEls)
+    els = (W.els = []),
     P2 = (x, z) => {
       mPutQ(W, mQx(x), 10);
       mPutQ(W, mQx(z), 10);
@@ -274,6 +282,7 @@ function mSecEffets(S) {
     mPut(W, mAng(Math.atan2(w.nx, w.nz), 6), 6);
     mPutQ(W, w.half * 4, 6);
     mPutQ(W, w.t * 2, 7);
+    els.push(w.ec);
   }
   const Th = S.thorns.slice(0, 7);
   mPut(W, Th.length, 3);
@@ -282,12 +291,14 @@ function mSecEffets(S) {
     mPutQ(W, th.y * 4, 7);
     mPutQ(W, th.r * 4, 6);
     mPutQ(W, th.t * 2, 7);
+    els.push(th.ec);
   }
   const Gd = S.guards.slice(0, 7);
   mPut(W, Gd.length, 3);
   for (const g of Gd) {
     P2(g.x, g.z);
     mPutQ(W, g.t * 2, 7);
+    els.push(g.ec);
   }
   const St = S.storms.slice(0, 3);
   mPut(W, St.length, 2);
@@ -296,6 +307,7 @@ function mSecEffets(S) {
     mPutQ(W, o.y * 4, 7);
     mPutQ(W, o.r, 6);
     mPutQ(W, o.t * 2, 7);
+    els.push(o.ec);
   }
   return W;
 }
@@ -304,6 +316,7 @@ function mSecBooms(S) {
   const W = [];
   S.mBooms = S.mBooms.filter(b => S.t - b.t < 0.6);
   const L = S.mBooms.slice(-7);
+  W.els = L.map(b => b.ec);
   mPut(W, L.length, 3);
   for (const b of L) {
     mPut(W, b.id & 255, 8);
@@ -313,6 +326,18 @@ function mSecBooms(S) {
     mPutQ(W, b.r, 5);
     mPut(W, Math.max(0, MKIND.indexOf(b.kind)), 3);
   }
+  return W;
+}
+// l'élément choisi (ec : une clé de ELKEYS, ou rien = l'élément d'origine du héros) des effets écrits, sur 3 bits chacun : 0 rien, 1 à 6 la clé.
+// els = les listes des sections effets et explosions (null si elles ne sont pas envoyées) ; puis celui de la pluie du Déluge s'il tombe.
+// Rien du tout (cas courant : aucun élément choisi) : aucun bit, la chaîne est celle d'avant. Sinon un 1, puis les valeurs.
+function mSecEls(S, els) {
+  const L = [];
+  for (const l of els) if (l) for (const ec of l) L.push(ELKEYS.indexOf(ec) + 1);
+  if (S.flood > 0) L.push(ELKEYS.indexOf(S.floodEc) + 1);
+  if (!L.some(v => v > 0)) return [];
+  const W = [1];
+  for (const v of L) mPut(W, v, 3);
   return W;
 }
 // une liste de zombies (rangés par place croissante, en écarts), ajoutée à W : proches (pres = true) ou lointains.
@@ -518,6 +543,18 @@ function mLit(G) {
     if (pres) D.proches = L;
     else D.loin = L;
   }
+  // V5.6 : l'élément choisi des sorts, facultatif, tout à la fin (un instantané d'avant s'arrête aux zombies : les bits qui restent sont des 0
+  // de remplissage). Même ordre qu'à l'écriture (mSecEls) ; un reste abîmé est ignoré, sans rejeter l'instantané.
+  if (R.i < R.b.length && R.b[R.i]) {
+    const L = (fl[2] ? D.ramparts.concat(D.thorns, D.guards, D.storms) : []).concat(fl[3] ? D.booms : []);
+    try {
+      R.i++;
+      const els = L.map(() => ELKEYS[g(3) - 1] || null),
+        eau = D.flood ? ELKEYS[g(3) - 1] || null : null;
+      L.forEach((o, k) => (o.ec = els[k]));
+      D.floodEc = eau;
+    } catch (_) {}
+  }
   return D;
 }
 // appliqueInstantane(S, G) chez l'invité : met à jour la journée, la ville, les tourelles, les planches, les cloisons, les effets et les zombies
@@ -561,6 +598,7 @@ function mApplique(S, D) {
   S.P.mur = D.mur;
   S.P.murH = D.murH;
   S.flood = D.flood ? Math.max(S.flood, 0.5) : 0;
+  S.floodEc = D.flood ? D.floodEc || null : null;
   // les changements de phase : les événements que l'hôte a eus (chaque joueur touche sa prime)
   if (!premier && S.escaped > escOld) S.ev.push({ k: 'escape', r: D.escR, ty: 0 });
   if (S.phase !== old) {
@@ -665,7 +703,9 @@ function mApplique(S, D) {
     for (const b of D.booms) {
       if (S.t - vu[b.id] < 1) continue;
       vu[b.id] = S.t;
-      S.ev.push({ k: 'boom', x: b.x, y: b.y, z: b.z, r: b.r, kind: b.kind });
+      const ev = { k: 'boom', x: b.x, y: b.y, z: b.z, r: b.r, kind: b.kind };
+      if (b.ec) ev.ec = b.ec;
+      S.ev.push(ev);
     }
   }
   // les zombies
@@ -878,13 +918,33 @@ function skillInvite(S, h, cd) {
     S.ev.push({ k: 'refus', why: 'Vise la rue' });
     return false;
   }
-  actionInvite(S, ['c', 0].concat(mPose(p), [h, mR3(hPow(S)), MHMA.map(k => mR2(m[k] || 0)), S.voie || '', S.elArme || '', S.elHeros || '']));
+  actionInvite(
+    S,
+    ['c', 0].concat(mPose(p), [h, mR3(hPow(S)), MHMA.map(k => mR2(m[k] || 0)), S.voie || '', S.elArme || '', S.elHeros || ''])
+  );
+  let relance = false;
   if (h === 'elec') {
     const fx = -Math.sin(p.yaw),
       fz = -Math.cos(p.yaw),
       dash = Math.max(0, rayWall(p.x, p.y + 0.55, p.z, fx, 0, fz, 14 + m.kLen) - 0.45),
       x0 = p.x,
       z0 = p.z;
+    // Escarmoucheur, Relance (spB2) : l'hôte fait les dégâts, mais la recharge se règle ici ; on regarde dans le miroir si un zombie du
+    // couloir meurt de ce coup (la vie du miroir est arrondie au seizième : à un cheveu près)
+    if (voieDe(S, 'elec', 'b') && m.spB2 > 0) {
+      const Z = S.z,
+        dmg = 70 * hPow(S);
+      for (let k = 0; k < S.nAct && !relance; k++) {
+        const i = S.act[k];
+        if (Z.st[i] === 0 || Z.fant[i] || Math.abs(Z.y[i] - p.y) > 2.2) continue;
+        const ax = Z.x[i] - x0,
+          az = Z.z[i] - z0,
+          t = Math.max(0, Math.min(dash, ax * fx + az * fz)),
+          ex = ax - fx * t,
+          ez = az - fz * t;
+        if (ex * ex + ez * ez < 5 && Z.hp[i] <= dmg) relance = true;
+      }
+    }
     p.x += fx * dash;
     p.z += fz * dash;
     p.vx = fx * 7;
@@ -895,8 +955,8 @@ function skillInvite(S, h, cd) {
   else if (h === 'feu') S.ev.push({ k: 'brasier0', ec: elH(S) });
   else if (h === 'eau') {
     if (m.kHeal) p.hp = Math.min(p.hpMax, p.hp + m.kHeal * soinK(S));
-    // V4.9 : Soigneuse, le bouclier est sur l'invité : posé ici
-    if (voieDe(S, 'eau', 'a') && m.spA2 > 0) bouclier(S);
+    // V4.9 : Soigneuse, le bouclier est sur l'invité : posé ici (et annoncé aux autres joueurs)
+    if (voieDe(S, 'eau', 'a') && m.spA2 > 0) bouclierMaree(S, a[0], a[1], a[2], 8);
     S.ev.push({ k: 'maree', x: a[0], y: a[1], z: a[2], r: 8, ec: elH(S) });
   } else if (h === 'bois' && voieDe(S, 'bois', 'b')) plonge(S, a, m, hPow(S), true, false);
   else if (h === 'bois') S.ev.push({ k: 'ronces', x: a[0], y: a[1], z: a[2], r: 5.2 + m.abRad, ec: elH(S) });
@@ -912,13 +972,17 @@ function skillInvite(S, h, cd) {
       ec: elH(S)
     });
   }
-  S.hab = cd;
+  S.hab = relance ? 0.3 : cd;
+  if (relance) S.ev.push({ k: 'relance' });
   return true;
 }
 // l'ultime chez l'invité (appelé par useHeroUlt, après ses conditions) : l'action 'u' ; ici, le voile et le soin du Sanctuaire
 function ultInvite(S, h) {
   S.ult = 0;
-  actionInvite(S, ['u', 0].concat(mPose(S.p), [h, mR3(uPow(S)), MHMA.map(k => mR2(S.hm[k] || 0)), S.voie || '', S.elArme || '', S.elHeros || '']));
+  actionInvite(
+    S,
+    ['u', 0].concat(mPose(S.p), [h, mR3(uPow(S)), MHMA.map(k => mR2(S.hm[k] || 0)), S.voie || '', S.elArme || '', S.elHeros || ''])
+  );
   if (h === 'eau') S.p.hp = S.p.hpMax;
   // V4.8 : le trait du Tir perçant, tout de suite (les dégâts sont chez l'hôte)
   else if (h === 'vent') {

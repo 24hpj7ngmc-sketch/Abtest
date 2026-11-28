@@ -147,7 +147,7 @@ function frame(now) {
                 : OBJN[ev.o] + ' : raté'
           );
         } else if (ev.k === 'quake') {
-          // V2.6 : les sorts prennent la couleur de l'élément choisi du héros (ev.el ; sans lui, l'élément d'origine du sort)
+          // les sorts prennent la couleur de l'élément choisi du héros (ev.el ; sans lui, l'élément d'origine du sort)
           const qe = ELS.includes(ev.el) ? ev.el : 'terre';
           ringFx(ev.x, ev.z, ev.r || BAL.quakeR, qe, 0.7);
           ringFx(ev.x, ev.z, (ev.r || BAL.quakeR) * 0.6, qe, 0.5);
@@ -174,14 +174,14 @@ function frame(now) {
           shake = Math.max(shake, 0.3);
           toast('Tir perçant');
         } else if (ev.k === 'charge' || ev.k === 'plonge') {
-          // V2.2 : la charge de l'Avant-garde (Roc) et le bond du Plongeur (Sylve)
+          // la charge de l'Avant-garde (Roc) et le bond du Plongeur (Sylve)
           const ce = ELS.includes(ev.el) ? ev.el : ev.k === 'charge' ? 'terre' : 'bois';
           for (let i = 0; i <= 6; i++)
             burst(ev.x + ((ev.ex - ev.x) * i) / 6, 0.8, ev.z + ((ev.ez - ev.z) * i) / 6, ce, 3, 0.7);
           ringFx(ev.ex, ev.ez, ev.r || 3, ce, 0.4);
           if (ev.k === 'charge') shake = Math.max(shake, 0.3);
         } else if (ev.k === 'tint') {
-          // l'ultime teinté par l'élément de l'arme (V2.2)
+          // l'ultime teinté par l'élément de l'arme
           if (ELS.includes(ev.el)) {
             ringFx(ev.x, ev.z, ev.r || 30, ev.el, 0.7);
             if (ev.r) burst(ev.x, 0.6, ev.z, ev.el, 16, 1.4);
@@ -204,7 +204,7 @@ function frame(now) {
           ringFx(ev.x, ev.z, BAL.stormR, ELS.includes(ev.el) ? ev.el : 'elec', 0.8);
           toast('Déchaînement');
         } else if (ev.k === 'bolt2') {
-          // V2.6 : l'éclair prend la couleur de l'élément choisi (les yeux de l'Élec gardent le blanc-jaune d'avant)
+          // l'éclair prend la couleur de l'élément choisi (les yeux de l'Élec gardent le blanc-jaune d'avant)
           const be = ELS.includes(ev.el) ? ev.el : 'elec';
           bolt(ev.x, ev.z, be === 'elec' ? 0 : boltCol(be));
           ringFx(ev.x, ev.z, 1.6, ELS.includes(ev.tn) ? ev.tn : be, 0.25);
@@ -232,7 +232,7 @@ function frame(now) {
           ringFx(ev.x, ev.z, ev.r, te, 0.6);
           ringFx(ev.x, ev.z, ev.r * 0.55, te, 0.45);
           burst(ev.x, 0.6, ev.z, te, 18, 1.3);
-          if (ev.mine) net.hl = [Date.now() % 1e9, r1(ev.x), r1(ev.z), ev.heal || BAL.tideHeal, ev.r, 0, ev.sh || 0]; // V2.2 : le bouclier de la Soigneuse
+          if (ev.mine) net.hl = [Date.now() % 1e9, r1(ev.x), r1(ev.z), ev.heal || BAL.tideHeal, ev.r, 0, ev.sh || 0]; // le bouclier de la Soigneuse
         } else if (ev.k === 'deluge') {
           toast('Sanctuaire');
           const le = ELS.includes(ev.el) ? ev.el : 'eau';
@@ -334,7 +334,7 @@ function frame(now) {
     }
     $('joy').classList.toggle('sprint', h.sprint);
     const mv = Math.hypot(inp.f, inp.r) * (h.y > 0 ? 0 : 1);
-    // V2.3 : la course de Dernier Toit : balancement 9 (marche) ou 13 (sprint) par seconde, facteur de sprint lissé (spk), roulis et champ de vision
+    // la course de Dernier Toit : balancement 9 (marche) ou 13 (sprint) par seconde, facteur de sprint lissé (spk), roulis et champ de vision
     if (mv > 0.1) bob += dt * (h.sprint ? 13 : 9) * mv;
     spk += ((h.sprint ? 1 : 0) - spk) * Math.min(1, dt * 7);
     if (shake > 0) shake = Math.max(0, shake - dt);
@@ -490,7 +490,7 @@ function frame(now) {
       const wv = $('wave'),
         vide =
           (sim.phase === 'wave' && !!$('objL') && $('objL').hidden && $('bossL').hidden) ||
-          (sim.phase === 'prep' && !!tuto && tuto.i < 2); // les deux premières étapes du tuto n'ont pas d'aperçu (audit écran n° 22)
+          (sim.phase === 'prep' && !!tuto && tuto.i < 2); // les deux premières étapes du tuto n'ont pas d'aperçu
       if (wv._v !== vide) {
         wv._v = vide;
         wv.classList.toggle('vide', vide);
@@ -544,7 +544,7 @@ function frame(now) {
         '+' +
           (sim.pts - lastPts) +
           (sim.pts - lastPts > 1 ? ' points' : ' point') +
-          (cielWant() ? ' · bouton Marchand en bas à gauche' : ' · le marchand est près du cœur') // dans le ciel, on n'y marche pas (audit écran n° 13)
+          (cielWant() ? ' · bouton Marchand en bas à gauche' : ' · le marchand est près du cœur') // dans le ciel, on n'y marche pas
       );
     lastPts = sim.pts;
     if (show) {

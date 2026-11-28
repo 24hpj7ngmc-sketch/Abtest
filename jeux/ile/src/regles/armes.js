@@ -1,4 +1,4 @@
-// [regles/armes.js] Les armes du joueur dans la partie (V2.0) : l'élément de chaque arme, et les améliorations du marchand d'armes (tirs multiples, explosions, ricochets, chaînes…).
+// [regles/armes.js] Les armes du joueur dans la partie : l'élément de chaque arme, et les améliorations du marchand d'armes (tirs multiples, explosions, ricochets, chaînes…).
 // Au début de la partie, chacun choisit jusqu'à 3 armes et un élément pour chacune (interface/arsenal.js). Le héros porte alors, pour l'arme en main :
 //   h.wk : l'arme (clé de WT) · h.wEl : son élément (celui des balles : il compte contre l'élément de l'ennemi, Eau › Feu › Bois › Terre › Élec › Eau) · h.wu : { id: niveau } ses améliorations.
 // Sans h.wEl (bots, esclaves, anciennes parties), les balles gardent l'élément du héros : les règles d'avant.
@@ -26,7 +26,7 @@ const ARMUP = [
         ? 8 + L * 3 + ' plombs'
         : L
           ? L + 1 + ' balles (+' + L + ' à ' + Math.round(ARMK.multiK * 100) + ' %)'
-          : '1 balle' // libellés seulement (audit écran n° 21)
+          : '1 balle' // libellés seulement
   },
   {
     id: 'expl',
@@ -98,7 +98,7 @@ const armCost = (id, L) => {
   return u && L < u.max ? u.cost[L] : 0;
 };
 // au tir : ce que les améliorations changent à une balle qui part (b est déjà rempli par heroStep).
-// side : une balle en plus des tirs multiples, ou un plomb après le premier. Audit V2.0 (problème 11) : explosion, ricochet et chaîne ne partent que de la balle principale.
+// side : une balle en plus des tirs multiples, ou un plomb après le premier. explosion, ricochet et chaîne ne partent que de la balle principale.
 function armShot(h, b, side) {
   if (!h.wu) return b;
   const dg = armL(h, 'deg'),
@@ -117,7 +117,7 @@ function armShot(h, b, side) {
   return b;
 }
 // à l'impact : explosion, ricochets, chaîne électrique, brûlure (après les dégâts de la balle elle-même).
-// Audit V2.0 (problème 11) : explosion, ricochet et chaîne seulement au premier ennemi touché par la balle (une balle perforante ne les répète pas) ;
+// explosion, ricochet et chaîne seulement au premier ennemi touché par la balle (une balle perforante ne les répète pas) ;
 // la brûlure suit les dégâts de la balle et l'élément (avant : une brûlure fixe, la même pour toutes les armes).
 function armHit(s, b, e) {
   const SK = BAL.strong + s.m.strong;
@@ -191,7 +191,7 @@ function armHit(s, b, e) {
 // l'achat : l'or de l'équipe paie (l'hôte décide, voir l'action 'wb' dans interface/bots-marchand.js). Rend le prix payé, 0 si refusé.
 function armPay(s, id, L) {
   const c = armCost(id, L);
-  if (!c || s.gold < c) return 0; // pas assez d'or : refusé, jamais de paiement partiel (audit V2.0, problème 3)
+  if (!c || s.gold < c) return 0; // pas assez d'or : refusé, jamais de paiement partiel
   s.gold -= c;
   return c;
 }

@@ -29,12 +29,13 @@ const mixC = (a, b, t) => {
 // V5.0 : les armes à feu prennent la couleur de l'élément de l'arme (S.elArme : opts.elementArme du lobby, sinon le choix du menu), sinon celui du héros
 let gearK = '';
 function heroGear() {
-  const hero = S && S.hero,
+  // « Ils arrivent » : pas de héros, pas d'élément : l'arme reste neutre (sans teinte)
+  const hero = S && S.mode === 'out' ? S.hero : null,
     // V5.2 : les manches suivent l'élément choisi du héros (elH), pas sa clé
     eh = hero ? elH(S) : null,
     el = hero ? (ELKEYS.includes(S.elArme) ? S.elArme : HEROS[hero] ? eh : null) : null,
     cle = (hero || '') + '|' + (eh || '') + '|' + (el || '');
-  if (cle === gearK || typeof gfxGuns !== 'function') return;
+  if (cle === gearK) return;
   gearK = cle;
   if (!hero) {
     gfxGuns(null);
@@ -95,7 +96,7 @@ function ov() {
 }
 
 // ---------------------------------------------------------------- l'écran d'accueil et de fin
-// la campagne (V3.2, affichage seulement) : save.camp[type] = plus haut niveau fini, save.stage = niveau choisi ('eau1') ;
+// la campagne (affichage seulement) : save.camp[type] = plus haut niveau fini, save.stage = niveau choisi ('eau1') ;
 // tous les niveaux jouent la même ville pour l'instant. CAMPL = nombre de niveaux ouverts par type.
 const CAMPO = ['eau', 'feu', 'elec', 'terre', 'bois'],
   CAMPL = 1;

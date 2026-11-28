@@ -46,7 +46,7 @@ function mainsInit() {
   G.gun = { fusil: 1, pistolet: 1, assaut: 1, sniper: 1, pompe: 1, lance: 1 };
   G.tip = {};
   G.aimP = {};
-  // V3.9 : jet du lance-flammes en cours (fl), temps depuis le dernier coup de fusil à pompe (pump), vecteur de travail, numéro d'image
+  // jet du lance-flammes en cours (fl), temps depuis le dernier coup de fusil à pompe (pump), vecteur de travail, numéro d'image
   G.fl = { t: 0, L: 10, wall: 0, n: 0, acc: 0, acs: 0 };
   G.pump = { t: 9 };
   G.v3 = new THREE.Vector3();
@@ -185,7 +185,7 @@ function reculFrame(dt) {
     if (G.vmFlashT <= 0) G.vmFlash.visible = false;
   }
 }
-// V1.5 : la masse en main. Repos, puis d'après S.swing / S.swingT : armer (la tête part derrière l'épaule), frapper (l'impact tombe à 35 %), rester, revenir.
+// la masse en main. Repos, puis d'après S.swing / S.swingT : armer (la tête part derrière l'épaule), frapper (l'impact tombe à 35 %), rester, revenir.
 // Chaque pose = décalage [x, y, z, rx, ry, rz] ajouté à la pose de repos.
 const MS_REST = [0.46, -0.36, -0.52, 0.25, 0.9, -0.45],
   MS_0 = [0, 0, 0, 0, 0, 0],

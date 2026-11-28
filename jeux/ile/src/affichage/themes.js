@@ -1,5 +1,5 @@
 // [affichage/themes.js] Les thèmes de la campagne : un décor par type (Feu, Eau, Terre, Élec, Nature, Vent) — ciel, lumière, sol, volcans, étangs, cristaux.
-// ---------- LES THÈMES DE LA CAMPAGNE (V9.5) : on doit comprendre au premier regard dans quel type on est, sans aller dans le détail (demande de Frédéric) ----------
+// ---------- LES THÈMES DE LA CAMPAGNE : on doit comprendre au premier regard dans quel type on est, sans aller dans le détail (demande de Frédéric) ----------
 // Même île, mêmes chemins, mêmes règles. Un thème change : la teinte du ciel et du brouillard, la lumière, la teinte du sol, les familles de végétation cachées,
 // et pose quelques éléments (volcans et lave, étangs et rivières, rochers et crevasses, cristaux, arbres géants). Les gros éléments arrêtent le héros (SOL) ; la lave et l'eau sont un simple dessin.
 // setTheme(type) est appelé au début de chaque partie ; '' = l'île d'origine (partie libre).
@@ -253,7 +253,7 @@ function setTheme(el) {
     for (const v of themeSpots(16, 42, 26, 108, 4, 6, C))
       b.add(K.rock(0.6 + v[2] * 1.1, 4 + Math.floor(v[3] * 9), 1), { p: [v[0], 0.3, v[1]], c: 0x4a4466, c2: 0x2e2a44 });
   } else if (el === 'vent') {
-    // VENT (V2.2) : des îles balayées par les rafales. Arches de roche creusées par le vent, moulins, fanions couchés, traînées d'herbe pâle, toutes dans le sens du vent.
+    // VENT : des îles balayées par les rafales. Arches de roche creusées par le vent, moulins, fanions couchés, traînées d'herbe pâle, toutes dans le sens du vent.
     const W = 0.6,
       wx = Math.cos(W),
       wz = Math.sin(W),

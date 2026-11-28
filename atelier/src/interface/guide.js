@@ -1,5 +1,5 @@
 // [interface/guide.js] Le panneau commun du Guide (#guideV) : un titre, des onglets, des lignes, un bouton facultatif (guideShow). Les sujets du Guide du lobby sont dans lobby/guide.js.
-// ---------- LE GUIDE, PARTOUT (V10.3) : un seul panneau (#guideV) sert au Guide du lobby (ses sujets, lobby/guide.js) et au même personnage en « Règles » dans chaque mini-jeu.
+// ---------- LE GUIDE, PARTOUT : un seul panneau (#guideV) sert au Guide du lobby (ses sujets, lobby/guide.js) et au même personnage en « Règles » dans chaque mini-jeu.
 // Une fiche de règles est toujours rangée pareil, cinq onglets dans cet ordre : Le but · Perdre · Commandes · Ce jeu · Ce que ça rapporte.
 // guideShow(titre, onglets, i, bouton) : onglets = [[nom, [[titre de ligne, texte], …]], …] ; bouton = [texte, fonction] facultatif, à gauche de « Retour ».
 let guTab = 0;

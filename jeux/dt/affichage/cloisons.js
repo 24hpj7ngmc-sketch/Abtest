@@ -1,4 +1,4 @@
-// ===================== DERNIER TOIT — l'affichage : cloisons cassables et planches (V1.5, V2.1) =====================
+// ===================== DERNIER TOIT — l'affichage : cloisons cassables et planches =====================
 // Les 1 140 panneaux de cloison (PANELS) dessinés en masse, entiers ou abîmés (moins de la moitié de leurs points de vie) ; les trous
 // laissés par les balles ; les gravats au pied d'un panneau tombé ; les planches clouées sur les portes (DOORS), la planche « fantôme »
 // qui montre au marteau où ira la prochaine ; les planches arrachées qui volent puis restent un moment au sol.

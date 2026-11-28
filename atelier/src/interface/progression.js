@@ -322,7 +322,7 @@ const HSPEC = {
     ],
     p: [['Source vive', 2, 100, 'pA', 3, L => BAL.ondRegen + 3 * L + ' PV par seconde']]
   },
-  // Zéphyr, le Tireur (V12.1) : chiffres du lobby en premier jet, aucun jeu collé ne le joue encore
+  // Zéphyr, le Tireur
   vent: {
     k: [
       ['Recharge du Bond', 3, 60, 'abCd', 1, L => 14 - L + ' s'],

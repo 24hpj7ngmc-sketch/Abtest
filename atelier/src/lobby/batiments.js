@@ -6,7 +6,7 @@ function hallOpen() {
   hallDraw();
 }
 // la carte d'un héros, la même au hall et aux deux portails (V11.4 ; rôles en V12.1) : portrait, nom, rôle et niveau, compétence et ultime, son élément choisi et éclats ; la toucher, c'est l'incarner
-// V13.2 : le portrait suit le héros et son élément choisi : HPHOTO['<modèle>_<élément>'] (braise_feu, roc_eau, sylve_bois, volt_elec, ondine_vent, zephyr_terre…)
+// le portrait suit le héros et son élément choisi : HPHOTO['<modèle>_<élément>'] (braise_feu, roc_eau, sylve_bois, volt_elec, ondine_vent, zephyr_terre…)
 const hPicK = e =>
     ({ feu: 'braise', terre: 'roc', bois: 'sylve', elec: 'volt', eau: 'ondine', vent: 'zephyr' })[e] + '_' + elH(e),
   hPic = e => {
@@ -46,7 +46,7 @@ function hallDraw() {
     lobSync();
     hallDraw();
   });
-  // la voie du héros incarné (V12.2) : deux choix à partir du niveau VOIE_NIV ; et l'ultime, qui prend l'élément de l'arme en main
+  // la voie du héros incarné : deux choix à partir du niveau VOIE_NIV ; et l'ultime, qui prend l'élément de l'arme en main
   const e = tHero,
     v = voieOf(e),
     nb = hBase(e);

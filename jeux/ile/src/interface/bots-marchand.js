@@ -59,7 +59,7 @@ function doAct(a, h) {
     const t = sim.towers.find(t => t.id === a[1]);
     if (t && sim.mode === 'normal') t.auto = !t.auto;
   } else if (k === 'wb') {
-    // un invité achète chez le marchand d'armes : l'hôte seul juge (audit V2.0, problème 3). Il paie avec l'or de l'équipe s'il y en a assez
+    // un invité achète chez le marchand d'armes : l'hôte seul juge. Il paie avec l'or de l'équipe s'il y en a assez
     // et note le niveau payé pour ce joueur et cette arme ; armPeer ne lui accorde jamais plus que ce qui a été payé.
     const u = ARMUP[a[1]],
       wk = WTK[a[3]];
@@ -69,7 +69,7 @@ function doAct(a, h) {
       if ((W[u.id] || 0) === a[2] - 1 && armPay(sim, u.id, a[2] - 1)) W[u.id] = a[2];
     }
   } else if (k === 'rf') {
-    // Roc Gardien chez un invité (V2.2) : il renvoie les coups reçus au contact. L'hôte vérifie la voie, la distance et le rythme.
+    // Roc Gardien chez un invité : il renvoie les coups reçus au contact. L'hôte vérifie la voie, la distance et le rythme.
     const e = sim.enemies.find(o => o.id === a[1]);
     if (
       e &&
@@ -88,7 +88,7 @@ function doAct(a, h) {
     if (runBuy(String(a[1])) && !$('tree').hidden) drawTree();
   }
 }
-// à terre, on ne peut rien faire, sauf : dire qu'on est prêt, acheter chez le marchand d'armes, et bâtir depuis la vue du ciel pendant la préparation (audit V2.0, problèmes 3 et 9)
+// à terre, on ne peut rien faire, sauf : dire qu'on est prêt, acheter chez le marchand d'armes, et bâtir depuis la vue du ciel pendant la préparation
 const DOWNOK = { go: 1, rdy: 1, wb: 1 },
   DOWNPREP = { pl: 1, up: 1, wl: 1, dg: 1 };
 function send(a) {
@@ -149,7 +149,7 @@ function netTick(dt) {
           applySnap(sim, pr.s);
         }
         if (pr.wp && typeof pr.wp === 'object') {
-          net.wp = pr.wp; // les niveaux d'armes payés, tels que l'hôte les tient : on corrige les nôtres (audit V2.0, problème 3)
+          net.wp = pr.wp; // les niveaux d'armes payés, tels que l'hôte les tient : on corrige les nôtres
           if (me) armPaid(pr.wp[me.peer + sim.hero.el]);
         }
         if (typeof pr.rl === 'string' && pr.rl !== net.rl) {
@@ -167,7 +167,7 @@ function netTick(dt) {
           net.seen = {};
           sim.client = false;
           net.noHost = 0;
-          // ce que l'ancien hôte savait et qui ne passe pas par le snap (audit V2.0, problèmes 2, 3, 5 et 8)
+          // ce que l'ancien hôte savait et qui ne passe pas par le snap
           net.acts = []; // nos actions d'invité ne doivent plus voyager dans la présence (place) ni être rejouées
           sim.cW = sim.phase === 'prep' ? sim.wave : -1; // la préparation continue : chrono repris du dernier snap, les « Prêt » ne sont pas effacés
           sim.cRdy = {};
@@ -205,10 +205,10 @@ function netTick(dt) {
             const v = +pr.hm[i];
             o.m[k] = Number.isFinite(v) ? Math.max(-3, Math.min(k[0] === 's' && k[1] === 'p' ? 100 : 12, v)) : 0; // les cases des voies (spA1…) peuvent valoir 25 ou 15
           });
-        o.ce = ELS.includes(pr.ce) ? pr.ce : undefined; // V2.5 : son élément choisi (un vieux téléphone ne l'envoie pas : sa clé)
-        armPeer(o, pr, p.peer); // son arme en main, son élément, ses améliorations (V2.0)
+        o.ce = ELS.includes(pr.ce) ? pr.ce : undefined; // son élément choisi (un vieux téléphone ne l'envoie pas : sa clé)
+        armPeer(o, pr, p.peer); // son arme en main, son élément, ses améliorations
         if (net.host && sim.phase === 'prep') {
-          // « Prêt » d'un invité : lu dans sa présence à chaque image, marqué du numéro de la vague attendue (audit V2.0, problème 2)
+          // « Prêt » d'un invité : lu dans sa présence à chaque image, marqué du numéro de la vague attendue
           sim.cRdy = sim.cRdy || {};
           if (+pr.rd === sim.wave + 1) sim.cRdy[o.id] = 1;
           else delete sim.cRdy[o.id];
@@ -236,7 +236,7 @@ function netTick(dt) {
             if (!(me2.down > 0)) {
               me2.hp = Math.min(me2.maxHp, me2.hp + Math.max(0, Math.min(999, pr.hl[3])));
               if (Number.isFinite(pr.hl[6]) && pr.hl[6] > 0) {
-                me2.shd = Math.max(me2.shd || 0, Math.min(100, pr.hl[6])); // V2.2 : le bouclier d'eau d'une Soigneuse
+                me2.shd = Math.max(me2.shd || 0, Math.min(100, pr.hl[6])); // le bouclier d'eau d'une Soigneuse
                 me2.shT = BAL.shieldT;
               }
               toast(pr.hl[6] > 0 ? 'Soigné et protégé par un coéquipier' : 'Soigné par un coéquipier');
@@ -283,7 +283,7 @@ function netTick(dt) {
           net.snapT += 1;
           if (net.snapT >= 2 || !net.snap) {
             net.snapT = 0;
-            // la place du snap = la limite du salon moins ce qui l'accompagne vraiment (audit V2.0, problème 5)
+            // la place du snap = la limite du salon moins ce qui l'accompagne vraiment
             const base = JSON.stringify(pa).length + 12;
             net.snap = fitSnap(snap(sim), Math.max(600, Math.min(2900, MULTI.max) - base));
           }

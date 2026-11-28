@@ -1,14 +1,11 @@
-// [interface/roles.js] La refonte « rôles des héros, éléments sur les armes » (V12.1, claude/refonte-roles-elements.md) : six héros, six rôles, six éléments.
-// ---------- Le rôle, c'est qui tu es ; l'élément, c'est comment tu frappes. Un héros se reconnaît toujours à sa clé (Braise = 'feu'…), qui reste son identité ; son élément se choisit (V12.9, elH)
-// (Braise = 'feu', Sylve = 'bois'…) ; Zéphyr ('vent') est le sixième. Tout ceci est au lobby : un mini-jeu ne connaît Zéphyr, le Vent et l'élément par arme
-// que lorsqu'il l'annonce (demandes claude/demande-<jeu>-roles-elements.md). ELS reste la liste des cinq éléments que connaissent les jeux collés.
+// [interface/roles.js] Les six héros et leurs rôles (Zéphyr, le Vent), les voies (spécialisations).
+// Le rôle, c'est qui tu es ; l'élément, c'est comment tu frappes. Un héros se reconnaît à sa clé (Braise = 'feu', Sylve = 'bois'…, Zéphyr = 'vent'), son élément se choisit.
+// ELS reste la liste des cinq éléments de la campagne ; HEROS en compte six.
 EL.bois.n = 'Nature';
 EL.vent = { n: 'Vent', c: '#8fe6dc', hero: 'Zéphyr' };
 KIT.vent = { skill: 'Bond', ult: 'Tir perçant', tag: 'Tireur · Bond · Tir perçant' };
 const HEROS = ELS.concat('vent'),
   ROLE = { terre: 'Tank', bois: 'Combattant', elec: 'Assassin', feu: 'Mage', eau: 'Support', vent: 'Tireur' },
-  // la boucle des faiblesses à six, telle que la fiche la fixe (chacun bat le suivant) ; les jeux collés appliquent encore la leur (BEATS, à cinq)
-  BOUCLE = ['eau', 'feu', 'bois', 'vent', 'terre', 'elec'],
   // le passif de chaque héros, en une ligne, pour le Hall
   PASSIF = {
     terre: 'encaisse mieux les coups au contact',
@@ -19,9 +16,7 @@ const HEROS = ELS.concat('vent'),
     vent: 'frappe plus fort de loin'
   },
   heroTag = e => KIT[e].skill + ' · ' + KIT[e].ult;
-// un jeu collé accepte-t-il ce héros ? Il le dit dans sa liste HEROS ; sans liste, il ne connaît que les cinq premiers
-const jeuHeros = (J, e) => (J && Array.isArray(J.HEROS) ? J.HEROS.includes(e) : ELS.includes(e));
-// LES SPÉCIALISATIONS (V12.2) : deux voies par héros, à choisir au Hall à partir du niveau VOIE_NIV. Le kit de base ne change pas, la voie le modifie, partout ;
+// LES SPÉCIALISATIONS : deux voies par héros, à choisir au Hall à partir du niveau VOIE_NIV. Le kit de base ne change pas, la voie le modifie, partout ;
 // chaque voie ouvre sa propre branche dans l'arbre du héros (deux cases : [nom, niveaux, prix, bonus, valeur par niveau, affichage, case finale ?]).
 // Les effets se jouent dans les mini-jeux, qui reçoivent la voie et ses cases ; noms des voies : la fiche ; chiffres : premier jet du lobby.
 const VOIE_NIV = 10,
@@ -89,9 +84,16 @@ const VOIE_NIV = 10,
       },
       b: {
         n: 'Escarmoucheur',
-        d: 'chaque élimination recharge sa compétence',
+        d: 'chaque élimination recharge sa compétence (beaucoup moins sur le toit, où les zombies sont des centaines)',
         c: [
-          ['Recharge sur élimination', 3, 90, 'spB1', 0.15, L => 'rend ' + (25 + 15 * L) + ' % de la recharge'],
+          [
+            'Recharge sur élimination',
+            3,
+            90,
+            'spB1',
+            0.15,
+            L => 'rend ' + (25 + 15 * L) + " % de la recharge sur l'île, " + f(2.5 + 1.5 * L, 1) + ' % sur le toit'
+          ],
           [
             'Enchaînement',
             1,

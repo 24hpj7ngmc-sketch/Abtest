@@ -2,6 +2,8 @@
 
 **Fait (V4.3, 23/11).** Écarts avec ce plan, fixés par les chantiers : les actions sont `[type, seq, …]` (voir regles/multi.js) ; la place cible des zombies chez l'invité est `Z.mx/my/mz` (`Z.ty` est déjà le type) ; l'invité publie ses actions par `actionsInvite(S, max)`. Le détail à jour : regles/LISEZMOI.md (« V4.3 : le multi »), interface/LISEZMOI.md, LOBBY.md.
 
+**Ajouts de la V5.6** : fin facultative de l'instantané (l'élément choisi des sorts, 3 bits par objet) et champ `B` de l'état publié `p` (`[numéro, x, y, z, rayon]` : la Répulsion d'une Soigneuse, 3 s) ; détails dans `regles/LISEZMOI.md` et `LOBBY.md`.
+
 Demande : `claude/demande-dernier-toit-multi.md` (projet Jv), lobby « Abtest. V10.5 ». Frédéric : « Go », « fais très vite ».
 Mode « Ils s'échappent » seulement, et seulement lancé depuis le lobby (`LOBBY.multi`). Sans multi, **rien ne change** : `tests/empreinte.js`
 doit rester identique, tous les tests actuels doivent passer.

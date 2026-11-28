@@ -7,6 +7,9 @@ Le jeu arrive en **un seul fichier**, `ile-pour-lobby.js`, à coller tel quel da
 
 Le jeu **n'écrit aucune sauvegarde**. Tout ce qui dure reste au lobby : or céleste, éclats, arbres des héros et des armes, campagne, défis, butin, réglages.
 
+## V2.9 (28/11/2026) — sorts des coéquipiers et sons à la couleur de l'élément, nettoyage
+Rien ne change dans le contrat (`opts`, `rappels`, tables). `IleDesCinq.version` vaut `'V2.9'`. Multi : l'état du monde que l'hôte envoie porte maintenant l'élément du lanceur du nuage du Déchaînement (4e valeur de chaque entrée de `sm`) ; un invité d'une version antérieure l'ignore, et une valeur absente ou douteuse donne Élec comme avant. Les sons des sorts suivent l'élément choisi (`opts.elHeros`). Le reste est du nettoyage (code mort, règles de style, commentaires) sans effet en jeu.
+
 ## V2.8 (28/11/2026) — les six héros ont chacun leur modèle 3D
 Rien ne change dans le contrat (`opts`, `rappels`, tables). `IleDesCinq.version` vaut `'V2.8'`. Les coéquipiers ont le modèle de leur héros (identité `hero`), à la couleur de leur élément choisi, avec ses pièces animées.
 
@@ -30,7 +33,7 @@ Rien ne change dans le contrat (`opts`, `rappels`, tables). `IleDesCinq.version`
 
 | | |
 |---|---|
-| `IleDesCinq.version` | `'V2.6'` |
+| `IleDesCinq.version` | `'V2.9'` |
 | `IleDesCinq.HEROS`, `.ARMES` | les clés acceptées |
 | `IleDesCinq.accepte` | ce que le jeu sait lire : `mode, campagne, tuto, bonus, gains, reglages, multi, paie, elements, voie` |
 | `IleDesCinq.tables` | des tables du jeu en lecture seule (voir plus bas) |

@@ -713,7 +713,6 @@ button:focus-visible {
 #lGrp[hidden] {
   display: none;
 }
-#sMq,
 #netMq,
 #netNm {
   justify-content: flex-start;
@@ -725,7 +724,6 @@ button:focus-visible {
 #netName {
   max-width: 230px;
 }
-#mqCode,
 #mq2,
 #netName {
   flex: 1;
@@ -1483,9 +1481,6 @@ button:focus-visible {
 #tWel .tchip.sel {
   background: rgba(255, 255, 255, 0.14);
   box-shadow: 0 0 0 2px currentColor inset;
-}
-.solid.off {
-  opacity: 0.5;
 }
 
 /* V12.2 : le choix de la voie au Hall */

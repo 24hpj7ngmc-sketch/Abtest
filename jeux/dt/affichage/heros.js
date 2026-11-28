@@ -1,4 +1,4 @@
-// ===================== DERNIER TOIT — l'affichage : effets des héros (V3.0), les réserves et les petits outils =====================
+// ===================== DERNIER TOIT — l'affichage : effets des héros, les réserves et les petits outils =====================
 // Braise (feu), Ondine (eau), Sylve (bois), Roc (terre), Volt (élec), Zéphyr (vent, V4.8). Dessin seulement : les règles sont dans regles/.
 // Tout vit dans des réserves fixes créées au premier besoin (hfxInit : IPool, Float32Array, quelques maillages) : rien n'est créé pendant
 // une image, le nombre d'objets est plafonné (HXN), aucune lumière ajoutée. Trois fichiers : ici les réserves et les outils (anneau au sol,

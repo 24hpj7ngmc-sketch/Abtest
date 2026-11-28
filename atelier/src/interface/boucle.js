@@ -14,14 +14,14 @@ function resize() {
 let last = performance.now();
 function frame(now) {
   requestAnimationFrame(frame);
-  if (typeof DernierToit === 'object' && DernierToit.ouvert) {
+  if (DernierToit.ouvert) {
     last = now;
     window.__dtPause = (window.__dtPause || 0) + 1;
     toitNet(now);
     return;
   }
   // L'Île des Cinq est ouverte dans son cadre : même pause (ni boucle, ni rendu, ni sons du lobby), le facteur du multi continue
-  if (typeof IleDesCinq === 'object' && IleDesCinq.ouvert) {
+  if (IleDesCinq.ouvert) {
     last = now;
     window.__ilePause = (window.__ilePause || 0) + 1;
     ileNet(now);

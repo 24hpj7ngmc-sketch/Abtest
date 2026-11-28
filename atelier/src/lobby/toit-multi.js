@@ -1,5 +1,5 @@
 // [lobby/toit-multi.js] Le relais du multi pour Dernier Toit : le lobby fait le facteur entre les téléphones (toitEtat, toitNet).
-// ---- le relais du multi pour Dernier Toit (V10.5). Dernier Toit tourne dans son cadre et ne voit pas le salon : le lobby fait le facteur.
+// ---- le relais du multi pour Dernier Toit. Dernier Toit tourne dans son cadre et ne voit pas le salon : le lobby fait le facteur.
 // Le contrat (Dernier Toit le suit depuis sa V4.3) : docs/DEMANDE-DT-MULTI.md et dt/LOBBY.md.
 //  · Dernier Toit → lobby : toitEtat(d) (branché sur le rappel « etat » de DernierToit.ouvrir) publie d, tel quel, dans le salon (clé dn : un état complet, pas un événement).
 //  · lobby → Dernier Toit : dix fois par seconde, DernierToit.pairs(liste, moi) avec les autres joueurs du salon qui sont sur le toit : {id, nom, heros, rang, depuis, etat}.
@@ -39,7 +39,7 @@ function toitNet(now) {
     L.push({
       id: String(p.peer),
       nom: nmClean(pr.nm),
-      heros: jeuHeros(DernierToit, pr.el) ? pr.el : 'feu',
+      heros: HEROS.includes(pr.el) ? pr.el : 'feu',
       rang: Math.max(1, Math.min(4, Math.round(+pr.tr) || 1)),
       depuis: +pr.tt,
       etat: (() => {

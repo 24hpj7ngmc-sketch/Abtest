@@ -65,7 +65,7 @@ function heroMods(el) {
     m = {};
   for (const k in t) if (Number.isFinite(+t[k])) m[k] = +t[k];
   for (const k in WT[tWeap].base) m[k] = (m[k] || 0) + WT[tWeap].base[k];
-  // V2.2 : la voie du héros joué (opts.voie, 'a' ou 'b') ; seules les deux cases de sa branche comptent. Un autre héros (un esclave) joue son kit de base.
+  // la voie du héros joué (opts.voie, 'a' ou 'b') ; seules les deux cases de sa branche comptent. Un autre héros (un esclave) joue son kit de base.
   const vo = el === LOBBY.heros && LOBBY.voie && typeof LOBBY.voie === 'object' ? LOBBY.voie.id : null;
   m.voA = vo === 'a' ? 1 : 0;
   m.voB = vo === 'b' ? 1 : 0;
@@ -158,7 +158,7 @@ function openTree() {
   const tr = tTree();
   $('tTitle').textContent = tr.title;
   $('tUnit').textContent = tr.unit;
-  $('tClose').textContent = net.n > 1 && tr.close === 'Reprendre la partie' ? 'Retour' : tr.close; // à plusieurs, la partie ne s'arrête pas (audit écran n° 22)
+  $('tClose').textContent = net.n > 1 && tr.close === 'Reprendre la partie' ? 'Retour' : tr.close; // à plusieurs, la partie ne s'arrête pas
   $('tree').hidden = false;
   drawTree();
   const sc = $('tScroll');

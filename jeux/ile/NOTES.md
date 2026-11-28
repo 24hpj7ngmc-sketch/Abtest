@@ -1,5 +1,12 @@
 # Notes de travail — L'Île des Cinq (le mini-jeu, dans son propre atelier)
 
+## V2.9 (28 nov. 2026) — bugs des sorts (multi, sons) et nettoyage, comportement identique
+- **Multi** : le snap (`regles/reseau.js`) met l'élément du nuage du Déchaînement en 4e valeur de `sm` (`ELS.indexOf(st.el)`) ; `applySnap` le relit (entier, vérifié contre `ELS`, sinon Élec : un ancien téléphone n'envoie que trois valeurs). Les autres sorts d'un coéquipier vus par un invité (zones au sol `hz`, tours des Gardiens `tw`) portaient déjà leur élément ; les événements (météores, déluge, séisme) ne passent pas par le réseau.
+- **Sons** (`sons/sound.js`) : `sortSon(ev, défaut, grand)` choisit le son d'après `ev.el` (feu fire, eau water, nature wood, terre stone ou quake pour les grands sorts, élec thunder, vent shift, tous des sons existants) ; l'Élan d'Élec garde zap. Sans `el` : le son d'avant. Le Tir perçant porte l'élément de l'arme quand aucun élément n'est choisi : son son suit donc l'arme.
+- **Nettoyage** : règles CSS `.lobby …` et `#lBar` jamais utilisées (8 règles, la classe `lobby` n'est plus posée nulle part), gardes `typeof SND` inutiles, variable `i` jamais lue, historiques « (V2.0, audit …) » retirés de ~140 commentaires et quelques longs « Avant : … » raccourcis. Aucun fichier supprimé : les `tests/*_tail.js` et `t52.js` servent encore à `outils/simbal.py`, `opsim.sh`, `simall.sh`.
+- Vérifié : AST de chaque fichier de src identique avant/après le nettoyage (`outils/astcmp.js`), feuilles de style comparées (`outils/csscmp.js`), `tests/sim-ref.out` identique et `simall.sh` identique avant/après. `tout.sh` lance maintenant aussi `runsorts` et `runelheros` (nouveaux contrôles du nuage chez l'invité et des sons dans `runsorts.js`).
+- À savoir : `runaj` (deux appuis rapprochés) rate parfois quand la machine est chargée (vert seul) ; `runcourse` dépend de la cadence d'images et rate sur cette machine avec ou sans le nettoyage : il n'est pas dans `tout.sh`.
+
 ## V2.8 (28 nov. 2026) — les six héros ont chacun leur modèle 3D
 - `gfx/models/roc.js`, `sylve.js`, `volt.js`, `ondine.js`, `zephyr.js` (copies de l'atelier), ajoutés à `ORDER` de `build.py` (avant `mains.js` ; `GARDE` garde `hero.avatar` du lobby, qui aiguille par identité vers les six modèles, repli sur le gardien). Les coéquipiers (`mateView`) les montrent avec leurs pièces de magie animées par `K.pose` (champ `anim`, aucun nom en dur).
 - Aucune règle ne change. Non vérifié : le vrai three.js r128, le téléphone.

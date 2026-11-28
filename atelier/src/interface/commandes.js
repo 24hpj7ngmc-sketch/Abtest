@@ -11,7 +11,7 @@ let jumpQ = false,
   jumpHeld = false,
   sneakHeld = false;
 const flying = () => !!(save.dev && dev.fly);
-// Le petit bouton libre : il faut deux appuis rapprochés pour activer. Sneak, lui, répond au premier appui (V8.5). Un appui seul arme le bouton (liseré blanc) et ne fait rien :
+// Le petit bouton libre : il faut deux appuis rapprochés pour activer. Sneak, lui, répond au premier appui. Un appui seul arme le bouton (liseré blanc) et ne fait rien :
 // le pouce qui tourne la caméra ne déclenche plus rien par accident. Un doigt posé sur un petit bouton puis glissé tourne d'ailleurs la caméra, comme partout.
 const DBL = 420;
 let dblId = '',

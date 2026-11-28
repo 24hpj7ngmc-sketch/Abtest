@@ -14,7 +14,7 @@ if (net.why === 'wait')
     .catch(() => {
       net.why = 'erreur';
     });
-// ---------- LE MULTI HORS DE CLAUDE (V9.8) ----------
+// ---------- LE MULTI HORS DE CLAUDE ----------
 // Dans Claude, le multi passe par le salon de la page (`room`), qui n'admet que des invités connectés à Claude. Quand le jeu est hébergé ailleurs (itch.io, Netlify…), il n'y a pas de salon :
 // mqRoom(mot, serveur) le remplace. Même interface que le salon pour ce que le jeu utilise (peers, presence, connected), donc netTick ne change pas. Les joueurs tapent le même « mot de salon » ;
 // chacun publie son état environ 10 fois par seconde sur un serveur de messages public (MQTT 3.1.1 sur WebSocket, écrit ici à la main : CONNECT, SUBSCRIBE, PUBLISH sans accusé) et écoute celui des autres.
@@ -251,7 +251,7 @@ function mqJoin() {
   net.why = '';
   net.wasPlay = null;
 }
-// le mot de salon et le serveur se choisissent sur la carte, bouton « Multi » (V11.3)
+// le mot de salon et le serveur se choisissent sur la carte, bouton « Multi »
 const mqLab = () => {
   $('mq2Srv').textContent = 'Serveur ' + (mqSrvI + 1);
 };

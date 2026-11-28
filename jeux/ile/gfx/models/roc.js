@@ -1,7 +1,7 @@
 // ROC — le héros Tank, vu par ses coéquipiers. Fichier commun, sur le modèle de braise.js (même interface, même recette).
 // Même gabarit que le gardien : ≈ 1,85 m (crête du casque), origine aux pieds, regarde vers −Z ; plus large que les autres (≈ 1,2 m avec le bouclier).
 // Pièces : body, armL, armR (pivots aux épaules, comme le gardien), puis motR (la magie de l'élément au-dessus du poing droit, qui pulse).
-// En plus de la recette : jambes = nombre de premiers objets de body qui sont les jambes (jambe droite x > 0, puis la gauche, autant
+// En plus de la recette : pas (multiplicateur de l'amplitude de marche des jambes, 1 par défaut ; les longues robes en veulent moins) ; jambes = nombre de premiers objets de body qui sont les jambes (jambe droite x > 0, puis la gauche, autant
 // chacune) ; mainD = nombre d'objets du bras droit à garder quand il tient une arme (ce qui suit est tenu en main).
 // ctx.arme : il tient une arme (lobby, Dernier Toit) : bras le long du corps, sans la magie du poing, le bouclier passe dans le dos.
 // Langage des formes : blocs carrés et plaques superposées (épaulières énormes, plastron, tassettes, grand bouclier au bras gauche).
@@ -322,6 +322,14 @@
         anim: [{ k: 'scl', axis: 'y', amp: 0.3, sp: 9 }]
       });
     }
-    return { parts, bake: { ground: 0.2, groundH: 0.6, map: { s: 'm' } }, scale: 1, labelY: 2.2, jambes, mainD };
+    return {
+      parts,
+      bake: { ground: 0.2, groundH: 0.6, map: { s: 'm' } },
+      scale: 1,
+      labelY: 2.2,
+      jambes,
+      pas: 1,
+      mainD
+    };
   };
 }

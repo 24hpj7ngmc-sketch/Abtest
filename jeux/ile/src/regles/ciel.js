@@ -1,4 +1,4 @@
-// [regles/ciel.js] La vue du ciel vue par les règles (V2.0) : le chrono de 30 s entre deux vagues et les joueurs « Prêts ». L'affichage est dans interface/ciel.js.
+// [regles/ciel.js] La vue du ciel vue par les règles : le chrono de 30 s entre deux vagues et les joueurs « Prêts ». L'affichage est dans interface/ciel.js.
 // Demande de Frédéric (25/11) : « à chaque fin de vague, l'écran se dézoome pour passer à une vue comme dans CoC, du ciel, et on a genre 30 s pour placer de nouvelles défenses,
 // améliorer les existantes et construire des murs / trous ». La vague part au bout de 30 s, ou plus tôt quand tous les joueurs ont appuyé sur Prêt.
 // Avant la vague 1 : pas de chrono, on part quand tout le monde est prêt. Pendant le tutoriel (s.cNoT) : pas de chrono non plus.

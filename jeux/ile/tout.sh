@@ -11,4 +11,4 @@ for t in run1 run9 run10 runaj runhire runrenf runcamp runjeu runpartie runarmes
 (rm -f $T/sim.txt; python3 outils/simbal.py >/dev/null && node $T/sim_new.js > $T/sim.txt 2>&1; cmp -s $T/sim.txt tests/sim-ref.out && echo "règles : simulation identique à la référence" || echo "règles : LA SIMULATION A CHANGÉ (diff $T/sim.txt tests/sim-ref.out)") &
 wait
 # le fichier à coller (dans une page vide) et le multi (deux téléphones simulés) tournent ensuite, l'un après l'autre : leurs délais ratent quand la machine est chargée
-for t in runpont runmulti runciel runvent runvoies; do node tests/$t.js > $T/$t.log 2>&1; echo "$t : $(grep -c '^RATÉ' $T/$t.log) raté(s) · $(grep -i 'erreurs' $T/$t.log | tail -1 | cut -c1-90)"; done
+for t in runpont runmulti runciel runvent runvoies runsorts runelheros; do node tests/$t.js > $T/$t.log 2>&1; echo "$t : $(grep -c '^RATÉ' $T/$t.log) raté(s) · $(grep -i 'erreurs' $T/$t.log | tail -1 | cut -c1-90)"; done

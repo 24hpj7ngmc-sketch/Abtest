@@ -3,7 +3,7 @@
 const LOOTN = {};
 for (const L of LOOT) LOOTN[L[0]] = L[1];
 for (const e of HEROS) LOOTN['etoile_' + e] = 'Étoile de ' + EL[e].hero;
-// ---- LE BARÈME COMMUN (V10.2) : les deux portails paient avec la même règle, en « unités de jeu ». Une unité = 45 s de jeu environ (sur l'île : un niveau de vague, 35 à la vague 20) : 10 or céleste et 20 éclats.
+// ---- LE BARÈME COMMUN : les deux portails paient avec la même règle, en « unités de jeu ». Une unité = 45 s de jeu environ (sur l'île : un niveau de vague, 35 à la vague 20) : 10 or céleste et 20 éclats.
 // Une journée de Dernier Toit vaut sa durée (dayU : 1,6 unité au jour 1, 3,3 au jour 10 ; 24 pour les dix jours). Un boss : +40 or, +50 éclats (sur le toit, par choix : un seul aux jours 5, 8 et 10, là où Dernier Toit ajoute un mastodonte ; il en sort dix en dix jours). Une victoire : +200 or, +150 éclats.
 // Le tout × le rang (PAYK : niveau de campagne sur l'île, rang sur le toit ; Difficile = ×1,5), puis × la maison (or) et × le hall (éclats). Pour un nouveau mini-jeu : compter ses unités et appeler payOut.
 const GAINS = { or: 10, ecl: 20, orBoss: 40, eclBoss: 50, orWin: 200, eclWin: 150 },

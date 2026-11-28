@@ -61,7 +61,7 @@ function lobSync() {
   $('sGrid')
     .querySelectorAll('.pick')
     .forEach(b => b.classList.toggle('cur', b.dataset.el === cur));
-  goTxt('sGo', typeof IleDesCinq === 'object' ? IleDesCinq : null, cur);
+  goTxt('sGo', cur);
   {
     const A = armsOf('ile');
     if (!A.includes(tWeap) && A.length) setWeap(A[0]); // ce jeu n'accepte pas l'arme en main : on prend la première qu'il accepte
@@ -92,11 +92,9 @@ function lobSync() {
   LB.hm = null;
   lobBar();
 }
-// le bouton qui lance la partie : il le dit quand le jeu ne connaît pas encore le héros incarné (Zéphyr, V12.1)
-function goTxt(id, J, el) {
-  const ok = jeuHeros(J, el);
-  $(id).textContent = ok ? 'Lancer la partie avec ' + EL[el].hero : EL[el].hero + " n'est pas encore dans ce jeu";
-  $(id).classList.toggle('off', !ok);
+// le bouton qui lance la partie, au nom du héros incarné
+function goTxt(id, el) {
+  $(id).textContent = 'Lancer la partie avec ' + EL[el].hero;
 }
 function lobHero(el) {
   if (tHero !== el) {
@@ -149,7 +147,7 @@ function lobbyEnter(from) {
     if (!save.vil.length && !window.__nodemo) vilDemo();
     else persist();
   }
-  // un village déjà installé reçoit le Verger céleste (V8.6) sur sa parcelle, une seule fois
+  // un village déjà installé reçoit le Verger céleste sur sa parcelle, une seule fois
   if (!save.vg) {
     save.vg = 1;
     if (save.vil.length && CAT.verger && !hasB('verger') && !window.__nodemo) {

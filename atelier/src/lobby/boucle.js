@@ -4,10 +4,42 @@ function lobTurn(dx, dy) {
   LB.yaw -= dx * 0.0055;
   LB.pitch = Math.max(-1.3, Math.min(1.3, LB.pitch - dy * 0.0055));
 }
+// les obstacles pleins au sol, en cercles [x, z, rayon] : les poteaux et arbres fixes, ceux du parvis, les bâtiments (le Hall et les chemins se traversent)
+function lobCercles() {
+  const L = LOBS.slice();
+  if (PAY) for (const o of PAY.obs) L.push(o);
+  for (const B of save.vil) {
+    const C = CAT[B.t];
+    if (C.pass || B.t === 'hall') continue;
+    const br = rOf(B);
+    L.push([B.x, B.z, Math.max(0.45, br * (br > 2 ? 0.72 : 1))]);
+  }
+  return L;
+}
+// distance (au plus tmax) de l'œil à l'obstacle le plus proche dans la direction du regard ; les cercles qui contiennent déjà l'œil ne comptent pas
+function lobRayon(cercles, tmax) {
+  const c = Math.cos(LB.pitch),
+    dx = -Math.sin(LB.yaw) * c,
+    dz = -Math.cos(LB.yaw) * c;
+  let best = tmax;
+  if (c < 0.05) return best;
+  for (const o of cercles) {
+    const ox = LB.x - o[0],
+      oz = LB.z - o[1],
+      b = ox * dx + oz * dz,
+      q = ox * ox + oz * oz - o[2] * o[2];
+    if (q <= 0) continue;
+    const d = b * b - q;
+    if (d < 0) continue;
+    const t = -b - Math.sqrt(d);
+    if (t >= 0 && t < best) best = t;
+  }
+  return best;
+}
 function lobbyTick(dt, now) {
   const t = now / 1000,
     free = !lobOv();
-  // la course, comme dans Dernier Toit (V12.7) : sprint lissé (LB.spk), balancement de la tête (LB.bob), pas, roulis, champ de vision
+  // la course, comme dans Dernier Toit : sprint lissé (LB.spk), balancement de la tête (LB.bob), pas, roulis, champ de vision
   LB.spr = false;
   LB.mg = 0;
   // déplacement : mêmes commandes qu'en partie (joystick, sprint à fond, saut) ; on suit le relief
@@ -31,18 +63,12 @@ function lobbyTick(dt, now) {
       rz = -Math.sin(LB.yaw);
     const mx = (fx * joy.f + rx * joy.r) * sp * dt,
       mz = (fz * joy.f + rz * joy.r) * sp * dt,
-      blk = (x, z, o, R) => Math.hypot(x - o[0], z - o[1]) < R && Math.hypot(LB.x - o[0], LB.z - o[1]) >= R,
+      cercles = lobCercles(),
       hit = (x, z) => {
         if (fly || (dv && ldev.clip)) return Math.hypot(x, z) > RI + 150;
         if (Math.hypot(x, z) > RI - 1.6) return true;
-        for (const o of LOBS) if (blk(x, z, o, o[2])) return true;
-        if (PAY) for (const o of PAY.obs) if (blk(x, z, o, o[2])) return true;
-        for (const B of save.vil) {
-          const C = CAT[B.t];
-          if (C.pass || B.t === 'hall') continue;
-          const br = rOf(B);
-          if (blk(x, z, [B.x, B.z], Math.max(0.45, br * (br > 2 ? 0.72 : 1)))) return true;
-        }
+        for (const o of cercles)
+          if (Math.hypot(x - o[0], z - o[1]) < o[2] && Math.hypot(LB.x - o[0], LB.z - o[1]) >= o[2]) return true;
         return false;
       };
     if (!hit(LB.x + mx, LB.z + mz)) {

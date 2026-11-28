@@ -86,7 +86,7 @@ function boom(S, x, y, z, r, dmg, src, kind) {
   // V4.3 : chez l'hôte du multi, les dernières explosions partent dans l'instantané (S.mBooms, créé par encodeInstantane)
   if (S.mBooms) {
     S.mBoomN = ((S.mBoomN || 0) + 1) & 255;
-    S.mBooms.push({ id: S.mBoomN, x, y, z, r, kind: kind || 'b', t: S.t });
+    S.mBooms.push({ id: S.mBoomN, x, y, z, r, kind: kind || 'b', t: S.t, ec: S.sortEl || null });
     if (S.mBooms.length > 32) S.mBooms.shift();
   }
   const Z = S.z;

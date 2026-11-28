@@ -1,5 +1,5 @@
 // [lobby/guide.js] Le Guide du lobby : la visite pas à pas du village, ses sujets quand on lui reparle.
-// ---- LE GUIDE (V10.3) : le personnage qui explique les vraies règles. Il attend près de la maison (là où l'on arrive), accueille le joueur à sa première venue et lui fait faire la visite du
+// ---- LE GUIDE : le personnage qui explique les vraies règles. Il attend près de la maison (là où l'on arrive), accueille le joueur à sa première venue et lui fait faire la visite du
 // village : à chaque arrêt on fait le geste (ouvrir le hall, ramasser une récolte, améliorer…), et l'étape ne passe que lorsqu'il est fait. « Passer » arrête tout de suite. Ensuite il reste à sa
 // place : on lui reparle (main, Action) et on choisit un sujet. Il n'arrête pas le joueur (on passe à travers), se pose toujours hors des bâtiments, et change de place en un clin d'œil d'étoile.
 // save.guide : 1 = visite passée, 2 = visite finie (le cadeau est donné une seule fois, à la première visite finie). Le même personnage tient les « Règles » dans chaque mini-jeu (RULES, interface/guide.js).

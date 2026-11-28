@@ -28,7 +28,7 @@ const BN = ['', 'Boss', 'Boss moyen', 'Big Boss'],
 const bossTier = (s, n) => (s.maxW < 20 ? 1 : n >= s.maxW ? 3 : n >= s.maxW - 10 ? 2 : 1);
 const cyOf = e => (e.boss ? [0, 2.4, 3.4, 5][e.bt || 1] : e.k === 'air' ? 8.1 : 1.1) + (e.gy || 0),
   rOf = e => (e.boss ? [0, 2.8, 3.8, 5.5][e.bt || 1] : 1.3);
-// VENT (V2.1) : une balle ou une défense de Vent soulève les petits ennemis (ni boss, ni tank, ni golem, ni aérien) : ils restent en l'air, immobiles, e.lift secondes,
+// VENT : une balle ou une défense de Vent soulève les petits ennemis (ni boss, ni tank, ni golem, ni aérien) : ils restent en l'air, immobiles, e.lift secondes,
 // puis ne peuvent plus être soulevés ni étourdis pendant une seconde (e.imm), pour qu'une rafale de balles ne les bloque pas pour toujours.
 const liftable = e => !e.boss && e.k !== 'air' && e.k !== 'tank' && e.k !== 'gol' && !e.bur && !(e.imm > 0) && !e.sea;
 function lift(e, t) {
@@ -151,7 +151,7 @@ function hurtE(e, d, pierce, hero) {
   e.lastH = !!hero;
   if (e.k === 'ste') e.rev = 2.5;
 }
-// LA COMPOSITION D'UNE VAGUE (V2.0) : des groupes { el, k, count } sans chemin (path: -1, « de partout »). Un à quatre éléments mélangés :
+// LA COMPOSITION D'UNE VAGUE : des groupes { el, k, count } sans chemin (path: -1, « de partout »). Un à quatre éléments mélangés :
 // un dominant (45 à 60 %) et les autres à parts égales. L'arc de côte d'où ils viendront est tiré en même temps (s.varc), pour que l'aperçu puisse l'annoncer.
 function genWave(s, n) {
   const r = s.rng,
@@ -266,7 +266,7 @@ function newSim(heroEl, rng, mods, mode) {
         inv: 0
       },
       others: {},
-      wpay: {}, // chez l'hôte : les niveaux d'armes payés par chaque invité, { id: { arme: { amélioration: niveau } } } (audit V2.0, problème 3)
+      wpay: {}, // chez l'hôte : les niveaux d'armes payés par chaque invité, { id: { arme: { amélioration: niveau } } }
       client: false,
       lid: 1,
       zones: [],
@@ -314,7 +314,7 @@ function cannons(s, dt) {
     s.events.push({ k: 'cannon', bx: P[0], bz: P[1], x: bt.x, z: bt.z, y: bt.wy || 0 });
   });
 }
-// LE DÉPART D'UNE VAGUE (V2.0) : tous les ennemis dans une seule file d'attente, mélangés (plus de meutes, plus d'un élément par côté),
+// LE DÉPART D'UNE VAGUE : tous les ennemis dans une seule file d'attente, mélangés (plus de meutes, plus d'un élément par côté),
 // qui sortent un par un à un rythme régulier mais pas mécanique, chacun en un point de la côte : les angles suivent le nombre d'or (deux sorties de suite
 // tombent loin l'une de l'autre et la côte se remplit sans trou), sur l'arc annoncé par l'aperçu. Une corne au départ, une autre pour chaque boss.
 function startWave(s) {

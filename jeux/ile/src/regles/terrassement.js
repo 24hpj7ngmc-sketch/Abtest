@@ -38,7 +38,7 @@ function checkWalls(s, x0, z0, x1, z1) {
   if (fresh.length) {
     for (const i of fresh) s.wallSet[i] = 1;
     const D = fieldOf(s.wallSet, s.pit);
-    for (const i of fresh) s.wallSet[i] = 0; // un mur ne peut jamais fermer l'île : il faut qu'un quart de la côte au moins mène encore au cœur (V2.0)
+    for (const i of fresh) s.wallSet[i] = 0; // un mur ne peut jamais fermer l'île : il faut qu'un quart de la côte au moins mène encore au cœur
     if (!passOk(D)) {
       r.why = 'Bloquerait le passage';
       return r;

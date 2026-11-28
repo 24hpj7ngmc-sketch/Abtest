@@ -37,7 +37,9 @@ let guTab = 0;
 function guideShow(titre, onglets, i, bouton) {
   guTab = Math.max(0, Math.min(onglets.length - 1, i || 0));
   $('guT').textContent = titre;
-  $('guTabs').innerHTML = onglets.map((T, k) => `<button class="tchip${k === guTab ? ' sel' : ''}" data-k="${k}">${T[0]}</button>`).join('');
+  $('guTabs').innerHTML = onglets
+    .map((T, k) => `<button class="tchip${k === guTab ? ' sel' : ''}" data-k="${k}">${T[0]}</button>`)
+    .join('');
   $('guTabs')
     .querySelectorAll('.tchip')
     .forEach(
@@ -125,7 +127,17 @@ const CMDS_TOIT = [
 // les gains du lobby (c'est le lobby qui les paie, d'après le message « fin » : voir LOBBY.md) : à tenir à jour avec lui
 // or, ecl : or céleste et éclats par tranche de « tranche » secondes de jeu ; …Boss : par mastodonte ; …Win : secouru ;
 // rangs : gains par rang de difficulté (1 à 4) ; vie : vie des zombies par rang
-const GAINS_LOBBY = { or: 10, ecl: 20, tranche: 45, orBoss: 40, eclBoss: 50, orWin: 200, eclWin: 150, rangs: [1, 1.25, 1.5, 2], vie: [1, 1.35, 1.8, 2.4] };
+const GAINS_LOBBY = {
+  or: 10,
+  ecl: 20,
+  tranche: 45,
+  orBoss: 40,
+  eclBoss: 50,
+  orWin: 200,
+  eclWin: 150,
+  rangs: [1, 1.25, 1.5, 2],
+  vie: [1, 1.35, 1.8, 2.4]
+};
 // les cinq onglets, refaits à chaque ouverture (les chiffres viennent des tables du jeu : ils suivent si on les change)
 function RULES_TOIT() {
   const JOURS = 10, // regles/partie.js : l'hélicoptère vient après le jour 10
@@ -152,7 +164,10 @@ function RULES_TOIT() {
           'Arrête la horde',
           "Chaque jour, la horde sort de l'immeuble sous tes pieds et fuit par les rues. Depuis le toit, abats-les avant qu'ils ne s'échappent."
         ],
-        ['Tiens ' + JOURS + ' jours', 'Le jour ' + JOURS + " tenu, l'hélicoptère vient te chercher : rejoins son aire, le cercle jaune du toit."],
+        [
+          'Tiens ' + JOURS + ' jours',
+          'Le jour ' + JOURS + " tenu, l'hélicoptère vient te chercher : rejoins son aire, le cercle jaune du toit."
+        ],
         [
           'Jour après jour',
           'Rien ne presse entre deux jours : la horde ne sort que quand tu touches « Lancer le jour », en haut. Elle grossit : ' +
@@ -208,7 +223,7 @@ function RULES_TOIT() {
         ],
         [
           'Les boutiques',
-          'Une sur le toit, une au rez-de-chaussée : « Boutique » n\'apparaît qu\'à côté, et c\'est seulement là qu\'on achète les améliorations.'
+          "Une sur le toit, une au rez-de-chaussée : « Boutique » n'apparaît qu'à côté, et c'est seulement là qu'on achète les améliorations."
         ],
         [
           'Ton héros',
@@ -229,9 +244,7 @@ function RULES_TOIT() {
             besoin +
             '.' +
             // V4.9 : sa voie (lobby) ; l'ultime teinté par l'élément de l'arme
-            (S && S.voie && VOIES[S.hero]
-              ? ' Ta voie, ' + VOIES[S.hero][S.voie].n + ' : ' + VOIES[S.hero][S.voie].d + '.'
-              : '') +
+            (S && S.voie && VOIES[S.hero] ? ' Ta voie, ' + VOIES[S.hero][S.voie].n + ' : ' + VOIES[S.hero][S.voie].d + '.' : '') +
             " Avec une arme d'un autre élément, l'ultime en prend l'effet."
         ],
         [
@@ -249,9 +262,9 @@ function RULES_TOIT() {
           "Dans l'immeuble",
           'Dès le jour ' +
             INV_DAY +
-            ", une partie de la horde monte dans les étages (le toit au jour " +
+            ', une partie de la horde monte dans les étages (le toit au jour ' +
             jToit +
-            ') ; le chiffre « Dedans », en haut, dit combien sont entrés. Marteau sur une porte : maintiens Action pour clouer jusqu\'à ' +
+            ") ; le chiffre « Dedans », en haut, dit combien sont entrés. Marteau sur une porte : maintiens Action pour clouer jusqu'à " +
             PLANKS_MAX +
             ' planches ; la Masse, à débloquer, casse les cloisons.'
         ],

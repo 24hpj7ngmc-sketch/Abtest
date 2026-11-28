@@ -6,7 +6,7 @@ const nearPath = (t, p) => {
   for (const g of p.seg) m = Math.min(m, distSeg(t.x, t.z, g.a, g.b));
   return m;
 };
-const potFree = s => s.pot - (s.potHold || 0); // V2.0 : ce que les esclaves ont déjà promis à un chantier n'est plus raflé par les défenses automatiques
+const potFree = s => s.pot - (s.potHold || 0); // ce que les esclaves ont déjà promis à un chantier n'est plus raflé par les défenses automatiques
 function potDo(s, fn) {
   const g = s.gold;
   s.gold = s.pot;
@@ -26,7 +26,7 @@ function autoDef(s, dt) {
       if (p < 0) {
         for (let i = 0; i < th.length; i++) add(i, el, k, w / th.length);
         return;
-      } // un groupe « de partout » (V2.0) menace les trois chemins à parts égales
+      } // un groupe « de partout » menace les trois chemins à parts égales
       const t = th[p];
       if (!t) return;
       t.w += w;

@@ -1,5 +1,4 @@
 // [regles/carte.js] La carte : arrivées tout autour de l'île, navires qui croisent au large, grille du terrain et chemins des ennemis (champs de distance), murs et relief vus par les règles.
-// V2.0 (demande de Frédéric, 25/11 : « les ennemis spawnent de tout autour de l'île, fini les portails » ; « ne fais pas spawn par pack ») :
 // chaque ennemi surgit de la mer en un point de la côte tiré pour lui, puis gagne la plage à gué (e.sea = son point d'accostage) ; on peut lui tirer dessus pendant ce temps.
 // Les trois chemins restent les routes de l'île ; e.path ne dit plus d'où sort un ennemi mais son « secteur » (le chemin dont la plage est la plus proche par l'angle).
 const VAGUES = {
@@ -179,7 +178,7 @@ function refield(s) {
   s.fv++;
   reland(s);
 }
-// un ennemi qui marche encore dans la mer n'est jamais « enfermé » : si un mur coupe sa plage du cœur, il en reçoit une autre (audit V2.0, problème 1)
+// un ennemi qui marche encore dans la mer n'est jamais « enfermé » : si un mur coupe sa plage du cœur, il en reçoit une autre
 function reland(s) {
   if (s.client) return;
   for (const e of s.enemies)
@@ -190,7 +189,7 @@ function reland(s) {
 }
 // un ennemi au sol posé sur l'île est-il coupé du cœur sur la carte D ? Ceux qui sont encore dans la mer ne comptent pas (ils changent de plage)
 const cutOff = (s, D) => s.enemies.some(e => e.fm && !e.sea && D[cellOf(e.x, e.z)] >= 1e8);
-// L'INVASION. Les ennemis ne marchent pas à la queue leu leu : ils arrivent de toute la côte (V2.0) et se répartissent sur trois façons d'avancer.
+// L'INVASION. Les ennemis ne marchent pas à la queue leu leu : ils arrivent de toute la côte et se répartissent sur trois façons d'avancer.
 //   0 = par la route (front large) · 1 = à travers champs en suivant à peu près la route · 2 = en éventail : chacun file d'abord vers son propre point de passage,
 //   loin de la route (jusqu'à fanW m de côté), puis fond droit sur le cœur. C'est ce qui fait un front large au lieu d'une file.
 // Chaque façon a son champ de distances ; les deux dernières contournent les défenses posées au sol. Recalculés quand un mur ou une défense change.

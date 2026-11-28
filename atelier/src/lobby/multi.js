@@ -190,7 +190,7 @@ function islHome(why) {
     toastT = 4;
   }
 }
-// aw : l'arme qu'il tient (armeNet) ou rien. Avec une arme : le gardien sans son pistolet à cristal, l'arme de son élément devant l'épaule droite, les bras qui la tiennent (V12.7)
+// aw : l'arme qu'il tient (armeNet) ou rien. Avec une arme : le gardien sans son pistolet à cristal, l'arme de son élément devant l'épaule droite, les bras qui la tiennent
 // el = la clé du héros (le modèle), ee = son élément choisi (la palette, V12.9)
 function avMake(el, ee, aw) {
   const g = new THREE.Group(),
@@ -475,7 +475,7 @@ function lobNet(dt) {
           ls: LN.ls,
           la: LN.ls ? Math.round((now - LN.lsT) / 1000) : 0,
           el: tHero,
-          // l'élément choisi du héros (V12.9) : un champ court, vérifié à la réception
+          // l'élément choisi du héros : un champ court, vérifié à la réception
           ee: elH(tHero),
           lp,
           io,

@@ -10,7 +10,7 @@ const floats = [],
 let fxTick = 0,
   pupTold = 0,
   buffKey = '';
-// chaque nouveau chiffre est décalé à gauche, au milieu ou à droite : ils ne s'empilent plus au même endroit (audit écran n° 10)
+// chaque nouveau chiffre est décalé à gauche, au milieu ou à droite : ils ne s'empilent plus au même endroit
 let floatN = 0;
 function floater(x, y, z, txt, col, size, life) {
   if (floats.length > 70) floats.shift();

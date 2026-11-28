@@ -1,10 +1,10 @@
-// [lobby/arme.js] L'outil Arme du lobby (V12.7) : on voit en 1re personne l'arme choisie, à la couleur de son élément, qui suit la course ; Action = « Montrer » (inspection d'environ 1,5 s). Les autres joueurs du salon la voient dans la main de ton avatar.
+// [lobby/arme.js] L'outil Arme du lobby : on voit en 1re personne l'arme choisie, à la couleur de son élément, qui suit la course ; Action = « Montrer » (inspection d'environ 1,5 s). Les autres joueurs du salon la voient dans la main de ton avatar.
 // ---- l'arme en main au lobby
 // les six armes en main (modèles vm.* de gfx/models/armes.js, copie de ceux de Dernier Toit) ; une liste, jamais un objet (une clé venue du réseau ne doit pas atteindre un prototype)
 const ARMES = ['pistolet', 'assaut', 'sniper', 'fusil', 'pompe', 'lance'],
   INSPECT = 1.5;
-// LA : g = l'arme devant la caméra, key = ce qu'elle montre (arme, élément, héros), up = 0 (rangée) à 1 (levée), ins = temps d'inspection en cours (−1 : aucune)
-const LA = { g: null, key: '', hold: [0.22, -0.2, -0.5, 0, 0, 0], up: 0, ins: -1 };
+// LA : g = l'arme devant la caméra, key = ce qu'elle montre (arme, élément, héros), up = 0 (rangée) à 1 (levée), ins = temps d'inspection en cours (−1 : aucune), near = 0 à 1 : à quel point un mur est proche
+const LA = { g: null, key: '', hold: [0.22, -0.2, -0.5, 0, 0, 0], up: 0, ins: -1, near: 0 };
 // l'arme du joueur et son élément : la sienne (salle d'armes ou dernier portail), l'élément choisi pour elle, sinon celui du héros joué (wEl)
 function armeSel() {
   const a = ARMES.includes(tWeap) ? tWeap : 'pistolet';
@@ -99,6 +99,11 @@ function armeFrame(dt) {
   rx -= 0.16 * env;
   ry += (1.25 + 0.18 * Math.sin(LA.ins * 2.6)) * env;
   rz += (0.1 + 0.05 * Math.sin(LA.ins * 3.4)) * env;
+  // un mur ou un bâtiment à moins de 1,2 m devant : l'arme recule vers la caméra (elle ne traverse pas, comme dans Dernier Toit)
+  LA.near += (Math.max(0, 1 - lobRayon(lobCercles(), 1.2)) - LA.near) * Math.min(1, dt * 18 + (dt ? 0 : 1));
+  z += LA.near * 0.75;
+  y -= LA.near * 0.12;
+  x -= LA.near * 0.08;
   g.position.set(x, y, z);
   g.rotation.set(rx, ry, rz);
 }

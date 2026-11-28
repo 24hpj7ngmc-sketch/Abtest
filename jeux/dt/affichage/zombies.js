@@ -8,10 +8,10 @@
 // Fournit : zSet (tenue d'un type), ZTY (lu par tests/variantes.js), zombiesInit (gfxInit), zombiesFrame (gfxFrame).
 const ZSETS = 'abcdefgh',
   ZPOSES = ['w0', 'w1', 'w2', 'c0', 'c1', 'lie'];
-// tenue selon le type : rôdeur a/b, coureur c, colosse et mastodonte d ; V3.9 : sprinteur e, casseur f, porteur g, hurleur h
+// tenue selon le type : rôdeur a/b, coureur c, colosse et mastodonte d ; sprinteur e, casseur f, porteur g, hurleur h
 const ZTY = ['a', 'c', 'd', 'd', 'e', 'f', 'g', 'h'],
   zSet = (ty, va) => (ty === 0 && va ? 'b' : ZTY[ty] || 'd');
-// V3.9 : une réserve de zombies = le maillage éclairé (canal m) et, s'il existe, celui des pièces lumineuses (canal g : bandes réfléchissantes, or du porteur), mêmes matrices
+// une réserve de zombies = le maillage éclairé (canal m) et, s'il existe, celui des pièces lumineuses (canal g : bandes réfléchissantes, or du porteur), mêmes matrices
 class ZPool {
   constructor(gs, cap) {
     this.a = new IPool(gs.m, K.MAT.m, cap);
@@ -71,7 +71,7 @@ function zombiesFrame(S) {
       pose = f === 0 ? 'w0' : f === 2 ? 'w2' : 'w1';
       pitch = ty === 1 || st === 3 ? 0.22 : 0;
     }
-    // V1.5 : il arrache une planche (bras levés, il tire) ; dans l'escalier, un pas en arrière (dessiné derrière les planches)
+    // il arrache une planche (bras levés, il tire) ; dans l'escalier, un pas en arrière (dessiné derrière les planches)
     let reculX = 0,
       reculZ = 0;
     if (Z.tr[i] > 0) {

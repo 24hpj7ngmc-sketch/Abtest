@@ -1,7 +1,7 @@
 // VOLT — le héros Assassin, vu par ses coéquipiers. Fichier commun, sur le modèle de braise.js (même interface, même recette).
 // Même gabarit que le gardien : ≈ 1,8 m, origine aux pieds, regarde vers −Z ; fin, le buste penché en avant (prêt à bondir).
 // Pièces : body, armL, armR (pivots aux épaules, comme le gardien), puis motL et motR (la magie de l'élément qui crépite dans les mains).
-// En plus de la recette : jambes = nombre de premiers objets de body qui sont les jambes (jambe droite x > 0, puis la gauche, autant
+// En plus de la recette : pas (multiplicateur de l'amplitude de marche des jambes, 1 par défaut ; les longues robes en veulent moins) ; jambes = nombre de premiers objets de body qui sont les jambes (jambe droite x > 0, puis la gauche, autant
 // chacune) ; mainD = nombre d'objets du bras droit à garder quand il tient une arme (ce qui suit est tenu en main).
 // ctx.arme : il tient une arme (lobby, Dernier Toit) : bras le long du corps, sans la magie des mains (les lames d'avant-bras restent).
 // Langage des formes : pointes et zigzags (capuche à pointe, masque, écharpe qui flotte en éclair, lames d'avant-bras, genouillères pointues).
@@ -352,6 +352,14 @@
         }
       );
     }
-    return { parts, bake: { ground: 0.2, groundH: 0.6, map: { s: 'm' } }, scale: 1, labelY: 2.15, jambes, mainD };
+    return {
+      parts,
+      bake: { ground: 0.2, groundH: 0.6, map: { s: 'm' } },
+      scale: 1,
+      labelY: 2.15,
+      jambes,
+      pas: 1,
+      mainD
+    };
   };
 }

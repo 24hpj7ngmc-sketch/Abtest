@@ -1,6 +1,6 @@
 // ===================== LES CAPACITÉS : missile, onde de choc, leurre, frappe aérienne ; les projectiles =====================
-// « Ils arrivent » : Missile (compétence) et Onde de choc (ultime) ; en mode fuite, le héros les remplace (l'interface n'appelle plus
-// useMissile / useOnde quand il y a un héros ; la branche « fuite » de useOnde ne sert qu'au banc simtest.js). Leurre et Frappe aérienne sont des objets.
+// « Ils arrivent » : Missile (compétence) et Onde de choc (ultime) ; en mode fuite, le héros les remplace (l'interface n'appelle pas
+// useMissile / useOnde quand il y a un héros). Leurre et Frappe aérienne sont des objets.
 // projStep fait avancer ce qui est en vol : obus de mortier, missiles, bombes (frappe, météores, sous-munitions) et le leurre.
 // Fournit aux autres dossiers : useMissile, useOnde, useLeurre, useAir (interface : boutons).
 
@@ -17,8 +17,8 @@ function useMissile(S) {
   return true;
 }
 // l'onde de choc (ultime, chargée en tuant : S.ult = 1). Toit : jette dans le vide ceux qui y sont ; dans l'immeuble : blesse et ralentit
-// ceux qui sont près du joueur. « Ils arrivent » : décroche les grimpeurs (blessés d'autant plus qu'ils étaient haut) et repousse ceux
-// de la place. Mode fuite : renvoie vers l'immeuble ceux du dehors (et fait redescendre ceux des murs d'avenue)
+// ceux qui sont près du joueur. Dehors : décroche les grimpeurs (blessés d'autant plus qu'ils étaient haut) et repousse ceux de la place.
+// Seulement en « Ils arrivent » (en mode fuite, le héros a son ultime)
 function useOnde(S) {
   const P = S.P,
     Z = S.z;
@@ -26,38 +26,6 @@ function useOnde(S) {
   S.ult = 0;
   S.ev.push({ k: 'onde' });
   const pw = P.onde.pw;
-  if (S.mode === 'out') {
-    for (let k = 0; k < S.nAct; k++) {
-      const i = S.act[k],
-        st = Z.st[i];
-      if (st === 3 && Z.lv[i] === NLV) {
-        const dx = Z.x[i],
-          dz = Z.z[i],
-          l = Math.hypot(dx, dz) || 1;
-        killZ(S, i, 'o', (dx / l) * 7, 4, (dz / l) * 7);
-        continue;
-      }
-      if (st === 3 || st === 7) {
-        const p = S.p;
-        if (Math.hypot(Z.x[i] - p.x, Z.y[i] - p.y, Z.z[i] - p.z) < 10 && !hurtZ(S, i, Z.hm[i] * 0.6 * pw, 'o')) Z.slow[i] = 3;
-        continue;
-      }
-      if (st !== 1 && st !== 5) continue;
-      const l = Math.hypot(Z.x[i], Z.z[i]);
-      if (l > 26 + 6 * pw) continue;
-      if (hurtZ(S, i, 40 * pw * hpMul(S.day), 'o')) continue;
-      const m = Math.max(0, Math.min(8 + 3 * pw, l - (B + 1.5)));
-      Z.x[i] -= (Z.x[i] / l) * m;
-      Z.z[i] -= (Z.z[i] / l) * m;
-      Z.slow[i] = 2.5;
-      if (st === 5) {
-        Z.st[i] = 1;
-        Z.y[i] = 0;
-        outRoute(S, i);
-      } else if (inPlaza(Z.x[i], Z.z[i]) && Z.wp[i] === 0) outRoute(S, i);
-    }
-    return true;
-  }
   for (let k = 0; k < S.nAct; k++) {
     const i = S.act[k],
       st = Z.st[i];

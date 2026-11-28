@@ -128,12 +128,8 @@ const DernierToit = (() => {
   return {
     version: VERSION,
     ARMES: ['fusil', 'pistolet', 'assaut', 'sniper', 'pompe', 'lance'],
-    // V4.8 : Zéphyr (vent)
     HEROS: ['feu', 'eau', 'bois', 'terre', 'elec', 'vent'],
-    // V4.2 : rang (vie des zombies), argent (bourse au départ), heros (tout l'arbre du héros), balles (élément des balles), niveaux (écran de fin)
-    // V4.3 : multi (plusieurs joueurs sur le même toit : opts.multi, pairs, rappels.etat)
-    // V4.8 : elementArme (les balles prennent l'élément de l'arme : bonus.balles = la branche de cet élément)
-    // V4.9 : voie (les voies du héros et l'ultime teinté)
+    // les options et bonus que le jeu sait lire (le lobby règle sa conduite sur cette liste)
     accepte: ['rang', 'argent', 'heros', 'balles', 'niveaux', 'multi', 'elementArme', 'voie', 'elHeros'],
     ouvrir,
     fermer,

@@ -1,4 +1,4 @@
-// ===================== DERNIER TOIT — l'affichage : les variantes de zombies (V3.9 ; dessin seulement : les règles sont dans regles/) =====================
+// ===================== DERNIER TOIT — l'affichage : les variantes de zombies  (dessin seulement : les règles sont dans regles/) =====================
 // Le cri du hurleur (deux anneaux rouge pâle au sol qui s'élargissent jusqu'à 12 m, bouffée rouge à la bouche), les zombies pressés par le cri
 // (Z.hst : yeux rouges qui brillent, traînée rouge pâle derrière ceux qui courent), le porteur (billets et paillettes d'or qui tombent du sac ;
 // une gerbe de billets quand il meurt). Les tenues elles-mêmes (sprinteur e, casseur f, porteur g, hurleur h) sont dans zombies.js.

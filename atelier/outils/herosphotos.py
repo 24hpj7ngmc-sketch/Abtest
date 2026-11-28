@@ -11,7 +11,8 @@ EL6 = ['feu', 'eau', 'bois', 'terre', 'elec', 'vent']
 HEROS = [('braise', 'feu'), ('roc', 'terre'), ('sylve', 'bois'), ('volt', 'elec'), ('ondine', 'eau'), ('zephyr', 'vent')]
 TOUS = [n + '_' + e for n, _ in HEROS for e in EL6]
 CLE = {n: h for n, h in HEROS}
-ZOOM = {'volt': '1.3'}   # Volt a le buste penché : sa tête sortait du cadre, on recule la caméra
+# cadre de chaque portrait : (hauteur visée en m, hauteur de monde visible en m) ; le haut du cadre dépasse de 8 cm le point le plus haut (pointe de capuche de Braise, plume de Zéphyr), la hauteur visible fixe la taille de la tête
+CADRE = {'braise': (1.65, 1.05), 'roc': (1.5, 1.05), 'sylve': (1.44, 1.0), 'volt': (1.44, 1.0), 'ondine': (1.44, 1.0), 'zephyr': (1.8, 1.15)}
 TAILLE, COULEURS = 100, 32
 # arguments : des clés (« roc_eau »), ou un nom de héros (« roc » : ses six portraits) ; sans argument, tout
 FAIRE = [k for a in sys.argv[1:] for k in (TOUS if False else ([a] if a in TOUS else [t for t in TOUS if t.startswith(a + '_')]))] or TOUS
@@ -26,8 +27,8 @@ for e in TOUS:
         continue
     p = os.path.join(D, e + '.png')
     n, el = e.split('_')
-    subprocess.run(['node', 'gfx/preview.js', p, FICHIERS, 'hero.avatar', 'el=' + el, 'hero=' + CLE[n], 'views=portrait', 'ref=0', 'ground=0', 'bg=12303a', 'zoom=' + ZOOM.get(n, '1'), 'tw=600', 'th=800', 'cols=1'], check=True, stdout=subprocess.DEVNULL)
-    im = Image.open(p).convert('RGB').crop((120, 40, 480, 400)).resize((TAILLE, TAILLE), Image.LANCZOS).quantize(COULEURS)
+    subprocess.run(['node', 'gfx/preview.js', p, FICHIERS, 'hero.avatar', 'el=' + el, 'hero=' + CLE[n], 'views=tete', 'ref=0', 'ground=0', 'bg=12303a', 'ty=%.2f' % CADRE[n][0], 'dabs=%.3f' % (CADRE[n][1] / 0.933), 'tw=480', 'th=480', 'cols=1'], check=True, stdout=subprocess.DEVNULL)
+    im = Image.open(p).convert('RGB').crop((9, 18, 471, 480)).resize((TAILLE, TAILLE), Image.LANCZOS).quantize(COULEURS)
     b = io.BytesIO()
     im.save(b, 'PNG', optimize=True)
     out.append("%s:'data:image/png;base64,%s'" % (e, base64.b64encode(b.getvalue()).decode()))

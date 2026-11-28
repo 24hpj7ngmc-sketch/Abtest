@@ -1,6 +1,6 @@
 // ZÉPHYR — le héros Tireur, vu par ses coéquipiers. Fichier commun, comme braise.js (même interface, même gabarit).
 // ≈ 1,8 m (plume du chapeau ≈ 2,15 m), origine aux pieds, regarde vers −Z. Pièces : body, armL, armR (pivots aux épaules, comme le
-// gardien), puis magR (la magie de l'élément au-dessus de la main droite, qui tourne). En plus de la recette : jambes (premiers objets
+// gardien), puis magR (la magie de l'élément au-dessus de la main droite, qui tourne). En plus de la recette : pas (multiplicateur de l'amplitude de marche des jambes, 1 par défaut ; les longues robes en veulent moins) ; jambes (premiers objets
 // de body : jambe droite puis gauche, autant chacune) ; mainD (objets du bras droit à garder quand il tient une arme).
 // Sans arme, il tient son arc dans la main gauche (au Hall). ctx.arme : bras le long du corps, sans l'arc ni la magie.
 // Langage des formes : lignes verticales et pointes qui filent vers l'arrière (pans du manteau, foulard, plume, flèches du carquois).
@@ -12,12 +12,10 @@
     OR = PAL.gold,
     BRONZE = PAL.bronze,
     BRONZE_L = PAL.bronzeL,
-    CUIR = 0x6b4030,
-    CUIR_L = 0x93603e,
-    CUIR_D = 0x46291e,
+    CUIR_REF = 0x8a5a3c,
     PEAU = PAL.skin,
     HY = 1.67;
-  let ELK, E, MANT, MANT_D, MANT_L, DOUBL, CHEMISE, PANT, CHEV, FOUL, FOUL_D;
+  let CUIR, CUIR_L, CUIR_D, ELK, E, MANT, MANT_D, MANT_L, DOUBL, CHEMISE, PANT, CHEV, FOUL, FOUL_D;
   // plafond : assombrit une couleur trop claire (palettes pâles comme le Vent : pas de tache blanche sur le ciel)
   const plafond = (c, L) => {
     const q = K.mix(c, c, 0),
@@ -36,6 +34,12 @@
     CHEV = K.mix(E.main, E.light, 0.35);
     FOUL = plafond(E.light, 0.84);
     FOUL_D = K.mix(E.main, E.light, 0.4);
+    // les cuirs (bottes, ceinture, carquois, gants) : bruns ; si le manteau de l'élément est lui aussi brun (Terre), ils passent au brun sombre pour s'en détacher
+    const q = K.rgb(CUIR_REF);
+    const proche = Math.hypot(MANT[0] - q[0], MANT[1] - q[1], MANT[2] - q[2]) < 0.3;
+    CUIR = proche ? 0x33241c : 0x6b4030;
+    CUIR_L = proche ? 0x4e382c : 0x93603e;
+    CUIR_D = proche ? 0x1f140e : 0x46291e;
   };
   // plaque : polygone [[x, y], …] dans le plan de face, épaisseur ep vers l'avant (−Z) à partir de o.p
   const plaque = (b, pts, ep, o) =>
@@ -424,6 +428,14 @@
         anim: [{ k: 'rot', axis: 'y', sp: 2.5, spin: true }]
       });
     }
-    return { parts, bake: { ground: 0.2, groundH: 0.6, map: { s: 'm' } }, scale: 1, labelY: 2.4, jambes, mainD };
+    return {
+      parts,
+      bake: { ground: 0.2, groundH: 0.6, map: { s: 'm' } },
+      scale: 1,
+      labelY: 2.4,
+      jambes,
+      pas: 0.75,
+      mainD
+    };
   };
 }

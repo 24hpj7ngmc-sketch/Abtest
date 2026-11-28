@@ -116,7 +116,7 @@ function devBuild() {
     store();
     toast('Arbre au maximum : tout est débloqué (gardé dans ta sauvegarde)');
   });
-  // V3.8 : l'inverse, pour retrouver l'arbre d'un nouveau joueur (l'argent n'est pas rendu)
+  // l'inverse, pour retrouver l'arbre d'un nouveau joueur (l'argent n'est pas rendu)
   bouton('Arbre à zéro', () => {
     save.lv = { root: 1 };
     save.devDon = false;

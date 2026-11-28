@@ -36,7 +36,7 @@ Dans l'ordre de `ordre.txt` (lignes après mise en forme prettier) :
 | `heros-image.js` | 668 | `hfxFrame` : ce qui dure, par héros (`hxFeuFrame`, `hxBoisFrame`, `hxTerreFrame`, `hxElecFrame`…), le Déluge, les teintes du ciel, le voile coloré |
 | `variantes.js` | 230 | Variantes de zombies : cri du hurleur, yeux et traînées des pressés, or et billets du porteur (`zvEvent`, `zvFrame`) |
 | `guide.js` | 88 | V4.2 : le Guide « Règles » sur le toit (mode fuite) : `MODELS['pnj.guide']` (gfx/models/pnj.js) à `GUIDEP` (interface/regles.js), étiquette « RÈGLES » (sprite), se tourne vers le joueur à moins de 15 m (`guideInit`, `guideFrame`, `G.guide`, `G.guideLab`) |
-| `joueurs.js` | 345 | V4.3 (multi) : les autres joueurs, lus dans `joueursDistants()` (interface/multi.js ; absente = personne) : corps `MODELS['joueur.corps']` (le gardien `hero.avatar` du lobby aux couleurs de l'élément, jambes détachées pour la marche, sans son pistolet), arme `vm.<arme>` tenue à deux mains selon yaw et pitch, couché quand il est à terre, étiquette du nom (sprite, taille constante à l'écran), éclair de bouche et traînée quand il tire, jet du lance-flammes ; ajout, changement de héros ou d'arme, retrait (`joueursInit`, `joueursFrame`, `JR`, `G.joueurs`) |
+| `joueurs.js` | 375 | Multi : les autres joueurs, lus dans `joueursDistants()` (interface/multi.js) : corps `MODELS['joueur.corps']` (le modèle de leur héros `hero.avatar` aux couleurs de l'élément choisi, jambes détachées pour la marche, d'une amplitude `pas` lue dans la recette du modèle ; arme neutre sans héros), arme `vm.<arme>` tenue à deux mains selon yaw et pitch, couché quand il est à terre, étiquette du nom (sprite, taille constante à l'écran), éclair de bouche et traînée quand il tire, jet du lance-flammes ; ajout, changement de héros ou d'arme, retrait (`joueursInit`, `joueursFrame`, `JR`, `G.joueurs`) |
 
 Les modèles du monde et des objets en main sont dans `gfx/models/` (`toit.js`, `mains.js` ; `pnj.js` et `shared.js` repris tels quels du lobby) ;
 les sons dans `sons/sound.js`.
@@ -112,7 +112,7 @@ est hors champ : le vrai three.js en dessine moins) :
   éclairs 14 ; trous 360 ; planches en vol 10 ; rayons laser 40 ; zombies `MAXZ` (2 600) par tenue a–d, 640 pour e–h ; corps 560 / 240.
   Le lance-flammes laisse toujours 150 places de feu aux autres ; héros et variantes plafonnent leurs émissions par image.
 - Sa vidéo (V2.5) : 60 images/s sur son iPhone, jour 7, 40 zombies dans l'immeuble, arbre au max.
-- **Autres joueurs** (V4.3, `joueurs.js`) : par joueur 12 à 14 appels de dessin (corps et arme 11, étiquette ; éclair et traînée
+- **Autres joueurs** (`joueurs.js`) : par joueur 12 à 14 appels de dessin (corps et arme 11, étiquette ; éclair et traînée
   quand il tire) et 2 900 à 3 850 triangles (corps ≈ 1 200 à 1 260, arme 1 700 à 2 600) ; 4 joueurs ≈ 50 appels. Les géométries du corps (une par
   héros) et des armes (une par arme et par héros) sont cuites une fois et partagées (cache `prepM`) ; par joueur, seuls son canevas
   d'étiquette, sa texture et sa matière lui appartiennent : libérés (`dispose`) à son départ. Aucune allocation par image.

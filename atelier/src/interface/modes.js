@@ -18,7 +18,7 @@ const MODES = { normal: 'Normal', hard: 'Difficile' },
 const gameMode = () => (save.mode === 'hard' ? 'hard' : 'normal');
 // La campagne : save.camp[type] = le plus haut niveau fini ; save.stage = le niveau choisi ('feu2'), vide = partie libre (les modes Normal et Difficile d'avant).
 if (!save.camp || typeof save.camp !== 'object') save.camp = {};
-// Dernier Toit (V10.2) : r = le plus haut rang où l'on a été secouru, sel = le rang choisi au portail
+// Dernier Toit : r = le plus haut rang où l'on a été secouru, sel = le rang choisi au portail
 if (!save.toit || typeof save.toit !== 'object') save.toit = { r: 0, sel: 1 };
 {
   const T = save.toit,
@@ -28,7 +28,7 @@ if (!save.toit || typeof save.toit !== 'object') save.toit = { r: 0, sel: 1 };
     };
   save.toit = { r: Math.max(n(T.r, 0, 4), save.rec && save.rec.toit >= 10 ? 1 : 0), sel: n(T.sel, 1, 4) };
 }
-// LES RANGS PAIENT (V10.2) : ce que rapporte une partie est multiplié par PAYK[rang − 1], aux deux portails (niveau de campagne sur l'île, rang sur le toit)
+// LES RANGS PAIENT : ce que rapporte une partie est multiplié par PAYK[rang − 1], aux deux portails (niveau de campagne sur l'île, rang sur le toit)
 const PAYK = [1, 1.25, 1.5, 2],
   payT = k => String(k).replace('.', ',');
 // les colonnes de la campagne, dans l'ordre de son dessin ; la sixième, le Vent, depuis L'Île des Cinq V2.2 (lobby V12.6)

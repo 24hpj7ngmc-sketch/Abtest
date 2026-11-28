@@ -24,7 +24,7 @@ Dans l'ordre de `ordre.txt` (lignes après mise en forme prettier ; 18 fichiers 
 | `armes.js` | 289 | Table des armes `WEAP`, le tir (`shoot`, `shootOne`, `flameShoot`), la masse (`useMasse`, `masseHit`) | `WEAP`, `WKEYS`, `weapOf`, `useMasse` |
 | `tourelles.js` | 376 | Emplacements `SLOTS`, pose (`buildTurrets`), visée (`turretPick`…) et tir (`turretsStep`), portée affichée (`turretReach`) | `SLOTS`, `slotOn`, `turOff`, `buildTurrets`, `placedCount`, `turretReach` |
 | `heros.js` | 693 | Les six héros `HEROS` (V4.8 : Zéphyr), les six éléments (`ELKEYS`, `ELNOM`) ; balles (`heroOnHit` → `effetBalle` : élément de l'arme + passif du héros ; `predilK`), compétences (`useHeroSkill`, `rafale`), ultimes (`useHeroUlt`, `tirPercant`), ce qui dure (`heroStep`), le rempart (`rampartBlock`) | `HEROS`, `HKEYS`, `ELKEYS`, `ELNOM`, `ELDE`, `ELFX`, `heroRole`, `heroHp`, `outside`, `useHeroSkill`, `useHeroUlt` |
-| `voies.js` | 294 | V4.9 : les voies du héros (`VOIES`, `voieDe`, `voieNom` ; leurs règles : `voieDegats`, `voieAcheve`, `voieJoueur`, `voieCoup`, `voieTue`, `cadenceVoie`, `tirCharge`, `porteeVoie`, `soinK`, `bouclier`, `plonge`, `chargeRempart`) et l'ultime teinté (`teinteDe`, `teinte`, appelée par `hurtZ` pendant `S.ultEl`) | `VOIES`, `voieDe`, `voieNom`, `tirCharge` (interface) |
+| `voies.js` | 316 | Les voies du héros (`VOIES`, `voieDe`, `voieNom` ; leurs règles : `voieDegats`, `voieAcheve`, `voieJoueur`, `voieCoup`, `voieTue`, `cadenceVoie`, `tirCharge`, `porteeVoie`, `soinK`, `bouclier`, `bouclierMaree`, `bouclierAllie`, `plonge`, `chargeRempart`) et l'ultime teinté (`teinteDe`, `teinte`, appelée par `hurtZ` pendant `S.ultEl`) | `VOIES`, `voieDe`, `voieNom`, `tirCharge` (interface) |
 | `partie.js` | 343 | L'état d'une partie (`mkZ`, `newRun`), les journées (`startDay`, `dayEndStep`), la grille de voisinage (`gridBuild`, `gridEach`) | `newRun`, `startDay`, `MAXZ`, `J1` |
 | `degats.js` | 172 | Dégâts : zombies (`hurtZ`, `killZ`), explosions (`boom`), joueur (`hurtP`), ville (`hurtCity`), cloisons (`wallDmg`, `boomWalls`) | `killZ` (outil dev), `hurtZ` (tests) |
 | `zombies.js` | 135 | Le pas des zombies (`zombiesStep` : effets, hurleur, casseur, puis le pas selon l'état), feux au sol, `compact`, cadavres | — |
@@ -34,7 +34,7 @@ Dans l'ordre de `ordre.txt` (lignes après mise en forme prettier ; 18 fichiers 
 | `escalade.js` | 276 | Tyroliennes (`zipSpot`…), échelles des passerelles (`LADDERS`, `ladderAuto`), escalade (`climbSpot`, `startClimb`, `climbStep`) | `zipSpot`, `climbSpot` |
 | `capacites.js` | 181 | Missile, onde de choc, leurre, frappe aérienne ; ce qui est en vol (`projStep`) | `useMissile`, `useOnde`, `useLeurre`, `useAir` |
 | `boucle.js` | 55 | `step` : un pas de jeu | `step` |
-| `multi.js` | 1146 | V4.3, le multi : l'instantané de l'hôte (`encodeInstantane` / `appliqueInstantane`), le pas de l'invité (`stepInvite`), ses gestes en actions (`hurtInvite`, `skillInvite`…), les actions chez l'hôte (`appliqueActions`), la reprise (`reprendHote`) | `encodeInstantane`, `appliqueInstantane`, `stepInvite`, `appliqueActions`, `actionsInvite`, `reprendHote`, `hordeK` (interface) |
+| `multi.js` | 1423 | Le multi : l'instantané de l'hôte (`encodeInstantane` / `appliqueInstantane`), le pas de l'invité (`stepInvite`), ses gestes en actions (`hurtInvite`, `skillInvite`…), les actions chez l'hôte (`appliqueActions`), la reprise (`reprendHote`) | `encodeInstantane`, `appliqueInstantane`, `stepInvite`, `appliqueActions`, `actionsInvite`, `reprendHote`, `hordeK` (interface) |
 
 Ce qui est construit **au chargement**, dans cet ordre : l'immeuble (`BOX`, `FLOORS`…), `BBOX`, les grilles et les champs de marche,
 les routes (`ROADS` complétées), `SLOTS` (l'ordre des emplacements est leur numéro dans la sauvegarde), `SP` (escalier qui porte), `LADDERS`.
@@ -128,8 +128,8 @@ Coordonnées en mètres (repère de l'immeuble). Colonne « Sert à » : « aff 
 | `plonge` | `x0, z0, y` → `x1, y1, z1` | `plonge` (V4.9, Plongeur) | aff, int (son) |
 | `onde_roc` | `x, z, r` | `chargeRempart` (Avant-garde, à l'arrivée) | aff, int (son) |
 | `acheve` | `x, y, z` | `voieAcheve` (Lame, Exécution) | aff, int (son) |
-| `relance` | — | `useHeroSkill` (Escarmoucheur : l'Éclair relancé) | int (message) |
-| `bouclier` | — | `bouclier` (Soigneuse) | aff, int (son) |
+| `relance` | — | `useHeroSkill`, `skillInvite` (Escarmoucheur : la Fulgurance relancée) | int (message) |
+| `bouclier` | — | `bouclier` (Soigneuse : la sienne, et celle des alliés dans la Répulsion) | aff, int (son) |
 
 ## Glossaire des noms courts
 
@@ -234,7 +234,6 @@ c'est normal, mais seule la session principale décide de régénérer la réfé
 - Le cri du hurleur touche les zombies des cases de voisinage à ±12 m (un carré, sans vraie distance).
 - L'annonce d'une variante (`variant`) peut partir pour un zombie qui devient aussitôt un mastodonte.
 - « Ils arrivent » : à moins de 3 m, un zombie va droit sur le joueur et le mord même à travers une cloison (mode figé, laissé tel quel).
-- La branche « mode fuite » de `useOnde` n'est plus appelée par le jeu (les héros remplacent l'onde) ; seul `tests/simtest.js` s'en sert.
 - Événements que personne n'écoute : `climbed`, `zipend`, `jet`.
 
 ## V4.2 : le lobby dans les règles
@@ -285,7 +284,7 @@ météores, bombes, gardiens, orage, Déluge) avance ensuite chez l'hôte comme 
 
 **Chez l'invité** (`S.invite`) : `hurtZ` → `hurtInvite` (vie baissée ici, action `h`, à 0 : `killZ` local puis éteint 1,5 s, `Z.kt`) ;
 `useHeroSkill` → `skillInvite` (action `c` ; ici : le bond de Volt, le soin d'Ondine, les effets `maree` / `ronces` / `rempart` / `brasier0` /
-`eclair`, le refus du Rempart hors de la rue) ; `useHeroUlt` → `ultInvite` (action `u`, `hult`, soin du Déluge) ; `useLeurre` /
+`eclair`, le refus du Rempart hors de la rue ; la Relance de l'Escarmoucheur, jugée dans le miroir des zombies) ; `useHeroUlt` → `ultInvite` (action `u`, `hult`, soin du Déluge) ; `useLeurre` /
 `useAir` → actions `l` / `r` (événements `decoy`, `jet`) ; `plankStep` → action `k` ; `wallDmg` ne casse rien (événement `wallhit` seul).
 Les fantômes ne se touchent pas (`shootOne`, `flameShoot` les sautent).
 
@@ -299,12 +298,17 @@ orientation en 16es de tour, effets ; ~40 bits ≈ 7 caractères), jusqu'à 65 %
 (x / z à 1 m, hauteur et état s'il n'est pas au sol dehors, type ; ~26 bits ≈ 4 caractères). Jour 10 (1 600 actifs), 3 000 caractères :
 **266 proches** (jusqu'à ~38 m) **+ ~185 lointains** ; 1 500 caractères : 127 + 50 ; 6 000 : 544 + 489. Tout tient en proches tant qu'il y a
 moins de ~400 zombies (jour 4 : 246 zombies en 1 700 caractères).
+**Fin de chaîne (facultative, V5.6)** : s'il y a un élément choisi sur un effet, une explosion de sort ou la pluie du Déluge, un bit 1 puis 3 bits par
+objet (0 : l'élément d'origine, 1 à 6 : la clé de `ELKEYS`), dans l'ordre remparts, ronciers, gardiens, orages, explosions, Déluge. Sans élément choisi : aucun
+bit de plus (la chaîne est celle d'avant). Un décodeur plus ancien s'arrête après les zombies ; un reste abîmé est ignoré sans rejeter l'instantané.
+**Bouclier des alliés (V5.6)** : l'hôte ne connaît pas la vie des invités ; la Soigneuse publie `P.B = [numéro, x, y, z, rayon]` pendant 3 s (`S.mBouc`), chaque téléphone
+se pose le bouclier s'il est dans la zone (`bouclierAllie`, `multiBoucliers` dans interface/multi.js).
 
 **Ce que `appliqueInstantane` fait chez l'invité** : `S.day`, `S.phase`, `S.why`, `S.endless`, `S.dayT`, `S.heliT`, `S.city`, `S.mVilleMax`
 (la vie maxi de la ville de l'hôte : `S.P.hp` reste celle de l'invité, c'est aussi sa vie), `S.toSpawn`, `S.spawned`, `S.dayTotal`, `S.left`,
-`S.escaped`, `S.dayEsc`, `S.bossAt`, `S.P.mur`, `S.P.murH`, `S.flood`, `S.mRangK` ; `S.tur` (objets complets, gardés d'un instantané à l'autre ;
+`S.escaped`, `S.dayEsc`, `S.bossAt`, `S.P.mur`, `S.P.murH`, `S.flood`, `S.floodEc`, `S.mRangK` ; `S.tur` (objets complets, gardés d'un instantané à l'autre ;
 `t.mTire` : la tourelle tire) ; les planches (`setPlanks`, `S.plankVer`) ; les cloisons (`o.dead`, `S.wallVer`, marche recalculée) ;
-`S.decoy`, `S.ramparts`, `S.thorns`, `S.guards`, `S.storms` (mêmes objets d'un instantané à l'autre : l'affichage garde leur âge) ; les
+`S.decoy`, `S.ramparts`, `S.thorns`, `S.guards`, `S.storms` (avec leur `ec`, l'élément choisi du lanceur ; mêmes objets d'un instantané à l'autre : l'affichage garde leur âge) ; les
 zombies : proches actifs (`Z.fant = 0`) avec une cible `Z.mx / Z.my / Z.mz` (`MULTI.md` disait `Z.tx/ty/tz` : `Z.ty` est le type), la vie
 prise au plus bas des deux (la sienne baisse avant que l'hôte le sache) ; lointains en fantômes (`Z.fant = 1`) ; les places absentes
 éteintes ; `S.act`, `S.nAct`, `S.free` refaits. Événements poussés comme step l'aurait fait : `dawn` (+ `road`), `clear` (avec **la prime de

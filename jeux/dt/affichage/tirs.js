@@ -1,7 +1,7 @@
 // ===================== DERNIER TOIT — l'affichage : les tirs du joueur (dessin seulement : les règles sont dans regles/) =====================
 // Un tir ('shot') : recul de l'arme ; fusil, pistolet, assaut, sniper : éclair de bouche, traçante, sang ou poussière à l'impact ;
-// V3.9 fusil à pompe : gros éclair, fumée, la pompe qui recule et revient, une traçante fine par plomb ('pellet') ;
-// V3.9 lance-flammes : jet de flammes de la buse au point visé (12 tics par seconde), flammes écrasées sur les murs, veilleuse qui vacille.
+// Fusil à pompe : gros éclair, fumée, la pompe qui recule et revient, une traçante fine par plomb ('pellet') ;
+// Lance-flammes : jet de flammes de la buse au point visé (12 tics par seconde), flammes écrasées sur les murs, veilleuse qui vacille.
 // Rien n'est créé pendant une image : tout va dans les réserves de particules communes (fire, spark, smoke, pdust, dust, blood) et les traçantes,
 // avec un plafond ici ; aucune lumière ajoutée (la lueur de la buse est l'éclair de bouche G.vmFlash, teinté orange).
 // Attend des règles : les événements 'shot' (w, x, y, z, hit, kill, flame) et 'pellet' (x, y, z, hit), WEAP (kick, range), eyeP, viewDir.
@@ -10,9 +10,9 @@
 // un tir du joueur
 function tirEvent(ev, S) {
   G.recoil = (WEAP[ev.w] || WEAP.fusil).kick;
-  // V3.9 : le lance-flammes n'a ni éclair de bouche, ni traçante, ni impact de balle (voir flameTic)
+  // le lance-flammes n'a ni éclair de bouche, ni traçante, ni impact de balle (voir flameTic)
   if (ev.flame) flameTic(ev, S);
-  // V3.9 : le fusil à pompe (gros éclair, fumée, la pompe) ; ses plombs arrivent par 'pellet'
+  // le fusil à pompe (gros éclair, fumée, la pompe) ; ses plombs arrivent par 'pellet'
   else if (ev.w === 'pompe') pompeShot(ev, S);
   else {
     G.vmFlash.visible = true;

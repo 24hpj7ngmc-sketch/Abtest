@@ -53,7 +53,8 @@ const RENDUS = [
     id: 'visage',
     names: [modele],
     views: [
-      { az: 192, el: 4, d: 0.36, ty: 1.66, label: 'gros plan du visage' },
+      // cadré sur la tête (à 0,8 m de l'axe du héros, à hauteur des yeux), pas sur la boîte englobante : l'écharpe de Volt la décale
+      { az: 192, el: 4, abs: 1, dAbs: 0.8, ty: 1.66, label: 'gros plan du visage' },
       { az: 160, eye: 1.7, d: 1.6, ty: 1.1, label: 'vu par un coéquipier (œil à 1,70 m, 3,5 m)' }
     ],
     tw: 420,

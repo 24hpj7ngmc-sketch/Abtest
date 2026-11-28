@@ -155,7 +155,7 @@ function particulesInit() {
     smoke: mkPart(oct, new THREE.MeshLambertMaterial({ color: 0x55524e }), 400, 1.5),
     dust: mkPart(oct, new THREE.MeshLambertMaterial({ color: 0xa49478 }), 300, -6),
     shell: mkPart(oct, new THREE.MeshLambertMaterial({ color: 0x2a2c30 }), 60, 0),
-    // V1.5 : éclats de plâtre (plats), gravats, poussière de plâtre (nuage clair), échardes de bois (longues et fines)
+    // éclats de plâtre (plats), gravats, poussière de plâtre (nuage clair), échardes de bois (longues et fines)
     plaster: mkPart(oct, new THREE.MeshLambertMaterial({ color: 0xe6dfd1 }), 420, -11, [1, 0.28, 0.8]),
     rubble: mkPart(oct, new THREE.MeshLambertMaterial({ color: 0xbdb5a5 }), 260, -13, [1, 0.7, 0.9]),
     pdust: mkPart(

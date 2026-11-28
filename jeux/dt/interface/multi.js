@@ -10,7 +10,8 @@
 // Fournit : MULTI, nomPropre, multiInvite (boucle.js, commandes.js), multiAvant, multiTir, multiTick, multiHoteOccupe (boucle.js),
 // joueursDistants (affichage/joueurs.js : les autres joueurs à dessiner, positions lissées).
 // Utilise des règles (écrites dans regles/multi.js, appelées seulement si elles existent) : encodeInstantane, appliqueInstantane,
-// stepInvite, appliqueActions, reprendHote ; les champs S.invite, S.mActions, S.mSeq, S.nJoueurs ; HEROS, WEAP.
+// stepInvite, appliqueActions, actionsInvite, reprendHote, bouclierAllie, planCode / planLit, niveauxCode / niveauxLit, statsTourelles, mNb, mR2 ;
+// les champs S.invite, S.mActions, S.mSeq, S.nJoueurs ; HEROS, WEAP.
 // De l'interface : LOBBY, versLobby (lobby.js), toast, bigMsg, prepUI (hud.js), showEnd (menu.js), setTxt, S, running, tool, ov.
 
 // ---------------------------------------------------------------- l'état du multi
@@ -51,10 +52,6 @@ function nomPropre(s, defaut) {
 }
 // un identifiant (texte de 64 caractères au plus) ; '' s'il n'est pas utilisable
 const idPropre = v => (typeof v === 'string' ? v.slice(0, 64) : typeof v === 'number' && Number.isFinite(v) ? String(v) : '');
-// un nombre fini borné (sinon d)
-const nbPropre = (v, a, b, d) => (typeof v === 'number' && Number.isFinite(v) ? Math.max(a, Math.min(b, v)) : d);
-// arrondi à 2 décimales (l'état publié)
-const r2 = v => Math.round(v * 100) / 100;
 // ce que le joueur tient : l'arme (clé de WEAP) ou l'outil
 const MAINS = ['masse', 'marteau', 'leurre', 'frappe', 'grappin'];
 const mainPropre = w => (typeof w === 'string' && w.length <= 12 && (WEAP[w] || MAINS.includes(w)) ? w : 'fusil');
@@ -78,9 +75,20 @@ function etatPropre(d) {
       if (a.every((v, k) => k === 0 || (typeof v === 'number' && Number.isFinite(v)) || (typeof v === 'string' && v.length <= 16)))
         A.push(a.slice());
     }
+  // sa Répulsion qui protège les autres (Soigneuse) : [numéro, x, y, z, rayon], cinq nombres bornés, sinon rien
+  const B =
+    Array.isArray(p.B) && p.B.length === 5 && p.B.every(v => typeof v === 'number' && Number.isFinite(v))
+      ? [
+          Math.round(mNb(p.B[0], 0, 1e9, 0)),
+          mNb(p.B[1], -500, 500, 0),
+          mNb(p.B[2], -50, 200, 0),
+          mNb(p.B[3], -500, 500, 0),
+          mNb(p.B[4], 1, 30, 8)
+        ]
+      : null;
   // V4.6 : son plan de tourelles et ses niveaux de tourelles (regles/multi.js planLit, niveauxLit) : les deux, ou aucun
-  const T = typeof planLit === 'function' ? planLit(p.T) : null,
-    L = T && typeof niveauxLit === 'function' ? niveauxLit(p.L) : null;
+  const T = planLit(p.T),
+    L = T ? niveauxLit(p.L) : null;
   return {
     v: 1,
     p: {
@@ -95,15 +103,16 @@ function etatPropre(d) {
       e: typeof p.e === 'string' && ELKEYS.includes(p.e) ? p.e : '',
       // V5.2 : l'élément choisi de son héros (clé de ELKEYS, sinon vide : on prend alors sa clé de héros)
       eh: typeof p.eh === 'string' && ELKEYS.includes(p.eh) ? p.eh : '',
-      x: nbPropre(p.x, -500, 500, 0),
-      y: nbPropre(p.y, -50, 200, 0),
-      z: nbPropre(p.z, -500, 500, 0),
-      a: nbPropre(p.a, -1e4, 1e4, 0),
-      b: nbPropre(p.b, -2, 2, 0),
+      x: mNb(p.x, -500, 500, 0),
+      y: mNb(p.y, -50, 200, 0),
+      z: mNb(p.z, -500, 500, 0),
+      a: mNb(p.a, -1e4, 1e4, 0),
+      b: mNb(p.b, -2, 2, 0),
       f: p.f === 1 ? 1 : 0,
       dn: p.dn === 1 ? 1 : 0,
-      hp: nbPropre(p.hp, 0, 100, 100),
-      k: Math.round(nbPropre(p.k, 0, 1e7, 0)),
+      hp: mNb(p.hp, 0, 100, 100),
+      k: Math.round(mNb(p.k, 0, 1e7, 0)),
+      B,
       A
     },
     g: typeof d.g === 'string' && d.g.length <= MULTI.max ? d.g : null,
@@ -152,8 +161,8 @@ function multiPairs(liste, moi) {
     const etat = etatPropre(e.etat);
     j.nom = nomPropre(e.nom, etat ? etat.p.n : 'Joueur');
     j.heros = herosPropre(e.heros) || (etat ? etat.p.h : '');
-    j.rang = Math.round(nbPropre(e.rang, 1, 4, 1));
-    j.depuis = nbPropre(e.depuis, -Infinity, Infinity, Infinity);
+    j.rang = Math.round(mNb(e.rang, 1, 4, 1));
+    j.depuis = mNb(e.depuis, -Infinity, Infinity, Infinity);
     if (etat) {
       j.etat = etat;
       j.dernier = performance.now();
@@ -217,11 +226,28 @@ window.addEventListener('message', e => {
   multiPairs(m.liste, m.moi);
 });
 
+// la Répulsion d'une Soigneuse (voie a) protège aussi ceux qu'elle touche : chaque téléphone lit les annonces des autres (B de leur état) et,
+// pour chaque nouvelle, se pose le bouclier si son joueur est dans la zone (regles/voies.js : bouclierAllie). La première annonce vue d'un
+// joueur ne compte pas (elle date d'avant son arrivée).
+function multiBoucliers() {
+  if (!running) return;
+  for (const j of MULTI.pairs.values()) {
+    const b = j.etat ? j.etat.p.B : null;
+    if (!b) continue;
+    if (j.bVu === undefined) j.bVu = b[0];
+    else if (b[0] !== j.bVu) {
+      j.bVu = b[0];
+      bouclierAllie(S, b);
+    }
+  }
+}
+
 // ---------------------------------------------------------------- à chaque image, avant le pas des règles (boucle.js)
 // l'invité : marqué S.invite, il applique le dernier instantané reçu ; l'hôte : S.nJoueurs, reprise de la partie s'il vient d'être
 // invité (reprendHote), et les actions nouvelles des invités (appliqueActions). Rien sans multi.
 function multiAvant() {
   if (!MULTI.actif || !S) return;
+  multiBoucliers();
   if (!MULTI.hote) {
     if (!S.invite) {
       S.invite = true;
@@ -237,12 +263,11 @@ function multiAvant() {
   }
   // hôte
   if (S.invite) {
-    if (typeof reprendHote === 'function')
-      try {
-        reprendHote(S);
-      } catch (err) {
-        console.error('reprendHote', err);
-      }
+    try {
+      reprendHote(S);
+    } catch (err) {
+      console.error('reprendHote', err);
+    }
     S.invite = false;
     S.mTurSig = null; // ses tourelles et celles des autres seront reposées d'après les plans (plus d'après l'instantané)
   }
@@ -252,7 +277,7 @@ function multiAvant() {
     .filter(j => j.etat && j.etat.p.T)
     .sort((a, b) => a.depuis - b.depuis || (String(a.id) < String(b.id) ? -1 : 1));
   const sig = invT.map(j => j.id + ':' + j.etat.p.Ts + ':' + j.etat.p.Ls).join(';');
-  if (sig !== S.mTurSig && typeof statsTourelles === 'function') {
+  if (sig !== S.mTurSig) {
     S.mTurSig = sig;
     S.mTurInv = invT.map(j => ({ id: String(j.id).slice(0, 64), plan: j.etat.p.T, P: statsTourelles(j.etat.p.L) }));
     buildTurrets(S);
@@ -261,7 +286,7 @@ function multiAvant() {
   const inv = [];
   for (const j of MULTI.pairs.values()) if (j.etat) inv.push({ id: j.id, x: j.etat.p.x, y: j.etat.p.y, z: j.etat.p.z, dn: j.etat.p.dn });
   S.mInvites = inv;
-  if (S.phase === 'dead' || S.phase === 'won' || typeof appliqueActions !== 'function') return;
+  if (S.phase === 'dead' || S.phase === 'won') return;
   for (const j of MULTI.pairs.values()) {
     const A = j.etat ? j.etat.p.A : null;
     if (!A) continue;
@@ -286,7 +311,6 @@ function multiAvant() {
 // l'invité applique l'instantané g de l'hôte ; les changements de phase donnent les messages que l'hôte reçoit de ses événements ;
 // la fin de partie de l'hôte (phase dead / won) donne l'écran de fin, une fois, si la partie a été vue en cours depuis newGame
 function multiApplique(g) {
-  if (typeof appliqueInstantane !== 'function') return;
   const ph0 = S.phase;
   try {
     appliqueInstantane(S, g);
@@ -388,8 +412,7 @@ function multiPublie() {
   if (!MULTI.hote && Array.isArray(S.mActions)) {
     if (S.mActions.length > 32) S.mActions.splice(0, S.mActions.length - 32);
     // actionsInvite (regles/multi.js) : au plus 8 actions, closes une fois publiées, dans le budget
-    const L = typeof actionsInvite === 'function' ? actionsInvite(S, Math.max(300, MULTI.max - 700)) : S.mActions.slice(-8);
-    for (const a of L) A.push(a);
+    for (const a of actionsInvite(S, Math.max(300, MULTI.max - 700))) A.push(a);
   }
   const P = {
     n: MULTI.moi.nom,
@@ -397,19 +420,21 @@ function multiPublie() {
     w: tool === 'fusil' ? S.weap : tool,
     e: ELKEYS.includes(S.elArme) ? S.elArme : '',
     eh: ELKEYS.includes(S.elHeros) ? S.elHeros : '',
-    x: r2(p.x),
-    y: r2(p.y),
-    z: r2(p.z),
-    a: r2(p.yaw),
-    b: r2(p.pitch),
+    x: mR2(p.x),
+    y: mR2(p.y),
+    z: mR2(p.z),
+    a: mR2(p.yaw),
+    b: mR2(p.pitch),
     f: MULTI.tirT > 0 ? 1 : 0,
     dn: p.down > 0 || p.dead ? 1 : 0,
     hp: Math.round((Math.max(0, p.hp) / Math.max(1, p.hpMax)) * 100),
     k: S.runKills | 0,
     A
   };
+  // ma Répulsion de Soigneuse, 3 s après son lancement (regles/voies.js : bouclierMaree)
+  if (S.mBouc && S.t - S.mBoucT < 3) P.B = S.mBouc;
   // V4.6 : l'invité publie son plan de tourelles et ses niveaux de tourelles : l'hôte pose ses tourelles et les fait tirer pour lui
-  if (!MULTI.hote && typeof planCode === 'function') {
+  if (!MULTI.hote) {
     P.T = planCode(save.layout);
     P.L = niveauxCode(save.lv || {});
   }
@@ -429,7 +454,7 @@ function multiPublie() {
   }
   const base = JSON.stringify(d).length;
   if (base > MULTI.max) return; // (ne devrait pas arriver : P fait ~200 caractères)
-  if (MULTI.hote && MULTI.pairs.size && typeof encodeInstantane === 'function') {
+  if (MULTI.hote && MULTI.pairs.size) {
     // les invités (leurs places) : l'instantané garde d'abord les zombies proches d'eux et de l'hôte
     const invites = [];
     for (const j of MULTI.pairs.values()) if (j.etat) invites.push({ x: j.etat.p.x, y: j.etat.p.y, z: j.etat.p.z });

@@ -1,6 +1,6 @@
 // [lobby/taverne.js] La taverne et ses défis ; le panneau du renom.
 // ---- taverne : trois défis en cours, qui avancent à chaque partie. On vient y chercher la récompense ; un nouveau défi prend la place.
-// LES DÉFIS COMPTENT LES DEUX PORTAILS (V10.2) : kills, boss, waves, hard, obj se font sur l'île ; zomb, jours, secours sur le toit ; win et hero partout.
+// LES DÉFIS COMPTENT LES DEUX PORTAILS : kills, boss, waves, hard, obj se font sur l'île ; zomb, jours, secours sur le toit ; win et hero partout.
 const QT = {
   kills: { n: [80, 150, 250], g: [80, 130, 200], t: n => 'Élimine ' + n + " ennemis sur l'île" },
   boss: { n: [2, 4, 6], g: [90, 150, 220], t: n => 'Bats ' + n + " boss sur l'île" },

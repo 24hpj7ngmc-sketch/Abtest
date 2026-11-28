@@ -10,11 +10,12 @@ const {chromium}=require('playwright');const path=require('path'),fs=require('fs
 const [out,files,namesArg,...kv]=process.argv.slice(2);
 if(!out||!files||!namesArg){console.log('usage : node preview.js <sortie.png> <fichier(s).js> <nom[,nom]> [clé=valeur …]');process.exit(1);}
 const opt={};for(const a of kv){const i=a.indexOf('=');opt[a.slice(0,i)]=a.slice(i+1);}
-let names=namesArg.split(','),ctxs=names.map(()=>({}));const pass=Object.assign({},opt);for(const k of['views','t','tw','th','cols','bg','ground','ref','spacing','fov','pathX','zoom','fp'])delete pass[k];
+let names=namesArg.split(','),ctxs=names.map(()=>({}));const pass=Object.assign({},opt);for(const k of['views','t','tw','th','cols','bg','ground','ref','spacing','fov','pathX','zoom','fp','ty','dabs'])delete pass[k];
 if(opt.el==='all'){const E=['feu','eau','bois','terre','elec'],n0=names[0];names=E.map(()=>n0);ctxs=E.map(e=>Object.assign({},pass,{el:e}));}else ctxs=names.map(()=>Object.assign({},pass));
 const V={hero:{az:25,eye:1.7,d:1.25,dAdd:2.5,label:'vue du joueur (œil à 1,70 m)'},back:{az:205,el:22,d:1.7,label:'trois quarts arrière'},side:{az:90,el:6,d:1.6,label:'profil'},close:{az:12,el:8,d:.75,label:'gros plan de face'},
-  top:{az:20,el:62,d:1.9,label:'vue de dessus'},large:{az:35,el:18,d:3.2,label:'vue large'},front:{az:0,el:5,d:1.5,label:'face'},portrait:{az:158,el:6,d:1.15,label:'portrait'}};
+  top:{az:20,el:62,d:1.9,label:'vue de dessus'},large:{az:35,el:18,d:3.2,label:'vue large'},front:{az:0,el:5,d:1.5,label:'face'},portrait:{az:158,el:6,d:1.15,label:'portrait'},tete:{az:158,el:6,abs:1,dAbs:1.29,ty:1.76,label:'portrait cadré sur la tête'}};
 let views=(opt.views||'hero,back,side,close').split(',').flatMap(n=>n==='turn'?[0,45,90,135,180,225,270,315].map(a=>({az:a,el:14,d:1.6,label:'angle '+a+'°'})):[V[n]||V.hero]);
+if(opt.ty)views.forEach(v=>{if(v.abs){v.ty=+opt.ty;v.dAbs=+opt.dabs;}});
 const cfg={names,ctxs,views,t:+opt.t||0,cols:opt.cols?+opt.cols:(views.length>4?4:2),tw:opt.tw?+opt.tw:(views.length>4?400:560),th:opt.th?+opt.th:(views.length>4?300:380)};
 if(opt.bg)cfg.bg=parseInt(opt.bg,16);if(opt.ground==='0')cfg.ground=false;if(opt.ref==='0')cfg.ref=false;if(opt.spacing)cfg.spacing=+opt.spacing;if(opt.fp){cfg.fp=opt.fp.split(',').map(Number);cfg.tw=844;cfg.th=390;cfg.ref=false;}if(opt.fov)cfg.fov=+opt.fov;if(opt.zoom)cfg.zoom=+opt.zoom;if(opt.pathX)cfg.pathX=+opt.pathX;
 (async()=>{const dir=__dirname,b=await chromium.launch({args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});const p=await b.newPage({viewport:{width:1200,height:800}});const errs=[];

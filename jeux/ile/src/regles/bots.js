@@ -216,12 +216,12 @@ function botThink(s, o, dt) {
         const w = ok ? '' : checkDig(s, j.a[0], j.a[1], j.b[0], j.b[1]).why;
         if (w && !j.op && !j.row && !/ennemi|Enfermerait/.test(w))
           botLaneInfo(s, j.L === undefined ? L : j.L).noD = true;
-      } // V2.0 : un chantier raté faute d'or (l'or promis dépensé ailleurs entre-temps) n'est plus rayé pour toujours : seul un refus du terrain l'est
+      } // un chantier raté faute d'or (l'or promis dépensé ailleurs entre-temps) n'est plus rayé pour toujours : seul un refus du terrain l'est
       if (!ok && j.op && ++j.op.fail > 8) j.op.dead = true;
       if (ok) {
         const spent = g0 - (s.mode === 'normal' ? s.pot : s.gold),
           tr = j.k === 'wl' || j.k === 'dg',
-          back = tr ? Math.round(spent * BOTT.rab) : 0; // V2.0 : un bot qui terrasse ne paie que les matériaux
+          back = tr ? Math.round(spent * BOTT.rab) : 0; // un bot qui terrasse ne paie que les matériaux
         if (s.mode === 'normal') s.pot += back;
         else s.gold += back;
         s.bspend = s.bspend || { t: 0, d: 0 };

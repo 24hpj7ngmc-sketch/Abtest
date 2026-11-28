@@ -170,7 +170,7 @@ function viewsTick(dt, now, h) {
     b => {
       const m = new THREE.Mesh(shotG, elBasic[b.el]),
         s = new THREE.Sprite(glowE[b.el]);
-      m.userData.gs = 1.7 + Math.min(5, b.ug || 0) * 0.32; // V2.0 : plus l'arme est améliorée, plus la balle brille
+      m.userData.gs = 1.7 + Math.min(5, b.ug || 0) * 0.32; // plus l'arme est améliorée, plus la balle brille
       s.scale.setScalar(m.userData.gs);
       m.add(s);
       scene.add(m);
@@ -180,7 +180,7 @@ function viewsTick(dt, now, h) {
     },
     (b, v) => {
       v.position.set(b.x, b.y, b.z);
-      // près de la caméra, le halo de nos propres balles reste petit : avec cadence et tirs multiples, il faisait une tache au viseur (audit écran n° 10)
+      // près de la caméra, le halo de nos propres balles reste petit : avec cadence et tirs multiples, il faisait une tache au viseur
       if (b.mine) {
         const d = Math.hypot(b.x - camera.position.x, b.y - camera.position.y, b.z - camera.position.z);
         v.children[0].scale.setScalar(v.userData.gs * Math.min(1, 0.2 + d / 14));

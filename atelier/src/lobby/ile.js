@@ -1,11 +1,10 @@
 // [lobby/ile.js] L'Île des Cinq derrière le premier portail : le jeu tourne dans son cadre (ile/ile-pour-lobby.js) ; le lobby l'ouvre, lui donne ses bonus, paie au message « fin », fait le facteur du multi.
-// ---- L'Île des Cinq est un mini-jeu à part (V11.0) : son code vit dans son propre atelier, et arrive ici en un seul fichier collé tel quel, ile/ile-pour-lobby.js (variable IleDesCinq).
+// ---- L'Île des Cinq est un mini-jeu à part : son code vit dans son propre atelier, et arrive ici en un seul fichier collé tel quel, ile/ile-pour-lobby.js (variable IleDesCinq).
 // Le contrat est dans ile/LOBBY.md. Le lobby garde tout ce qui dure : or céleste, éclats, arbres des héros et des armes, campagne, défis, butin, réglages. Le jeu n'écrit aucune sauvegarde.
 //  · à l'ouverture, le lobby donne : héros, arme, mode ou niveau de campagne, bonus (arbres), préparatifs du village, bourse, réglages, barème (pour le Guide du jeu) ;
 //  · à chaque partie finie, le jeu dit ce qui s'est passé (« fin ») : le lobby paie avec le barème commun (payOut), puis répond ce qu'il a donné (IleDesCinq.paie), que le jeu affiche ;
 //  · « Retour sur l'île » dans le jeu : le cadre se retire, on se réveille devant le portail.
 // Rien de ce qui vient du jeu n'est cru sur parole : chaque nombre est borné (une partie ne peut pas rapporter plus que vingt vagues gagnées).
-const ileOk = () => typeof IleDesCinq === 'object' && !!IleDesCinq && typeof IleDesCinq.ouvrir === 'function';
 let IR = null, // la visite en cours : { el, n : parties finies, pret, gold, sh }
   ileT = 0;
 // ce qu'un héros emporte avec une arme : son arbre, les cases de l'arme (générales et celles de ce jeu), la branche de son élément. Le profil de base de l'arme, lui, appartient au jeu.
@@ -15,16 +14,13 @@ function ileMods(el, w) {
   if (WT[w] && WT[w].games.includes('ile'))
     for (const n of WT[w].nodes.concat(WT[w].gt && WT[w].gt.ile ? WT[w].gt.ile.nodes : []))
       m[n.key] = (m[n.key] || 0) + (save.wl[w][n.id] || 0) * n.inc;
-  // l'arbre « Élément des balles » : les six branches dès que le jeu dit lire l'élément de chaque arme ('elements' dans IleDesCinq.accepte, V2.1 : il n'applique que celle de l'arme en main) ; sinon la seule branche du héros, comme avant
-  if (ileOk() && Array.isArray(IleDesCinq.accepte) && IleDesCinq.accepte.includes('elements')) {
-    for (const e of HEROS) elMods(e, m);
-    return m;
-  }
-  return elMods(elH(el), m);
+  // l'arbre « Élément des balles » : les six branches partent, le jeu n'applique que celle de l'arme en main
+  for (const e of HEROS) elMods(e, m);
+  return m;
 }
 function ileOpts(el, x) {
   const mods = {};
-  for (const e of HEROS.filter(e => jeuHeros(typeof IleDesCinq === 'object' ? IleDesCinq : null, e))) {
+  for (const e of HEROS) {
     mods[e] = {};
     for (const w of armsOf('ile')) mods[e][w] = ileMods(e, w);
   }
@@ -42,10 +38,10 @@ function ileOpts(el, x) {
   return Object.assign(
     {
       heros: el,
-      // V12.9 : l'élément choisi du héros (sa clé tant qu'il n'a rien choisi) ; un jeu qui le lit l'annonce par 'elHeros' dans accepte
+      // l'élément choisi du héros (sa clé tant qu'il n'a rien choisi)
       elHeros: elH(el),
       arme: A.includes(tWeap) ? tWeap : A[0],
-      // V12.1 : le rôle du héros et l'élément choisi pour chaque arme, pour les jeux qui sauront les lire
+      // le rôle du héros, sa voie, l'élément choisi pour chaque arme
       role: ROLE[el],
       voie: voieOf(el) ? { id: voieOf(el), nom: VOIES[el][voieOf(el)].n } : null,
       elements: A.reduce((o, w) => ((o[w] = wEl(w, el)), o), {}),
@@ -64,15 +60,7 @@ function ileOpts(el, x) {
 // passer le premier portail : x = { tuto: true } pour la partie guidée
 function ileGo(el, x) {
   if (!HEROS.includes(el)) el = tHero;
-  if (!ileOk()) {
-    toast("L'Île des Cinq n'est pas dans cette page");
-    return;
-  }
-  if (!jeuHeros(IleDesCinq, el)) {
-    toast(EL[el].hero + " n'est pas encore dans L'Île des Cinq");
-    return;
-  }
-  if (IleDesCinq.ouvert || (typeof DernierToit === 'object' && DernierToit.ouvert)) return;
+  if (IleDesCinq.ouvert || DernierToit.ouvert) return;
   {
     let mx = 0;
     if (net.room)
@@ -278,7 +266,7 @@ function ileNet(now) {
     L.push({
       id: String(p.peer),
       nom: nmClean(pr.nm),
-      heros: jeuHeros(IleDesCinq, pr.el) ? pr.el : 'feu',
+      heros: HEROS.includes(pr.el) ? pr.el : 'feu',
       rang: 1,
       depuis: +pr.tt,
       etat

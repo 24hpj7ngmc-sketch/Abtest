@@ -77,7 +77,7 @@ function flosTick(dt) {
 
 // ---------------------------------------------------------------- l'interface pendant la partie
 // le bouton du haut à droite : « Améliorations » entre deux jours (« Ils arrivent ») ;
-// V3.5 : en mode fuite, les améliorations s'achètent aux boutiques (toit, rez-de-chaussée) :
+// en mode fuite, les améliorations s'achètent aux boutiques (toit, rez-de-chaussée) :
 // « Boutique » n'apparaît qu'à côté d'une boutique, à tout moment
 function treeBtn() {
   const btn = $('bTree');
@@ -99,7 +99,7 @@ function treeBtn() {
       btn.textContent = 'Améliorations';
     }
   }
-  // V4.5 (comme le Marchand de L'Île des Cinq V1.2) : le bouton pâlit quand rien n'est achetable, et se dore sinon.
+  // (comme le Marchand de L'Île des Cinq) : le bouton pâlit quand rien n'est achetable, et se dore sinon.
   // Recalculé seulement quand l'argent ou l'arbre changent.
   if (!btn.hidden) {
     let niveaux = 0;
@@ -133,7 +133,7 @@ function uiTick(dt) {
     setTxt('sCity', 'b', String(Math.ceil(S.city)));
     $('sCity').classList.toggle('low', S.city < ((S.invite && S.mVilleMax) || S.P.hp) * 0.3);
   }
-  // V4.5 (écran au modèle de L'Île des Cinq V1.2) : en mode fuite, la vie n'est plus qu'une barre fine sous la barre d'outils ;
+  // (écran au modèle de L'Île des Cinq) : en mode fuite, la vie n'est plus qu'une barre fine sous la barre d'outils ;
   // le chiffre reste en haut dans « Ils arrivent », où la vie du joueur est la partie
   $('sHp').hidden = S.mode === 'out';
   setTxt('sHp', 'b', String(Math.ceil(p.hp)));

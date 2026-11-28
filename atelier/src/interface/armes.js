@@ -1,6 +1,6 @@
 // [interface/armes.js] Les six armes : profils, arbres (Général, par mini-jeu, Élément des balles), ce qu'une arme apporte dans un jeu (armMods).
 // ---------- un arbre par arme : amélioré à la salle d'armes, payé en or céleste, valable pour tous les héros ----------
-// LES ARMES APPARTIENNENT AU JOUEUR (V8.7) : une arme se monte une fois, à la salle d'armes, et garde son arbre partout. Chaque mini-jeu accepte certaines armes :
+// LES ARMES APPARTIENNENT AU JOUEUR : une arme se monte une fois, à la salle d'armes, et garde son arbre partout. Chaque mini-jeu accepte certaines armes :
 // `games` liste les jeux où l'arme sert (identifiants de LGAMES, dans lobby/terrain.js). Une case qui n'a de sens que dans un jeu porte `only` (ajouté après la création).
 // Pour une nouvelle arme : une entrée ici avec ses `games`. Pour un nouveau mini-jeu : l'ajouter aux `games` des armes qu'il accepte, et lire leurs cases avec armMods(jeu).
 const WT = {
@@ -86,7 +86,7 @@ const WT = {
     ]
   }
 };
-// TROIS ARBRES PAR ARME (V9.0, demande de Frédéric) : « Général » (WT[arme].nodes, vaut dans tous les mini-jeux), un arbre par mini-jeu qui accepte l'arme (WT[arme].gt[jeu]), et « Élément » (ET, plus bas).
+// TROIS ARBRES PAR ARME : « Général » (WT[arme].nodes, vaut dans tous les mini-jeux), un arbre par mini-jeu qui accepte l'arme (WT[arme].gt[jeu]), et « Élément » (ET, plus bas).
 // L'arbre de L'Île des Cinq : la Marque (case m1, venue de l'arbre général : même identifiant, la sauvegarde ne bouge pas), les boss, la prime. Ses cases se gardent avec les autres dans save.wl[arme].
 const ileTree = (mk, mc, mb) => ({
   br: {
@@ -139,7 +139,7 @@ const ileTree = (mk, mc, mb) => ({
     )
   ]
 });
-// L'arbre de Dernier Toit (V10.1) : trois cases qui ne comptent que derrière le deuxième portail ; elles partent dans les « bonus » passés au jeu (toitBonus, lobby/toit.js).
+// L'arbre de Dernier Toit : trois cases qui ne comptent que derrière le deuxième portail ; elles partent dans les « bonus » passés au jeu (toitBonus, lobby/toit.js).
 const toitTree = () => ({
   br: {
     a: { a: -90, c: '#ffcf5a', n: 'Calibre' },
@@ -368,7 +368,7 @@ WT.lance.nodes = WT.lance.nodes
 if (!save.wl || typeof save.wl !== 'object') save.wl = {};
 for (const w in WT) if (!save.wl[w] || typeof save.wl[w] !== 'object') save.wl[w] = {};
 // L'ÉLÉMENT DES BALLES (V9.0, revu en V12.1) : les balles prennent l'élément de l'arme (avant la V12.1 : celui du héros joué). Cet arbre le renforce, une branche par élément ;
-// seule la branche de l'élément de l'arme agit en partie (dans les jeux collés qui ne lisent pas encore l'élément de l'arme : celle du héros). Il est commun à toutes les armes (save.we), payé en or céleste. Roc n'avait aucun effet sur ses balles : ses deux cases en créent un.
+// seule la branche de l'élément de l'arme agit en partie. Il est commun à toutes les armes (save.we), payé en or céleste. Roc n'avait aucun effet sur ses balles : ses deux cases en créent un.
 const ET = {
   title: 'Élément des balles',
   unit: 'or céleste',
@@ -506,9 +506,9 @@ const ET = {
     )
   ]
 };
-// L'ÉLÉMENT DE CHAQUE ARME (V12.1) : il se choisit à la salle d'armes ou au portail, arme par arme ; tant qu'on n'a rien choisi, l'arme prend l'élément choisi du héros joué (V12.9 ; sa clé tant qu'il n'a pas choisi).
+// L'ÉLÉMENT DE CHAQUE ARME : il se choisit à la salle d'armes ou au portail, arme par arme ; tant qu'on n'a rien choisi, l'arme prend l'élément choisi du héros joué (V12.9 ; sa clé tant qu'il n'a pas choisi).
 if (!save.wel || typeof save.wel !== 'object') save.wel = {};
-// V12.9 : l'ÉLÉMENT CHOISI D'UN HÉROS (save.hel[héros], vide = sa clé, donc une ancienne sauvegarde ne change rien). La clé reste son identité (kit, voies, rôle, nom, modèle, records) ;
+// l'ÉLÉMENT CHOISI D'UN HÉROS (save.hel[héros], vide = sa clé, donc une ancienne sauvegarde ne change rien). La clé reste son identité (kit, voies, rôle, nom, modèle, records) ;
 // l'élément choisi sert partout où elle servait d'élément : couleurs, prédilection, élément par défaut des armes, branche d'élément. Gratuit, réversible.
 if (!save.hel || typeof save.hel !== 'object') save.hel = {};
 const elH = h => (HEROS.includes(save.hel[h]) ? save.hel[h] : HEROS.includes(h) ? h : 'feu');
@@ -545,7 +545,7 @@ function welRow(id, w, redraw) {
         })
     );
 }
-// la rangée « Son élément » d'un héros, au Hall (V12.9) : les six éléments en pastilles, le sien (sa clé) marqué d'une étoile
+// la rangée « Son élément » d'un héros, au Hall : les six éléments en pastilles, le sien (sa clé) marqué d'une étoile
 function helRow(id, h, redraw) {
   const cur = elH(h);
   $(id).innerHTML =
@@ -645,7 +645,7 @@ for (const e of HEROS) {
   };
   HT[e].base = nodes;
 }
-// LES SPÉCIALISATIONS (V12.2) : la voie choisie au Hall ajoute sa branche (deux cases) à l'arbre du héros. Changer de voie ne rembourse rien et ne fait rien perdre :
+// LES SPÉCIALISATIONS : la voie choisie au Hall ajoute sa branche (deux cases) à l'arbre du héros. Changer de voie ne rembourse rien et ne fait rien perdre :
 // les cases de l'autre voie restent dans la sauvegarde et reviennent avec elle. Le seuil se compte sur les cases de base, pour qu'une voie ouverte le reste.
 if (!save.voie || typeof save.voie !== 'object') save.voie = {};
 const hBase = e => HT[e].base.reduce((a, n) => a + (save.hl[e][n.id] || 0), 0),

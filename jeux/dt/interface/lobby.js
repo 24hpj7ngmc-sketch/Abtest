@@ -1,13 +1,9 @@
-// lobby.js — V4.1 : Dernier Toit lancé depuis le lobby, dans un cadre (iframe). Le contrat complet est dans LOBBY.md (racine).
+// lobby.js — Dernier Toit lancé depuis le lobby, dans un cadre (iframe). Le contrat complet est dans LOBBY.md.
 // Le lobby colle la page de Dernier Toit dans une iframe (srcdoc) et pose, avant tout script, window.DT_LOBBY = { heros, arme, jour,
-// bonus, encoche }. Dans ce cas : pas de menu de départ (le lobby en tient lieu), la partie démarre tout de suite en « Ils s'échappent »,
-// chaque partie finie est envoyée au lobby (message « fin »), et « Retour au lobby » remplace « Menu » à l'écran de fin (message « retour »).
-// Sans window.DT_LOBBY (la page seule), rien ne change.
-// V4.2 (demande du lobby, claude/demande-dernier-toit-synchro.md) : le rang (vie des zombies), la bourse (argent de départ), tout l'arbre
-// du héros et l'élément de ses balles (S.hm), les niveaux affichés à l'écran de fin ; « pret » à chaque nouvelle partie ; dans « fin » :
-// depart, boss, duree, chutes, dev. La liste de ce qui est lu est DernierToit.accepte (pont-lobby.js) : la tenir à jour.
-// V4.8 (claude/demande-dernier-toit-roles-elements.md) : opts.elementArme (l'élément de l'arme : ses balles, la prédilection), Zéphyr.
-// V4.9 : opts.voie (la voie du héros, regles/voies.js).
+// bonus, encoche, … }. Dans ce cas : pas de menu de départ (le lobby en tient lieu), la partie démarre tout de suite en « Ils s'échappent »,
+// « pret » part à chaque nouvelle partie, « fin » à chaque partie finie, et « Retour au lobby » remplace « Menu » à l'écran de fin.
+// Sans window.DT_LOBBY (la page seule, toit.html), rien ne change. Ce que le jeu lit des options est annoncé par DernierToit.accepte
+// (pont-lobby.js) : la tenir à jour.
 // Fournit : LOBBY (les options reçues, ou null), lobbyPret (appelé par boucle.js au lancement), lobbyPartie (newGame), lobbyFin (showEnd),
 // lobbyLigne (l'écran de fin).
 // Utilise des règles : HEROS, WEAP, bonusLobby (regles/arbre.js) ; de l'interface : save, newGame, startDays, store.
@@ -125,8 +121,8 @@ function lobbyFin(won) {
     rang: rangLobby,
     dev: !!S.devUse,
     // V4.3 : la partie à plusieurs : joueurs sur le toit à la fin (1 en solo), et si ce téléphone était l'hôte
-    joueurs: typeof MULTI === 'object' && MULTI && MULTI.actif ? 1 + MULTI.pairs.size : 1,
-    hote: !(typeof MULTI === 'object' && MULTI && MULTI.actif && !MULTI.hote),
+    joueurs: MULTI.actif ? 1 + MULTI.pairs.size : 1,
+    hote: !(MULTI.actif && !MULTI.hote),
     sansFin: !!S.endless,
     raison: won ? 'secouru' : S.abandon ? 'abandon' : S.why === 'joueur' ? 'envahi' : S.mode === 'out' ? 'ville' : 'submerge',
     heros: S.hero,

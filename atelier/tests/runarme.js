@@ -31,6 +31,11 @@ const {chromium}=require('playwright');const path=require('path');const broker=r
  await A.waitForTimeout(1100);const rf=await G(A,()=>{const L=__g().LA,o=L.g;return{ins:L.ins,x:o.position.x,ry:o.rotation.y};});
  ok('au bout d\'environ 1,5 s elle est revenue',rf.ins===-1&&Math.abs(rf.ry-r0[1])<.05&&Math.abs(rf.x-r0[0])<.02,rf);
  ok('pas de tir au lobby : Action n\'a rien tiré, aucune erreur',await G(A,()=>!(window.__mdlErr||[]).length));
+ // ---------- l'arme ne traverse pas les murs ----------
+ const mur=await G(A,async()=>{const g=__g(),sleep=ms=>new Promise(r=>setTimeout(r,ms)),B=g.save.vil.find(b=>!g.CAT[b.t].pass&&b.t!=='hall');if(!B)return null;const R=g.lobCercles().find(o=>o[0]===B.x&&o[1]===B.z)[2];
+   g.LB.pitch=0;g.LB.x=B.x;g.LB.z=B.z+R+0.3;g.LB.yaw=0;await sleep(500);const contre={near:g.LA.near,z:g.LA.g.position.z};
+   g.LB.yaw=Math.PI;await sleep(500);const dos={near:g.LA.near,z:g.LA.g.position.z};return{contre,dos,R};});
+ ok('arme contre un bâtiment : elle recule vers la caméra ; dos au bâtiment : elle revient',mur&&mur.contre.near>.6&&mur.contre.z>mur.dos.z+.3&&mur.dos.near<.05,mur);
  // ---------- la course comme dans Dernier Toit ----------
  const run=await G(A,async()=>{const g=__g(),sleep=ms=>new Promise(r=>setTimeout(r,ms));let steps=0;const p0=g.SND.play;g.SND.play=n=>{if(n==='step')steps++;return p0.call(g.SND,n);};
    const base={fov:g.lcam.fov,ry:g.LA.g.rotation.y,rx:g.LA.g.rotation.x,y:g.LA.g.position.y};g.LB.pitch=0;

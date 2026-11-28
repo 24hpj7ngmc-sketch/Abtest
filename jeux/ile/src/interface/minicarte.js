@@ -152,7 +152,7 @@ function drawMini(mg, px, big) {
     mg.fillText(t.els.length, a, b + (t.type === 'archer' ? 6 : 4.5));
   }
   if (sim.phase === 'prep' && sim.next && sim.next.length) {
-    // l'aperçu sur la côte (V2.0) : l'arc d'où ils viendront, coloré selon les éléments annoncés (un trait par ennemi, éléments mêlés)
+    // l'aperçu sur la côte : l'arc d'où ils viendront, coloré selon les éléments annoncés (un trait par ennemi, éléments mêlés)
     const A = sim.varc || [0, 6.2832],
       gs = sim.next.filter(g => !g.boss),
       cols = [];
@@ -211,7 +211,7 @@ function drawMini(mg, px, big) {
     mg.beginPath();
     mg.arc(X(e.x), Z(e.z), e.boss ? 8 : e.bomb ? 6 : 5, 0, 7);
     mg.fill();
-    // un contour sombre : un Bois sur l'herbe ou un Terre sur un chemin restent visibles (audit écran n° 3) ; les bombes gardent le leur, blanc
+    // un contour sombre : un Bois sur l'herbe ou un Terre sur un chemin restent visibles ; les bombes gardent le leur, blanc
     mg.strokeStyle = e.bomb ? '#fff' : '#10202a';
     mg.lineWidth = 2;
     mg.stroke();

@@ -414,7 +414,8 @@ function pDown(e) {
     joy.id = e.pointerId;
     joy.x0 = x;
     joy.y0 = y;
-    $('joy').classList.add('on'); // V4.5 : le joystick, à peine visible au repos, s'allume sous le pouce (comme L'Île des Cinq V1.2)
+    // le joystick, à peine visible au repos, s'allume sous le pouce (comme dans L'Île des Cinq)
+    $('joy').classList.add('on');
     return;
   }
   looks[e.pointerId] = { x, y };

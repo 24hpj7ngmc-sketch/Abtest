@@ -3,7 +3,7 @@
 // ou p.zip (tyrolienne : une position le long du câble). Pendant l'escalade, pas de collision et pas de tir.
 // Fournit aux autres dossiers : zipSpot, climbSpot (interface : nom du bouton Saut) ; LADDERS (tests).
 
-// ---------------------------------------------------------------- V3.6 : les tyroliennes (mode fuite)
+// ---------------------------------------------------------------- les tyroliennes (mode fuite)
 // Au pied d'un poteau (toit ou passerelle), face au câble : Saut devient « Tyrolienne ». On glisse dans les deux sens, on peut tirer, Saut = lâcher.
 function zipSpot(S) {
   const p = S.p;
@@ -120,7 +120,7 @@ function passSpot(S) {
   }
   return null;
 }
-// V3.7 : les échelles des passerelles, comme de vraies échelles : on marche dedans (joystick vers l'échelle) et on monte tout seul ;
+// les échelles des passerelles, comme de vraies échelles : on marche dedans (joystick vers l'échelle) et on monte tout seul ;
 // sur la passerelle, au-dessus d'une échelle, on pousse vers le vide et on descend. Une échelle à chaque pied (quatre par passerelle).
 const LADDERS = [];
 for (const zl of ZIPS)
@@ -139,7 +139,7 @@ for (const zl of ZIPS)
         down: [P(s * 1.05, PASSY + 1.15), P(s * 1.75, PASSY + 0.6), P(s * 1.75, 0.25), P(s * 1.95, 0)]
       });
     }
-// V3.7 : au pied d'une échelle (à 0,95 m), le joystick vers elle pendant 0,12 s : on monte tout seul ; en haut, vers le vide : on descend
+// au pied d'une échelle (à 0,95 m), le joystick vers elle pendant 0,12 s : on monte tout seul ; en haut, vers le vide : on descend
 function ladderAuto(S, dt, tx, tz, m) {
   const p = S.p;
   if (S.mode !== 'out' || !p.ground || m < 0.45) {
@@ -164,7 +164,7 @@ function ladderAuto(S, dt, tx, tz, m) {
   p.ladT = 0;
   return false;
 }
-// ---------------------------------------------------------------- V3.4 : l'escalade
+// ---------------------------------------------------------------- l'escalade
 // L'escalade (à débloquer : Survie → Escalade ; mode fuite) : au bord du toit ou d'un balcon, regarder vers le bas et Saut = descendre d'un étage
 // (balcon du dessous, ou la rue depuis le 1er) ; sur un balcon ou dans la rue au pied de l'immeuble, regarder vers le haut et Saut = monter d'un étage.
 // renvoie le geste possible ici ({ dir : 1 monter / −1 descendre, P : les points du chemin, free : sans l'Escalade }), ou null

@@ -2,7 +2,7 @@
 // deux mémoires de la boucle d'affichage (interface/boucle.js) : le marchand est-il à portée, et les points du joueur à la dernière image
 let shopNear = false,
   lastPts = 0;
-// ---------- LE GUIDE, PARTOUT (V10.3) : un seul panneau (#guideV) sert au Guide du lobby (ses sujets, lobby/guide.js) et au même personnage en « Règles » dans chaque mini-jeu.
+// ---------- LE GUIDE, PARTOUT : un seul panneau (#guideV) sert au Guide du lobby (ses sujets, lobby/guide.js) et au même personnage en « Règles » dans chaque mini-jeu.
 // Une fiche de règles est toujours rangée pareil, cinq onglets dans cet ordre : Le but · Perdre · Commandes · Ce jeu · Ce que ça rapporte.
 // guideShow(titre, onglets, i, bouton) : onglets = [[nom, [[titre de ligne, texte], …]], …] ; bouton = [texte, fonction] facultatif, à gauche de « Retour ».
 let guTab = 0;
@@ -229,7 +229,7 @@ function rulesOpen() {
   }
   rulesShow();
 }
-// la fiche, d'où qu'on l'ouvre : près du Guide, depuis le ciel (bouton « Règles »), depuis les options de la carte (audit écran n° 6)
+// la fiche, d'où qu'on l'ouvre : près du Guide, depuis le ciel (bouton « Règles »), depuis les options de la carte
 function rulesShow() {
   if (!running) return;
   $('mapV').hidden = true;

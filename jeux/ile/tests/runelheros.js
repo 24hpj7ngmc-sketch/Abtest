@@ -182,7 +182,7 @@ const path = require('path');
         '\nwindow.IleDesCinq=IleDesCinq;</script></body>'
     );
     const v = await p.evaluate(() => ({ v: IleDesCinq.version, a: IleDesCinq.accepte.includes('elHeros') }));
-    ok('IleDesCinq.accepte contient elHeros ; version ' + v.v, v.a && v.v === 'V2.8');
+    ok('IleDesCinq.accepte contient elHeros ; version ' + v.v, v.a && v.v === 'V2.9');
     await ctx.close();
   }
   console.log('ratés', bad, '· erreurs', errs.length);

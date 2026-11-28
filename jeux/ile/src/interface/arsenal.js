@@ -1,4 +1,4 @@
-// [interface/arsenal.js] Tes armes dans la partie (V2.0) : le choix de 3 armes et de leur élément au début, le marchand d'armes, les effets des améliorations à l'écran, et ce que le multi en dit.
+// [interface/arsenal.js] Tes armes dans la partie : le choix de 3 armes et de leur élément au début, le marchand d'armes, les effets des améliorations à l'écran, et ce que le multi en dit.
 // Les règles (éléments des balles, améliorations, prix) sont dans regles/armes.js. Ici : l'état de la page pour soi (arsenal, armUp), les écrans, les effets.
 const WTK = Object.keys(WT),
   WDESC = {
@@ -61,7 +61,7 @@ function armApply() {
 // au début de chaque partie (appelé par begin)
 function armBegin(el) {
   armUp = {};
-  arsHero = el; // l'élément de prédilection du héros : une étoile sur l'écran du choix (V2.1)
+  arsHero = el; // l'élément de prédilection du héros : une étoile sur l'écran du choix
   const ok = arsenal.length > 0 && arsenal.length <= 3 && arsenal.every(o => WT[o.w] && ELS.includes(o.el));
   if (!ok) arsenal = armDefault(el);
   if (!armOf(tWeap)) gameWeap(arsenal[0].w);
@@ -94,7 +94,7 @@ function arsDraw() {
   arsTeam();
   $('arsGo').disabled = !arsenal.length;
 }
-// les choix des coéquipiers (ce qu'ils envoient en direct) ; armTick la refait toutes les demi-secondes pendant que l'écran est ouvert (audit écran n° 17)
+// les choix des coéquipiers (ce qu'ils envoient en direct) ; armTick la refait toutes les demi-secondes pendant que l'écran est ouvert
 function arsTeam() {
   const now = performance.now(),
     tm = [];
@@ -203,7 +203,7 @@ function armBuy(id) {
     return;
   }
   if (!net.host) {
-    // un invité demande ; l'hôte paie et tient le compte : le niveau n'arrive qu'avec sa réponse (armPaid), jamais avant (audit V2.0, problème 3)
+    // un invité demande ; l'hôte paie et tient le compte : le niveau n'arrive qu'avec sa réponse (armPaid), jamais avant
     send(['wb', i, L + 1, WTK.indexOf(tWeap)]);
     return;
   }
@@ -338,7 +338,7 @@ function armBolt(x1, y1, z1, x2, y2, z2) {
       x = x1 + (x2 - x1) * u + (Math.random() - 0.5) * j,
       y = y1 + (y2 - y1) * u + (Math.random() - 0.5) * j,
       z = z1 + (z2 - z1) * u + (Math.random() - 0.5) * j;
-    armSeg(px, py, pz, x, y, z, 0xfff6b0, 0.18, 0.3); // plus épais et plus long, pour qu'on le voie à côté des explosions (audit écran n° 10)
+    armSeg(px, py, pz, x, y, z, 0xfff6b0, 0.18, 0.3); // plus épais et plus long, pour qu'on le voie à côté des explosions
     px = x;
     py = y;
     pz = z;

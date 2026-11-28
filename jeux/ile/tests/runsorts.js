@@ -182,6 +182,94 @@ const path = require('path');
     "la zone au sol de Braise en Eau est bleue à l'écran (" + JSON.stringify(col) + ')',
     col && col.b > col.r && col.b > 0.5
   );
+  // V2.9 : le nuage d'un coéquipier garde l'élément de son lanceur chez un invité (et ce qui vient du réseau est vérifié)
+  const R2 = await p.evaluate(() => {
+    const g = __g(),
+      I = { f: 0, r: 0 },
+      out = {};
+    const hote = g.newSim('elec', null, {}, 'normal');
+    hote.hero.ce = 'eau';
+    g.ability(hote, hote.hero, [1, hote.hero.x, hote.hero.z, 0, 0, 0]);
+    hote.hero.ult = 100;
+    g.ULT.elec(hote, hote.hero);
+    const sn = JSON.parse(JSON.stringify(g.snap(hote)));
+    const inv = g.newSim('feu', null, {}, 'normal');
+    inv.client = true;
+    g.applySnap(inv, sn);
+    out.hote = hote.storms.map(t => t.el);
+    out.invite = inv.storms.map(t => t.el);
+    // un vieux téléphone n'envoie que trois valeurs : Élec ; des valeurs absurdes aussi
+    const mauvais = [undefined, 99, -1, 'length', null, {}, 'x', 1.5];
+    out.mauvais = mauvais.map(v => {
+      const o = JSON.parse(JSON.stringify(sn));
+      o.sm = [[1, 2, 3, v]];
+      const c = g.newSim('feu', null, {}, 'normal');
+      c.client = true;
+      g.applySnap(c, o);
+      return c.storms.length === 1 ? c.storms[0].el : 'perdu';
+    });
+    // zones des sorts : l'élément est dans le snap
+    out.zones = inv.zones.filter(z => z.hero).map(z => z.el);
+    return out;
+  });
+  ok(
+    "le nuage du Déchaînement en Eau est Eau chez l'hôte et chez l'invité " + JSON.stringify(R2),
+    R2.hote.length === 1 && R2.hote[0] === 'eau' && R2.invite[0] === 'eau'
+  );
+  ok(
+    'élément absent ou douteux dans le réseau : Élec ' + JSON.stringify(R2.mauvais),
+    R2.mauvais.every(e => e === 'elec')
+  );
+  // les sons des sorts suivent l'élément choisi
+  const S = await p.evaluate(() => {
+    const g = __g(),
+      rec = [],
+      A = g.SND.at,
+      P = g.SND.play;
+    g.SND.at = n => rec.push(n);
+    g.SND.play = n => rec.push(n);
+    const son = (k, el) => {
+      rec.length = 0;
+      g.feel({ k, x: 0, z: 0, el });
+      return rec[0];
+    };
+    const r = {
+      orbeEau: son('fball', 'eau'),
+      orbeFeu: son('fball', 'feu'),
+      orbeSans: son('fball'),
+      nuageEau: son('storm', 'eau'),
+      nuageElec: son('storm', 'elec'),
+      nuageFeu: son('storm', 'feu'),
+      seismeTerre: son('quake', 'terre'),
+      seismeFeu: son('quake', 'feu'),
+      sylveVent: son('ronce', 'vent'),
+      elanElec: son('dash', 'elec'),
+      elanBois: son('dash', 'bois'),
+      deluge: son('deluge', 'terre'),
+      rafaleVent: son('rafale', 'vent'),
+      douteux: son('tide', 'constructor')
+    };
+    g.SND.at = A;
+    g.SND.play = P;
+    return r;
+  });
+  ok(
+    'sons : un son par élément choisi ' + JSON.stringify(S),
+    S.orbeEau === 'water' &&
+      S.orbeFeu === 'fire' &&
+      S.orbeSans === 'fire' &&
+      S.nuageEau === 'water' &&
+      S.nuageElec === 'thunder' &&
+      S.nuageFeu === 'fire' &&
+      S.seismeTerre === 'quake' &&
+      S.seismeFeu === 'fire' &&
+      S.sylveVent === 'shift' &&
+      S.elanElec === 'zap' &&
+      S.elanBois === 'wood' &&
+      S.deluge === 'quake' &&
+      S.rafaleVent === 'shift' &&
+      S.douteux === 'water'
+  );
   console.log('erreurs de page ' + errs.length + (errs.length ? '\n' + errs.join('\n') : ''));
   await b.close();
   process.exit(bad || errs.length ? 1 : 0);

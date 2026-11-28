@@ -43,7 +43,7 @@ function foamOf() {
   m.scale.set(4.6, 12.6, 1);
   return m;
 }
-// navires (V2.0) : la flotte ennemie croise au large (boatAt) ; personne n'en débarque. Ses lanternes s'embrasent pendant la vague, quand ses canons tirent.
+// navires : la flotte ennemie croise au large (boatAt) ; personne n'en débarque. Ses lanternes s'embrasent pendant la vague, quand ses canons tirent.
 const portals = [];
 PATHS.forEach((p, pi) => {
   const B = BOATS[pi],
@@ -97,7 +97,7 @@ const SHOP = (() => {
   }
   return b;
 })();
-// le marchand d'esclaves (V9.7) : le meilleur emplacement à 10 m du cœur, loin des chemins et du marchand
+// le marchand d'esclaves : le meilleur emplacement à 10 m du cœur, loin des chemins et du marchand
 const HIREP = (() => {
   let b = [-7, -7],
     bd = -1;
@@ -140,7 +140,7 @@ const HIREP = (() => {
   scene.add(l);
   SOL.push([HIREP[0], HIREP[1], 1.6, 4]);
 }
-// le Guide (V10.3), « Règles » en partie : à 10 m du cœur, loin des chemins, du marchand et du marchand d'esclaves
+// le Guide, « Règles » en partie : à 10 m du cœur, loin des chemins, du marchand et du marchand d'esclaves
 const RULEP = (() => {
   let b = [7, 7],
     bd = -1;

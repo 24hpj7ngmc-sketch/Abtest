@@ -23,7 +23,7 @@ let tool = 'pistolet',
   hamType = 'mortier',
   shMode = 'pelle',
   swing = 0;
-// Changer d'arme en partie (V9.9) : l'outil Arme en main, la sous-barre propose les armes de ce mini-jeu. Le profil et l'arbre de l'ancienne arme sortent des réglages du héros, ceux de la nouvelle y entrent.
+// Changer d'arme en partie : l'outil Arme en main, la sous-barre propose les armes de ce mini-jeu. Le profil et l'arbre de l'ancienne arme sortent des réglages du héros, ceux de la nouvelle y entrent.
 function gameWeap(w) {
   if (!running || !sim || !WT[w] || w === tWeap || (arsenal.length && !armOf(w))) return;
   const el = sim.hero.el,
@@ -42,7 +42,7 @@ function gameWeap(w) {
 function drawSub() {
   const el = $('sub');
   if (tool === 'pistolet') {
-    const L = arsenal.length ? arsenal : Object.keys(WT).map(w => ({ w, el: '' })); // V2.0 : seulement les armes choisies au début, à la couleur de leur élément
+    const L = arsenal.length ? arsenal : Object.keys(WT).map(w => ({ w, el: '' })); // seulement les armes choisies au début, à la couleur de leur élément
     el.hidden = L.length < 2;
     el.innerHTML = L.map(
       o =>
@@ -61,7 +61,7 @@ function drawSub() {
     tool === 'marteau'
       ? TKEYS.map(k => [k, TYPES[k].s])
       : [
-          ['pelle', 'Fosse'], // le même mot que dans le ciel (audit écran n° 21)
+          ['pelle', 'Fosse'], // le même mot que dans le ciel
           ['mur', 'Mur']
         ];
   el.innerHTML = opts
@@ -140,7 +140,7 @@ const WPOS = [
   [201, 164],
   [165, 200],
   [122, 228]
-]; // un second arc, plus large que celui des petits boutons ; le Vent (V2.1) prend une sixième place, au même pas, au bout de l'arc
+]; // un second arc, plus large que celui des petits boutons ; le Vent prend une sixième place, au même pas, au bout de l'arc
 function wheelGo(k) {
   const w = wheelCtx,
     e = ELS[k];
@@ -253,7 +253,7 @@ function chip(g) {
   if (g.hidden) return `<span class="chip"><i></i>? ×${g.count}</span>`;
   return `<span class="chip" style="--c:${elc(g.el)}"><i></i>${KINDS[g.k] && KINDS[g.k].n ? KINDS[g.k].n + ' ' : ''}${EL[g.el].n} ×${g.count}</span>`;
 }
-// l'aperçu de la vague (V2.0) : d'où ils viendront (de partout, ou d'un côté de l'île aux vagues 1 et 2), puis les ennemis par élément, tous mêlés
+// l'aperçu de la vague : d'où ils viendront (de partout, ou d'un côté de l'île aux vagues 1 et 2), puis les ennemis par élément, tous mêlés
 const COTES = ['Est', 'Sud-Est', 'Sud', 'Sud-Ouest', 'Ouest', 'Nord-Ouest', 'Nord', 'Nord-Est'],
   coteOf = a => COTES[((Math.round(a / 0.7854) % 8) + 8) % 8];
 function apercuRows() {
@@ -265,7 +265,7 @@ function apercuRows() {
     else m[k] = Object.assign({}, g);
   } // deux groupes pareils (même élément, même type) n'en font qu'un
   const gs = Object.values(m).sort((a, b) => (b.boss ? 1e3 : b.count) - (a.boss ? 1e3 : a.count)),
-    lim = cielWant() ? 2 : 99, // dans le ciel, une seule rangée : les deux plus gros groupes, puis « +N » ennemis (audit écran n° 7)
+    lim = cielWant() ? 2 : 99, // dans le ciel, une seule rangée : les deux plus gros groupes, puis « +N » ennemis
     more = gs.slice(lim).reduce((n, g) => n + (g.boss ? 1 : g.count), 0);
   return `<div class="wr"><span class="wp">${A[1] >= 6.28 ? 'Partout' : coteOf(A[0])}</span><span class="wc">${gs
     .slice(0, lim)
@@ -284,10 +284,10 @@ function drawWave() {
         tu +
         `<div class="wh">Vague ${n} · <span id="wT">aperçu</span></div>` + // dans le ciel, « dans 29 s » (interface/ciel.js)
         apercuRows() +
-        (tuto && tuto.i >= 4 && !cielWant() ? `<button id="go">Lancer la vague</button>` : ''); // V2.0 : la vague part par « Prêt » dans la vue du ciel (le tuto aussi, à ses étapes « ciel »)
+        (tuto && tuto.i >= 4 && !cielWant() ? `<button id="go">Lancer la vague</button>` : ''); // la vague part par « Prêt » dans la vue du ciel (le tuto aussi, à ses étapes « ciel »)
     if ($('go')) $('go').onpointerdown = () => send(['go']);
   } else
     w.innerHTML =
       tu +
-      `<div id="objL" hidden></div><div id="bossL" hidden><span id="bossN"></span><div class="bbar"><i id="bossF"></i></div></div>`; // « Vague N » et les ennemis restants sont dans les chiffres en haut à droite (V1.2)
+      `<div id="objL" hidden></div><div id="bossL" hidden><span id="bossN"></span><div class="bbar"><i id="bossF"></i></div></div>`; // « Vague N » et les ennemis restants sont dans les chiffres en haut à droite
 }

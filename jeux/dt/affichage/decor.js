@@ -47,7 +47,7 @@ function objetsInit() {
   G.decoy = instM('leurre');
   G.decoy.visible = false;
   scene.add(G.decoy);
-  // V3.6 : les tyroliennes ; V3.5 : les boutiques (mode fuite seulement)
+  // les tyroliennes et les boutiques (mode fuite seulement)
   G.tyro = instM('tyro');
   G.tyro.visible = false;
   scene.add(G.tyro);

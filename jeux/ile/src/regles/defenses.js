@@ -166,7 +166,7 @@ function impact(s, b) {
       if (can && e === tg) knock(s, e, e.boss ? 1.5 : 4);
     }
     if (P.vent) {
-      // Vent (V2.1) : soulève les petits ennemis ; le canon repousse sa cible ; la flèche traverse (plus bas)
+      // Vent : soulève les petits ennemis ; le canon repousse sa cible ; la flèche traverse (plus bas)
       if (liftable(e)) lift(e, (can ? 1.2 : 0.8) * fxd);
       if (can && e === tg) knock(s, e, e.boss ? 1.5 : 5);
     }

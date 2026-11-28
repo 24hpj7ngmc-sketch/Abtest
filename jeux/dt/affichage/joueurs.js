@@ -1,9 +1,8 @@
-// ===================== DERNIER TOIT — l'affichage : les autres joueurs (multi, V4.3) =====================
+// ===================== DERNIER TOIT — l'affichage : les autres joueurs (multi) =====================
 // Chaque entrée de joueursDistants() (interface/multi.js : { id, nom, heros, arme, x, y, z, yaw, pitch, tire, aTerre }, positions déjà
 // lissées ; y = hauteur des pieds ; yaw 0 = regarde vers −Z, comme le joueur local) est dessinée à chaque image :
-// - le corps : le gardien de L'Île des Cinq vu par ses coéquipiers (MODELS['hero.avatar'], gfx/models/mains.js, avec ses motifs
-//   SH de gfx/models/shared.js, repris tel quel de l'atelier du lobby), aux couleurs de l'élément du héros. La recette
-//   'joueur.corps' ci-dessous en détache les deux jambes (pour la marche) et retire le pistolet à cristal de sa main droite ;
+// - le corps : le modèle de son héros (MODELS['hero.avatar'], gfx/models/mains.js, communs aux jeux), aux couleurs de son élément choisi.
+//   La recette 'joueur.corps' ci-dessous en détache les deux jambes (pour la marche) et retire ce que la main droite tenait ;
 // - son arme en main : le modèle vm.<arme> (gfx/models/mains.js), gants et manches aux couleurs du héros, tenue à deux mains et
 //   pointée selon yaw et pitch ; marche (jambes, bras qui suivent l'arme, petit rebond) quand il se déplace, immobile sinon ;
 //   couché sur le dos quand il est tombé (aTerre) ;
@@ -44,14 +43,13 @@ const JOUEURS_MAX = 8,
 const JR = { l: [], n: 0 };
 
 // ---------------------------------------------------------------- le modèle du corps
-// Le gardien (hero.avatar, ≈ 1,8 m, origine aux pieds, regarde vers −Z), sans y toucher : ses 8 premières pièces sont les jambes
-// (b.sym : jambe droite x > 0 puis jambe gauche), elles deviennent les pièces legR et legL (pivot aux hanches) ; les 5 dernières
-// pièces du bras droit sont son pistolet à cristal, retirées (le joueur tient sa vraie arme). Graines 1311 et 1312 (neuves).
-// V5.1 : Braise (feu) a son propre modèle (gfx/models/braise.js). On demande la variante qui tient une arme (arme: 1 : bras tendus,
-// sans les flammes des mains) ; sa recette dit combien de premières pièces sont les jambes (jambes, moitié droite puis moitié gauche)
-// et combien de pièces du bras droit garder (mainD). Sans ces champs (le gardien) : 8 et 4, comme avant. Les pivots sont ceux de la recette.
+// Le modèle du héros (hero.avatar, ≈ 1,8 m, origine aux pieds, regarde vers −Z), sans y toucher, en variante « arme » (arme: 1 : bras tendus,
+// sans effets aux mains). Sa recette dit combien de premières pièces sont les jambes (jambes : moitié droite puis moitié gauche ; 8 sans ce
+// champ) : elles deviennent les pièces legR et legL (pivot aux hanches, graines 1311 et 1312) ; combien de pièces du bras droit garder
+// (mainD ; 4 sans ce champ : le reste est ce que la main tenait, le joueur tient sa vraie arme) ; et l'amplitude de la marche (pas ; 1 sans
+// ce champ). Les pivots des bras sont ceux de la recette.
 MODELS['joueur.corps'] = ctx => {
-  // V5.2 : el = l'élément choisi du héros (ses couleurs), hero = sa clé (son modèle : Braise a le sien)
+  // el = l'élément choisi du héros (ses couleurs), hero = sa clé (son modèle)
   const el = JOUEUR_HEROS.indexOf(ctx.el) >= 0 ? ctx.el : 'feu',
     hero = JOUEUR_HEROS.indexOf(ctx.hero) >= 0 ? ctx.hero : el,
     r = MODELS['hero.avatar']({ P: K.EL[el], el, hero, arme: 1 }),
@@ -72,7 +70,9 @@ MODELS['joueur.corps'] = ctx => {
       { name: 'armL', b: r.parts[1].b, parent: 'body', pivot: r.parts[1].pivot || [-0.3, 1.42, 0] },
       { name: 'armR', b: brasD, parent: 'body', pivot: r.parts[2].pivot || [0.3, 1.42, 0] }
     ],
-    bake: r.bake
+    bake: r.bake,
+    // l'amplitude de marche des jambes (1 par défaut ; moins pour une robe, que les jambes ne doivent pas traverser)
+    pas: r.pas
   };
 };
 
@@ -116,7 +116,7 @@ function joueurNom(n) {
 }
 // couleurs des manches et des gants de son arme, comme celles du joueur local (interface/menu.js, heroGear)
 function joueurGants(h) {
-  const c = typeof HEROS !== 'undefined' && HEROS[h] && HEROS[h].c ? parseInt(HEROS[h].c.slice(1), 16) : K.EL[h].main,
+  const c = HEROS[h] && HEROS[h].c ? parseInt(HEROS[h].c.slice(1), 16) : K.EL[h].main,
     manche = K.mix(c, 0x30353b, 0.5);
   return { sleeve: K.hex(manche), sleeveD: K.hex(K.shade(manche, 0.65)), glove: 0x3a3732, gloveD: 0x24221f };
 }
@@ -129,7 +129,7 @@ function joueurTexte(r) {
     hexa = v => '#' + ('00000' + v.toString(16)).slice(-6);
   g.clearRect(0, 0, 384, 96);
   // V4.8 : le nom, et dessous le rôle du héros (« Tireur ») à la couleur de l'élément
-  const role = typeof HEROS !== 'undefined' && HEROS[r.heros] ? HEROS[r.heros].role : '';
+  const role = HEROS[r.heros] ? HEROS[r.heros].role : '';
   g.font = "700 26px 'Chakra Petch',sans-serif";
   const lr = role ? g.measureText(role).width : 0;
   g.font = '700 ' + (role ? 44 : 54) + "px 'Chakra Petch',sans-serif";
@@ -204,14 +204,16 @@ function joueurAjoute(e) {
   JR.l.push(r);
   return r;
 }
-// son corps (au premier passage et quand son héros change) : le gardien à la couleur de l'élément, et le pivot de visée
-// (à l'épaule droite, tourné selon pitch) qui porte l'arme ; l'arme est refaite ensuite (ses gants suivent le héros)
-// V5.2 : eh = l'élément choisi de son héros (ses couleurs) ; h reste sa clé (son modèle)
+// son corps (au premier passage et quand son héros change) : le modèle de son héros h aux couleurs de son élément choisi eh, son amplitude
+// de marche (r.pasK, de la recette), et le pivot de visée (à l'épaule droite, tourné selon pitch) qui porte l'arme ; l'arme est refaite ensuite
 function joueurCorps(r, h, eh) {
   if (r.root) scene.remove(r.root);
   r.heros = h;
   r.elH = eh;
-  r.root = instM('joueur.corps', { el: eh, hero: h });
+  const ctx = { el: eh, hero: h },
+    pas = prepM('joueur.corps', ctx).rec.pas;
+  r.pasK = typeof pas === 'number' && isFinite(pas) ? Math.max(0, Math.min(2, pas)) : 1;
+  r.root = instM('joueur.corps', ctx);
   r.root.rotation.order = 'YXZ';
   r.nodes = r.root.userData.nodes;
   r.nodes.armL.rotation.order = r.nodes.armR.rotation.order = 'YXZ';
@@ -222,10 +224,12 @@ function joueurCorps(r, h, eh) {
   r.arme = null;
 }
 // son arme (au premier passage et quand elle change) : vm.<arme> un peu réduite, la poignée devant l'épaule droite ; l'éclair à la bouche
-// V5.0 : el = l'élément de son arme (sa couleur) ; vide ou inconnu : celui de son héros
+// el = l'élément de son arme (sa couleur) ; vide : arme neutre (joueur sans héros)
 function joueurArme(r, a, el) {
   if (r.gun) r.visee.remove(r.gun);
-  const pr = prepM('vm.' + a, { H: joueurGants(r.elH), el }),
+  const ctx = { H: joueurGants(r.elH) };
+  if (el) ctx.el = el;
+  const pr = prepM('vm.' + a, ctx),
     A = JOUEUR_ARMES[a];
   r.arme = a;
   r.elArme = el;
@@ -256,7 +260,7 @@ function joueursFrame(S, dt) {
   let liste = null;
   // la liste vient d'un autre fichier (et du réseau) : une erreur là-bas ne doit pas arrêter l'image
   try {
-    liste = typeof joueursDistants === 'function' ? joueursDistants() : null;
+    liste = joueursDistants();
   } catch (_) {
     liste = null;
   }
@@ -278,12 +282,13 @@ function joueursFrame(S, dt) {
 function joueurPose(r, e, dt) {
   const h = JOUEUR_HEROS.indexOf(e.heros) >= 0 ? e.heros : 'feu',
     a = Object.prototype.hasOwnProperty.call(JOUEUR_ARMES, e.arme) ? e.arme : 'fusil';
-  // V5.2 : l'élément choisi de son héros vient du réseau : une clé connue de JOUEUR_HEROS, sinon sa clé de héros (le corps est refait s'il change)
+  // l'élément choisi de son héros vient du réseau : une clé connue de JOUEUR_HEROS, sinon sa clé de héros (le corps est refait s'il change)
   const eh = typeof e.elHeros === 'string' && JOUEUR_HEROS.indexOf(e.elHeros) >= 0 ? e.elHeros : h;
   // (joueurCorps remet r.arme à null : l'arme est refaite avec ses gants à la couleur de cet élément)
   if (h !== r.heros || eh !== r.elH) joueurCorps(r, h, eh);
-  // V5.0 : l'élément de son arme vient du réseau : une clé connue de JOUEUR_HEROS, sinon l'élément choisi de son héros
-  const el = typeof e.el === 'string' && JOUEUR_HEROS.indexOf(e.el) >= 0 ? e.el : eh;
+  // l'élément de son arme vient du réseau : une clé connue de JOUEUR_HEROS, sinon l'élément choisi de son héros ; sans héros
+  // (« Ils arrivent »), l'arme est neutre
+  const el = !e.heros ? '' : typeof e.el === 'string' && JOUEUR_HEROS.indexOf(e.el) >= 0 ? e.el : eh;
   if (a !== r.arme || el !== r.elArme) joueurArme(r, a, el);
   const nom = joueurNom(e.nom);
   if (nom !== r.nom || r.labH !== r.heros + r.elH) {
@@ -316,8 +321,8 @@ function joueurPose(r, e, dt) {
   // couché sur le dos (rotation de π/2 autour de x : la tête part derrière lui, le visage vers le ciel), un peu relevé
   R.position.set(x, y + Math.abs(Math.cos(r.ph)) * 0.05 * w + k * 0.22, z);
   R.rotation.set(k * Math.PI * 0.5, yaw, 0);
-  N.legL.rotation.x = s * 0.55 * w;
-  N.legR.rotation.x = -s * 0.55 * w;
+  N.legL.rotation.x = s * 0.55 * w * r.pasK;
+  N.legR.rotation.x = -s * 0.55 * w * r.pasK;
   // l'arme suit pitch ; les bras la tiennent (main droite à la poignée, main gauche devant) ; couché : l'arme sur la poitrine
   r.visee.rotation.x = pitch * debout - 1.4 * k;
   const bras = (Math.PI * 0.5 + pitch * 0.9) * debout;

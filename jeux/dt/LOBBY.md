@@ -50,6 +50,14 @@ DernierToit.fermer(); // retirer le jeu sans attendre le joueur (aucun « fin »
 - `sansFin` : partie sans fin (après une victoire, « Continuer sans fin » lance une nouvelle partie, qui enverra son propre `fin`) ;
 - « Rejouer » à l'écran de fin relance une partie dans l'iframe : un `fin` par partie, à récompenser chacun.
 
+## V5.6 : corrections du multi et des sorts, nettoyage
+Rien ne change dans le contrat (`DernierToit.version` vaut `'V5.6'`) ; l'état publié `d.p` gagne un champ facultatif `B` (voir plus bas), et l'instantané `d.g` une fin facultative.
+- La Relance de l'Escarmoucheur (Volt, voie b, `spB2`) marche chez un invité (la recharge est rendue quand un zombie du couloir meurt de la Fulgurance, d'après le miroir).
+- Le bouclier de la Répulsion (Ondine, voie a, `spA2`) protège aussi les autres joueurs dans la zone (8 m, même étage) : la Soigneuse publie `p.B = [numéro, x, y, z, rayon]` pendant 3 s, chaque téléphone se pose le bouclier de 30 (10 s) s'il est dans la zone. `B` est vérifié à la réception (cinq nombres bornés).
+- Les sorts des autres joueurs gardent l'élément choisi de leur lanceur chez l'invité (remparts, ronciers, gardiens, orages, explosions, pluie du Déluge) : 3 bits par objet à la fin de l'instantané, rien de plus quand aucun élément n'est choisi ; un jeu plus ancien ignore cette fin.
+- Le son d'un sort suit l'élément choisi (un son par élément, ceux de `sons/sound.js`).
+- Les autres joueurs sans héros (« Ils arrivent ») ont l'arme neutre ; la marche de leurs jambes suit le champ `pas` de la recette du modèle.
+
 ## V5.5 : les six héros ont chacun leur modèle 3D
 Rien ne change dans le contrat. `DernierToit.version` vaut `'V5.5'`. Les coéquipiers vus sur le toit (`joueur.corps`) ont le modèle de leur héros (Braise, Roc, Sylve, Volt, Ondine, Zéphyr), à la couleur de leur élément choisi ; le gardien ne sert plus que de repli.
 
@@ -59,7 +67,7 @@ Rien à changer côté lobby (`opts.elHeros` de la V5.2 suffit) : la compétence
 élémentaire et leurs couleurs (boule, explosion, météores, zones au sol, vagues, éclairs, voile) sont ceux de l'élément choisi (Feu brûle, Eau ralentit, Nature empoisonne,
 Terre repousse / étourdit, Élec rebondit, Vent soulève les petits : le code des balles). Sans élément choisi (élément = clé du héros), tout reste comme en V5.2.
 Multi : chez l'hôte, le sort d'un invité suit l'`eh` de cet invité ; chez l'invité, ses propres sorts suivent son élément, mais les effets des AUTRES joueurs vus dans
-l'instantané gardent les couleurs d'origine de leur héros (l'instantané ne dit pas l'élément : à faire avec un champ de plus). `DernierToit.version` vaut `'V5.3'`.
+l'instantané gardaient les couleurs d'origine de leur héros (corrigé en V5.6 : l'instantané porte l'élément). `DernierToit.version` vaut `'V5.3'`.
 
 ## V5.2 : l'élément du héros se choisit (contrat V12.9)
 
@@ -169,7 +177,7 @@ de Dernier Toit est fait pour une ville (on tire du toit sur la rue) : chaque vo
 | Sylve | **Colosse** : +25 de vie (+ `spA1`) ; `spA2` : chaque coup sur un zombie à moins de 5 m rend 2 de vie | **Plongeur** : les Ronces deviennent un bond de 8 m (+ `spB1` m) vers le point visé ; à l'arrivée, roncier et poison 6 s ; `spB2` : le poison d'un empoisonné qui meurt passe à ses voisins (3 m) |
 | Volt | **Lame** : balles et Éclair +50 % (+ `spA1`) sur un zombie isolé (personne à 4 m) ; `spA2` : achève sous 15 % de vie | **Escarmoucheur** : chaque tué rend 2,5 % de la recharge de l'Éclair (+ `spB1` / 10 : **le chiffre du lobby est divisé par 10**, on tue des centaines de zombies par jour) ; `spB2` : un tué par l'Éclair le relance |
 | Braise | **Artilleur** : armes à balles +10 m de portée (+ `spA1` m) ; feu du Brasier 6 m ; `spA2` : chaque météore laisse le sol en feu 4 s | **Mage de bataille** : aura qui brûle à 3 m (+ `spB1` m) ; `spB2` : coups reçus −25 % |
-| Ondine | **Soigneuse** : soins +20 % (+ `spA1`) ; `spA2` : la Marée pose un bouclier de 30 (10 s) **sur Ondine seule** (les autres joueurs : pas encore) | **Entraveuse** : la Marée immobilise 1,5 s (+ `spB1` s) les petits ; `spB2` : le Déluge immobilise tous les petits dehors à son arrivée |
+| Ondine | **Soigneuse** : soins +20 % (+ `spA1`) ; `spA2` : la Marée pose un bouclier de 30 (10 s) sur Ondine et sur les autres joueurs qu'elle touche (V5.6) | **Entraveuse** : la Marée immobilise 1,5 s (+ `spB1` s) les petits ; `spB2` : le Déluge immobilise tous les petits dehors à son arrivée |
 | Zéphyr | **Sniper** : +15 % au-delà de 40 m (+ `spA1`) ; `spA2` : 1 s en visée charge un tir ×2 qui traverse 3 zombies de plus | **Mitrailleur** : cadence +10 %, +10 % (+ `spB1`) en courant ; `spB2` : +4 % par tir d'affilée, jusqu'à +40 % |
 
 - **Ultime teinté** : quand l'élément de l'arme n'est pas celui du héros, chaque zombie que l'ultime blesse reçoit l'effet des balles de
@@ -177,7 +185,7 @@ de Dernier Toit est fait pour une ville (on tire du toit sur la rue) : chaque vo
   Sans `elementArme` (ou avec celui du héros), l'ultime ne change pas.
 - `pret` et `fin` portent `voie` (`'a'`, `'b'` ou `null`). L'écran de fin dit « Rang 2 · Roc, Tank (Avant-garde) niv. 11 · … ».
 - Multi : la compétence et l'ultime d'un invité emportent aussi sa voie, ses quatre cases et l'élément de son arme ; l'hôte les joue
-  avec. Limites : la Relance de l'Escarmoucheur et le bouclier des alliés ne passent pas d'un joueur à l'autre.
+  avec. (Depuis la V5.6, la Relance de l'Escarmoucheur marche chez l'invité et le bouclier de la Répulsion protège les alliés proches.)
 
 ## Côté Dernier Toit (déjà fait, V4.1)
 

@@ -44,7 +44,7 @@ Dans l'ordre de `ordre.txt` (lignes après mise en forme prettier) :
 | `tutoriel.js` | 65 | `TUTO`, `TUTO_OUT`, `tutoTick` ; V4.2 : `tutoPossible`, `tutoStart` (relancé depuis la fiche des règles) |
 | `lobby.js` | 69 | V4.1 : lancé depuis le lobby (`window.DT_LOBBY`) : `LOBBY`, `lobbyPret`, `lobbyFin`, `versLobby` (voir `LOBBY.md`) |
 | `regles.js` | 307 | V4.2 : le Guide « Règles » : sa place sur le toit (`GUIDEP`), le bouton « Règles » à côté de lui (`guideNear`, `rulesBtn`), la fiche à cinq onglets (`rulesOpen`, `guideShow`, `#guideV`, en pause comme l'arbre), son contenu (`CMDS` commun à tous les jeux, `RULES_TOIT`) |
-| `multi.js` | 418 | V4.3 : le multi (lancé du lobby avec `multi`, voir `MULTI.md` et `LOBBY.md`) : `MULTI` (rôle, pairs, taille), `nomPropre`, les listes du lobby (`multiPairs`, tout vérifié), `multiAvant` (instantané chez l'invité, actions des invités et `S.nJoueurs` chez l'hôte, reprise d'hôte), `multiTick` (publication 10 fois/s, autres joueurs lissés, compteur « N sur le toit », bouton du jour de l'invité), `joueursDistants()` (pour l'affichage) |
+| `multi.js` | 520 | Le multi (lancé du lobby avec `multi`, voir `MULTI.md` et `LOBBY.md`) : `MULTI` (rôle, pairs, taille), `nomPropre`, les listes du lobby (`multiPairs`, tout vérifié), `multiAvant` (instantané chez l'invité, actions des invités et `S.nJoueurs` chez l'hôte, reprise d'hôte), `multiTick` (publication 10 fois/s, autres joueurs lissés, compteur « N sur le toit », bouton du jour de l'invité), `joueursDistants()` (pour l'affichage) |
 | `boucle.js` | 210 | `frame` (la boucle) et le lancement |
 | `style.css` | 1350 | Tout le style (un seul fichier : `build.py` n'en colle qu'un) |
 
@@ -149,7 +149,7 @@ Par leur nom, dans la page : `S`, `running`, `tool`, `ptype`, `ads` (écrit), `b
 V4.3 : le pont fait suivre `DernierToit.pairs(liste, moi)` au jeu (`{ dt: 'pairs', liste, moi }`) et l'état publié par le jeu (`{ dt: 'etat', d }`)
 à `rappels.etat(d)`, s'il ne dépasse pas `opts.multi.max`.
 
-## Le multi (V4.3, `multi.js`)
+## Le multi (`multi.js`)
 - Rien ne s'exécute sans `LOBBY.multi` (`MULTI.actif` faux) : `node tests/empreinte.js` et les captures ne changent pas.
 - **Tout ce qui vient du lobby est vérifié** dans `etatPropre` et `multiPairs` (nombres bornés, textes courts, 16 joueurs, 8 actions) ; un nom
   ne s'affiche qu'après `nomPropre`, et seulement par `textContent` (`toast`).
@@ -157,4 +157,5 @@ V4.3 : le pont fait suivre `DernierToit.pairs(liste, moi)` au jeu (`{ dt: 'pairs
   appelées que si elles existent, dans un `try` (une erreur s'écrit dans la console, la partie continue).
 - Chez l'invité : la fin de partie vient de l'instantané (phase `dead` / `won`, vue en cours depuis `newGame`) → `showEnd` → son propre `fin` ;
   une partie déjà finie chez l'hôte n'est pas recopiée (« attends qu'il en relance une »).
-- Test : `node tests/multitest.js` (`tests/bouchon-multi.js` y remplace les règles du multi tant qu'elles n'existent pas).
+- Boucliers : `multiBoucliers` (avant chaque pas) lit le champ `B` publié par les autres (`etatPropre` le vérifie : 5 nombres bornés) et pose le bouclier de la Soigneuse (`bouclierAllie`) à celui qui est dans la zone.
+- Test : `node tests/multitest.js`, et `tests/v56page.js` (boucliers, sons des sorts).

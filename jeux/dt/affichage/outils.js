@@ -64,7 +64,7 @@ function setM(a, k, x, y, z, yaw, pitch, sx, sy, sz) {
   a[o + 14] = z;
   a[o + 15] = 1;
 }
-// V1.5 : la même chose avec un roulis (rotation autour de l'axe Z de l'objet, appliquée en premier) : planches de biais, planches qui volent
+// la même chose avec un roulis (rotation autour de l'axe Z de l'objet, appliquée en premier) : planches de biais, planches qui volent
 function setMR(a, k, x, y, z, yaw, pitch, roll, sx, sy, sz) {
   const c = Math.cos(yaw),
     s = Math.sin(yaw),

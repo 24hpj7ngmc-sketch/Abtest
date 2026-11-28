@@ -85,7 +85,7 @@ function frame(now) {
     plankStep(S, dt, tool === 'marteau' && tenu && aimSlot < 0 && aimDoor >= 0 ? aimDoor : -1);
     // règles : un pas (ou 2, 4 avec la vitesse DEV) ; vol libre DEV : Saut tenu monte, Sneak tenu descend
     // V4.3 : l'invité ne fait avancer que son joueur (stepInvite, règles du multi), sans la vitesse DEV
-    const invite = multiInvite() && typeof stepInvite === 'function',
+    const invite = multiInvite(),
       avance = invite ? stepInvite : step,
       vol = flying(),
       pas = save.dev && !invite ? devO.speed : 1;

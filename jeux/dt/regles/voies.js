@@ -44,15 +44,15 @@ const VOIES = {
     },
     b: {
       n: 'Escarmoucheur',
-      d: "chaque zombie tué rend 2,5 % de la recharge de la Fulgurance (on en tue des centaines par jour)",
+      d: 'chaque zombie tué rend 2,5 % de la recharge de la Fulgurance (on en tue des centaines par jour)',
       c1: '+1,5 point par niveau',
-      c2: "un zombie tué par la Fulgurance le relance aussitôt"
+      c2: 'un zombie tué par la Fulgurance le relance aussitôt'
     }
   },
   feu: {
     a: {
       n: 'Artilleur',
-      d: 'tes armes portent 10 m plus loin ; l\'Orbe laisse un feu plus large (6 m)',
+      d: "tes armes portent 10 m plus loin ; l'Orbe laisse un feu plus large (6 m)",
       c1: '+5 m de portée par niveau',
       c2: 'chaque météore laisse le sol en feu 4 s'
     },
@@ -191,6 +191,24 @@ function bouclier(S) {
   S.p.boucl = 30;
   S.p.boucT = 10;
   S.ev.push({ k: 'bouclier' });
+}
+// la Répulsion lancée en (gx, gy, gz), rayon R : le bouclier de la Soigneuse, et (multi) l'annonce aux autres joueurs, publiée dix fois par
+// seconde pendant 3 s (S.mBouc = [numéro, x, y, z, R]) : chaque téléphone se protège s'il est dans la zone (bouclierAllie). Pas d'annonce
+// quand l'hôte rejoue le sort d'un invité (S.mOwn : l'invité publie le sien)
+function bouclierMaree(S, gx, gy, gz, R) {
+  bouclier(S);
+  if (S.mOwn) return;
+  S.mBoucN = (S.mBoucN || 0) + 1;
+  S.mBouc = [S.mBoucN, Math.round(gx * 100) / 100, Math.round(gy * 100) / 100, Math.round(gz * 100) / 100, R];
+  S.mBoucT = S.t;
+}
+// le bouclier d'une Répulsion lancée par un autre joueur (b = [numéro, x, y, z, R], déjà vérifié) : si je suis dans la zone, debout
+function bouclierAllie(S, b) {
+  const p = S.p;
+  if (!b || p.dead || p.down > 0 || S.phase !== 'day') return false;
+  if (Math.abs(p.y - b[2]) > 2.5 || (p.x - b[1]) ** 2 + (p.z - b[3]) ** 2 > b[4] * b[4]) return false;
+  bouclier(S);
+  return true;
 }
 
 // ---------------------------------------------------------------- les compétences

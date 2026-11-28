@@ -434,6 +434,12 @@ const SND = (() => {
 })();
 // ce que chaque événement du jeu fait entendre et ressentir (appelé pour chaque événement, avant son effet visuel)
 let critT = 0;
+// le son d'un sort suit l'élément choisi du héros (ev.el) ; la Terre fait le grand fracas pour un sort qui secoue tout (big)
+const SORT_SON = { feu: 'fire', eau: 'water', bois: 'wood', terre: 'stone', elec: 'thunder', vent: 'shift' };
+function sortSon(ev, dflt, big) {
+  if (big && ev.el === 'terre') return 'quake';
+  return typeof ev.el === 'string' && SORT_SON.hasOwnProperty(ev.el) ? SORT_SON[ev.el] : dflt;
+}
 function feel(ev) {
   const k = ev.k,
     A = n => SND.at(n, ev.x, ev.z);
@@ -446,7 +452,7 @@ function feel(ev) {
       SND.at('crit', ev.x, ev.z);
       const now = performance.now();
       if (now - critT > 800) {
-        critT = now; // un « CRITIQUE » toutes les 0,8 s au plus : avec les tirs multiples, ils s'empilaient (audit écran n° 10)
+        critT = now; // un « CRITIQUE » toutes les 0,8 s au plus : avec les tirs multiples, ils s'empilaient
         floater(ev.x, ev.y + 1.6, ev.z, 'CRITIQUE', '#ffcf5a', 12, 0.7);
       }
     } else A('hit');
@@ -462,34 +468,33 @@ function feel(ev) {
   else if (k === 'clear') SND.play('clear');
   else if (k === 'obj') SND.play(ev.t === 'win' ? 'clear' : 'obj');
   else if (k === 'quake') {
-    SND.play('quake');
+    SND.play(sortSon(ev, 'quake', true));
     slowT = 0.35;
-  } else if (k === 'fball' || k === 'meteor') A('fire');
+  } else if (k === 'fball' || k === 'meteor') A(sortSon(ev, 'fire'));
   else if (k === 'flame') A('flame');
   else if (k === 'rain') {
-    SND.play('fire');
+    SND.play(sortSon(ev, 'fire', true));
     slowT = 0.35;
-  } else if (k === 'tide') A('water');
+  } else if (k === 'tide') A(sortSon(ev, 'water'));
   else if (k === 'deluge') {
-    SND.play('water');
+    SND.play(sortSon(ev, 'water', true));
     slowT = 0.35;
   } else if (k === 'storm') {
-    SND.play('thunder');
+    SND.play(sortSon(ev, 'thunder', true));
     slowT = 0.35;
-  } else if (k === 'bolt2') A('thunder');
-  else if (k === 'dash' || k === 'arc' || k === 'zap') A('zap');
-  else if (k === 'rafale')
-    A('water'); // Zéphyr (V2.1) : en attendant un vrai souffle, le bruit d'eau fait une rafale
+  } else if (k === 'bolt2') A(sortSon(ev, 'thunder'));
+  else if (k === 'dash') A(ev.el === 'elec' ? 'zap' : sortSon(ev, 'zap'));
+  else if (k === 'arc' || k === 'zap') A('zap');
+  else if (k === 'rafale') A(sortSon(ev, 'water'));
   else if (k === 'perce') {
-    SND.play('thunder');
+    SND.play(sortSon(ev, 'thunder', true));
     slowT = 0.3;
-  } else if (k === 'ronce') A('wood');
-  else if (k === 'charge')
-    A('stone'); // V2.2 : la charge de l'Avant-garde, le bond du Plongeur, la bourrasque du Tourbillon
-  else if (k === 'plonge') A('wood');
+  } else if (k === 'ronce') A(sortSon(ev, 'wood'));
+  else if (k === 'charge') A(sortSon(ev, 'stone'));
+  else if (k === 'plonge') A(sortSon(ev, 'wood'));
   else if (k === 'gust') A('water');
   else if (k === 'guard') {
-    SND.play('wood');
+    SND.play(sortSon(ev, 'wood', true));
     slowT = 0.35;
   } else if (k === 'pup') SND.play(ev.t === 'bombe' ? 'pupboom' : 'pup');
   else if (k === 'horn' || k === 'raid') SND.play('horn');

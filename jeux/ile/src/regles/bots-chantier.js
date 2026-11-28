@@ -128,7 +128,7 @@ const botSay = (s, o, txt) => {
   s.sayT = s.t + 3.5;
   s.events.push({ k: 'say', el: o.el, t: txt });
 };
-// ---- L'AVANT-POSTE (V7.9). Le cœur était bien gardé mais rien n'était bâti plus avant, là où il y a toute la place pour tendre un piège.
+// ---- L'AVANT-POSTE. Le cœur était bien gardé mais rien n'était bâti plus avant, là où il y a toute la place pour tendre un piège.
 // À mi-chemin, chaque bot monte un « goulet » : deux murs en entonnoir, ouverts vers la plage, rabattent la route, ceux qui coupent à travers champs et l'éventail
 // vers un couloir de 8 m entre deux murs, cerné de défenses. Le couloir peut être creusé : les ennemis y pataugent (70 % puis 40 % de leur vitesse).
 // Le bot ne devine rien : il essaie des dizaines de tracés sur la carte des trajets ennemis (fieldOf) et garde celui où les ennemis passent le plus de temps sous le feu.
@@ -416,7 +416,7 @@ const BOTT = {
 // rayon de la ceinture, demi-largeur de chaque porte, longueur d'un arc (m) ; rayons des rangées de fosses (loin de la ceinture : un mur ne rebouche jamais une fosse
 // du même bot, une fosse ne ronge jamais un de ses murs), demi-largeurs essayées ; part au plus de ce que les bots dépensent qui va au terrassement (45 %) ;
 // rabais : un esclave travaille pour rien, il ne paie que les matériaux (la moitié du prix d’un mur ou d’une fosse).
-// Audit V2.0 (problème 6) : d'abord défendre. Pas de terrassement avant d'avoir minT défenses de niveau 2 sur son chemin ni avant la préparation de la vague minW + 1,
+// d'abord défendre. Pas de terrassement avant d'avoir minT défenses de niveau 2 sur son chemin ni avant la préparation de la vague minW + 1,
 // et pas plus de share0 (20 %) de l'or dans la terre jusqu'à la vague shareW (5), share (45 %) ensuite.
 function ringOf(s) {
   if (s.bring) return s.bring;

@@ -1,21 +1,16 @@
 // [lobby/toit.js] Dernier Toit derrière le deuxième portail : panneau, bonus emportés, ouverture, paie au retour (toitFin), écran de retour.
-// ---- DERNIER TOIT (V10.1) : le jeu derrière le deuxième portail. Il n'est pas mêlé au code du lobby : dt/dt-pour-lobby.js (collé tel quel par build.py) donne une seule variable,
+// ---- DERNIER TOIT : le jeu derrière le deuxième portail. Il n'est pas mêlé au code du lobby : dt/dt-pour-lobby.js (collé tel quel par build.py) donne une seule variable,
 // DernierToit, qui ouvre le jeu dans un cadre par-dessus l'île (contrat : dt/LOBBY.md). Ici : le panneau du portail (héros, arme, ce qu'on emporte), la conversion de ce que le lobby
 // apporte en « bonus », la pause du lobby pendant la partie (frame() ne fait plus rien, le son est suspendu), les récompenses à chaque partie finie, et le retour devant le portail.
 // Le lobby ne touche jamais à la sauvegarde de Dernier Toit (localStorage « dernier-toit-v1 »).
 // la photo d'une arme, encadrée à la couleur de son élément (V12.7 : celui qu'on a choisi pour elle, sinon celui du héros joué)
 const wPic = w =>
-    typeof WPHOTO === 'object' && WPHOTO[w]
-      ? `<img class="wpic" src="${WPHOTO[w]}" alt="" style="--ec:${elc(wEl(w))}" title="${EL[wEl(w)].n}">`
-      : '',
-  dtOk = () => typeof DernierToit === 'object' && !!DernierToit;
+  WPHOTO[w] ? `<img class="wpic" src="${WPHOTO[w]}" alt="" style="--ec:${elc(wEl(w))}" title="${EL[wEl(w)].n}">` : '';
 // TR : la visite en cours (héros, arme, jour de départ, gains cumulés)
 let TR = null;
 // ce que le lobby apporte à une partie de Dernier Toit : l'arbre Général et l'arbre « Dernier Toit » de l'arme (dégâts, cadence, critique), l'arbre du héros (force et recharge de la compétence, vie),
-// l'affûtage et les provisions. V10.2 : tout l'arbre du héros (heros), ses balles d'élément (balles) et les niveaux (niveaux) partent aussi, pour que le héros vaille pareil aux deux portails ;
-// Dernier Toit les lit depuis sa V4.2 (rang, argent, heros, balles, niveaux) et joue à plusieurs depuis sa V4.3 (multi) : il est collé dans la page, le lobby n'a plus à s'en assurer.
+// l'affûtage et les provisions. Tout l'arbre du héros (heros), ses balles d'élément (balles) et les niveaux (niveaux) partent aussi, pour que le héros vaille pareil aux deux portails.
 const r3 = v => Math.round(v * 1000) / 1000;
-const dtLit = k => dtOk() && Array.isArray(DernierToit.accepte) && DernierToit.accepte.includes(k);
 function toitBonus(el, w) {
   const a = armMods('toit', w, {}),
     B = WT[w].base || {},
@@ -32,8 +27,8 @@ function toitBonus(el, w) {
     heroDegats: r3(1 + (hm.abDmg || 0)),
     recharge: r3(Math.max(0.4, (CD - (hm.abCd || 0)) / CD)),
     heros: hm,
-    // la branche d'élément envoyée : celle de l'arme dès que le jeu dit la lire ('elementArme' dans DernierToit.accepte), sinon celle du héros comme avant (V12.2)
-    balles: elMods(dtLit('elementArme') ? wEl(w, el) : elH(el), {}),
+    // la branche d'élément envoyée : celle de l'arme en main
+    balles: elMods(wEl(w, el), {}),
     niveaux: { heros: hLevel(el), arme: wLevel(w) }
   };
 }
@@ -42,7 +37,7 @@ const toitRang = () => Math.max(1, Math.min(PAYK.length, save.toit.sel || 1, (sa
 function toitDraw() {
   const A = armsOf('toit');
   if (!A.includes(tWeap) && A.length) setWeap(A[0]);
-  $('dtVer').textContent = dtOk() ? 'version ' + DernierToit.version : '';
+  $('dtVer').textContent = 'version ' + DernierToit.version;
   $('dtArms').innerHTML =
     '<span>Ton arme</span>' +
     A.map(
@@ -61,7 +56,7 @@ function toitDraw() {
     );
   const rs = toitRang(),
     R0 = save.toit.r || 0;
-  // même dessin que la campagne de l'île : une colonne de niveaux, le 1 en bas (V11.5)
+  // même dessin que la campagne de l'île : une colonne de niveaux, le 1 en bas
   $('dtRang').innerHTML =
     '<div class="cst" style="--c:var(--gold)"><b>Dernier Toit</b>' +
     PAYK.map((_, i) => {
@@ -88,7 +83,7 @@ function toitDraw() {
         })
     );
   heroCards('dtGrid', toitDraw);
-  goTxt('dtGo', dtOk() ? DernierToit : null, tHero);
+  goTxt('dtGo', tHero);
   welRow('dtWel', tWeap, toitDraw);
   const B = toitBonus(tHero, tWeap),
     L = [],
@@ -120,20 +115,12 @@ function toitDraw() {
     : 'Tiens dix jours pour être secouru.';
 }
 function toitOpen() {
-  if (!dtOk()) {
-    toast("Dernier Toit n'est pas chargé dans cette page");
-    return;
-  }
   toitDraw();
   $('toitV').hidden = false;
   SND.play('tick');
 }
 function toitGo(el) {
   if (!HEROS.includes(el)) el = tHero;
-  if (dtOk() && !jeuHeros(DernierToit, el)) {
-    toast(EL[el].hero + " n'est pas encore dans Dernier Toit");
-    return;
-  }
   {
     let mx = 0;
     if (net.room)
@@ -146,7 +133,7 @@ function toitGo(el) {
     LN.tt = Math.max(Date.now(), mx + 1);
     lobNetSt('toit', { tt: LN.tt, tr: toitRang(), nm: LN.nm, el, dn: null });
   }
-  if (!dtOk() || DernierToit.ouvert || !HEROS.includes(el)) return;
+  if (DernierToit.ouvert) return;
   const A = armsOf('toit'),
     w = A.includes(tWeap) ? tWeap : A[0],
     bonus = toitBonus(el, w),

@@ -16,7 +16,7 @@ const ICON = {
     '<svg viewBox="0 0 24 24"><path d="M12 2v13"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M4 13l2-2 2 2M16 13l2-2 2 2"/><path d="M3 22c3-1 6-4 9-7"/></svg>'
 };
 // need : la case de l'arbre qui débloque l'outil (S.P[need].on) ; out : mode « Ils s'échappent » seulement
-// la Masse (V1.5) : seulement en mode fuite, verrouillée tant que le nœud « Masse » n'est pas acheté
+// la Masse : seulement en mode fuite, verrouillée tant que le nœud « Masse » n'est pas acheté
 const TOOLS = [
   { k: 'fusil', n: 'Fusil' },
   { k: 'masse', n: 'Masse', need: 'masse', out: 1 },

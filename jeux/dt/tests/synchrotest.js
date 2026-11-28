@@ -21,7 +21,13 @@ const fs = require('fs');
       '</script></body></html>'
   );
   const b = await chromium.launch({
-    args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--allow-file-access-from-files']
+    args: [
+      '--use-gl=angle',
+      '--use-angle=swiftshader',
+      '--enable-unsafe-swiftshader',
+      '--ignore-gpu-blocklist',
+      '--allow-file-access-from-files'
+    ]
   });
   let ok = 0,
     ko = 0;
@@ -37,7 +43,14 @@ const fs = require('fs');
     if (m.type() === 'error' && !m.text().includes('Failed to load resource')) errs.push(m.text());
   });
   await p.goto('file://' + hote);
-  T('accepte', await p.evaluate(() => JSON.stringify(DernierToit.accepte) === JSON.stringify(['rang', 'argent', 'heros', 'balles', 'niveaux', 'multi', 'elementArme', 'voie'])));
+  T(
+    'accepte',
+    await p.evaluate(
+      () =>
+        JSON.stringify(DernierToit.accepte) ===
+        JSON.stringify(['rang', 'argent', 'heros', 'balles', 'niveaux', 'multi', 'elementArme', 'voie', 'elHeros'])
+    )
+  );
 
   const bonus = {
     argent: 150,
@@ -53,9 +66,22 @@ const fs = require('fs');
     return { rangK: S.rangK, hm: S.hm, cash: cash0, depart: S.depart, ver: document.title };
   });
   T('rang 3 : vie ×1,8', e1.rangK === 1.8, e1.rangK);
-  T('arbre du héros et balles dans S.hm', e1.hm.hSpd === 0.12 && e1.hm.uCharge === 0.3 && e1.hm.abRad === 1.5 && e1.hm.ePois === 2 && e1.hm.eChain === 1 && e1.hm.kTrail === undefined, JSON.stringify(e1.hm));
+  T(
+    'arbre du héros et balles dans S.hm',
+    e1.hm.hSpd === 0.12 &&
+      e1.hm.uCharge === 0.3 &&
+      e1.hm.abRad === 1.5 &&
+      e1.hm.ePois === 2 &&
+      e1.hm.eChain === 1 &&
+      e1.hm.kTrail === undefined,
+    JSON.stringify(e1.hm)
+  );
   let recu = await p.evaluate(() => recu);
-  T('pret (partie 1, bourse 150)', recu.length === 1 && recu[0].dt === 'pret' && recu[0].partie === 1 && recu[0].argent === 150 && recu[0].rang === 3, JSON.stringify(recu));
+  T(
+    'pret (partie 1, bourse 150)',
+    recu.length === 1 && recu[0].dt === 'pret' && recu[0].partie === 1 && recu[0].argent === 150 && recu[0].rang === 3,
+    JSON.stringify(recu)
+  );
 
   // un zombie qui sort : sa vie × 1,8 ; l'ultime se charge 30 % plus vite ; les Entraves plus grandes et plus longues
   const z = await f.evaluate(() => {
@@ -88,15 +114,36 @@ const fs = require('fs');
   });
   T('tombé : la partie continue', c.down === 8 && c.R === 8 && !c.dead && c.phase !== 'dead' && c.chutes === 1, JSON.stringify(c));
   await p.waitForTimeout(400);
-  T('le voile « Tu es tombé »', await f.evaluate(() => !document.getElementById('chuteV').hidden && /De retour sur le toit dans [1-8] s/.test(document.getElementById('chuteT').textContent)));
+  T(
+    'le voile « Tu es tombé »',
+    await f.evaluate(
+      () =>
+        !document.getElementById('chuteV').hidden &&
+        /De retour sur le toit dans [1-8] s/.test(document.getElementById('chuteT').textContent)
+    )
+  );
   const pendant = await f.evaluate(() => ({ skill: useHeroSkill(S), hp0: S.p.hp }));
   T('pas de compétence pendant la chute', pendant.skill === false);
   await f.evaluate(() => {
     for (let k = 0; k < 170; k++) step(S, 0.05, { f: 0, r: 0, yaw: S.p.yaw, pitch: S.p.pitch });
     events();
   });
-  const r = await f.evaluate(() => ({ x: S.p.x, y: S.p.y, z: S.p.z, H, hp: S.p.hp, hpMax: S.p.hpMax, down: S.p.down, inv: S.p.inv, voile: document.getElementById('chuteV').hidden }));
-  T('relevé au départ, toute sa vie, invincible un instant', r.x === 0 && r.z === -7 && r.y === r.H && r.hp === r.hpMax && r.down === 0 && r.inv > 0 && r.voile, JSON.stringify(r));
+  const r = await f.evaluate(() => ({
+    x: S.p.x,
+    y: S.p.y,
+    z: S.p.z,
+    H,
+    hp: S.p.hp,
+    hpMax: S.p.hpMax,
+    down: S.p.down,
+    inv: S.p.inv,
+    voile: document.getElementById('chuteV').hidden
+  }));
+  T(
+    'relevé au départ, toute sa vie, invincible un instant',
+    r.x === 0 && r.z === -7 && r.y === r.H && r.hp === r.hpMax && r.down === 0 && r.inv > 0 && r.voile,
+    JSON.stringify(r)
+  );
   recu = await p.evaluate(() => recu);
   T('aucun « fin » à la chute', !recu.some(m => m.dt === 'fin'));
 
@@ -114,13 +161,29 @@ const fs = require('fs');
     arbre: document.getElementById('eTree').textContent,
     btns: [...document.querySelectorAll('#eBtns button')].map(x => x.textContent)
   }));
-  T('écran de paie', fin.paie && /^\+ 4\s?321 \$$/.test(fin.t) && /argent est gardé/.test(fin.p) && fin.arbre === "Améliorer l'immeuble" && fin.btns.some(x => /^Repartir plus fort/.test(x)), JSON.stringify(fin));
-  T('niveaux à l\'écran de fin', /Rang 3 · Sylve, Combattant niv\. 4 · Fusil d'assaut niv\. 3 de Nature/.test(fin.p), fin.p);
+  T(
+    'écran de paie',
+    fin.paie &&
+      /^\+ 4\s?321 \$$/.test(fin.t) &&
+      /argent est gardé/.test(fin.p) &&
+      fin.arbre === "Améliorer l'immeuble" &&
+      fin.btns.some(x => /^Repartir plus fort/.test(x)),
+    JSON.stringify(fin)
+  );
+  T("niveaux à l'écran de fin", /Rang 3 · Sylve, Combattant niv\. 4 · Fusil d'assaut niv\. 3 de Nature/.test(fin.p), fin.p);
   recu = await p.evaluate(() => recu);
   const m = recu.find(x => x.dt === 'fin') || {};
   T(
     'fin : depart, boss, duree, chutes, rang, dev',
-    m.raison === 'ville' && m.depart === 1 && m.boss === 0 && Number.isInteger(m.duree) && m.duree >= 8 && m.chutes === 1 && m.rang === 3 && m.dev === false && m.argent === 4321,
+    m.raison === 'ville' &&
+      m.depart === 1 &&
+      m.boss === 0 &&
+      Number.isInteger(m.duree) &&
+      m.duree >= 8 &&
+      m.chutes === 1 &&
+      m.rang === 3 &&
+      m.dev === false &&
+      m.argent === 4321,
     JSON.stringify(m)
   );
 
@@ -130,7 +193,11 @@ const fs = require('fs');
   await p.waitForTimeout(500);
   recu = await p.evaluate(() => recu);
   const pr2 = recu.filter(x => x.dt === 'pret');
-  T('pret à la deuxième partie, sans bourse', pr2.length === 2 && pr2[1].partie === 2 && pr2[1].argent === 0 && (await f.evaluate(() => save.cash)) === cashAvant, JSON.stringify(pr2[1]));
+  T(
+    'pret à la deuxième partie, sans bourse',
+    pr2.length === 2 && pr2[1].partie === 2 && pr2[1].argent === 0 && (await f.evaluate(() => save.cash)) === cashAvant,
+    JSON.stringify(pr2[1])
+  );
   await f.evaluate(() => {
     save.dev = true;
     devTick(0.016);
@@ -161,7 +228,11 @@ const fs = require('fs');
     a.inDead = S.p.dead && S.phase === 'dead';
     return a;
   });
-  T('page seule : rang 1, bonus à zéro, chute ; « Ils arrivent » : défaite', seule.rangK === 1 && seule.hm && seule.down === 8 && seule.inDead, JSON.stringify(seule));
+  T(
+    'page seule : rang 1, bonus à zéro, chute ; « Ils arrivent » : défaite',
+    seule.rangK === 1 && seule.hm && seule.down === 8 && seule.inDead,
+    JSON.stringify(seule)
+  );
 
   T('aucune erreur', errs.length === 0, errs.slice(0, 3).join(' | '));
   console.log(ok + ' OK, ' + ko + ' ratés · erreurs ' + errs.length);

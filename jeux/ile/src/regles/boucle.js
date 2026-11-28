@@ -49,7 +49,7 @@ function step(s, dt, inp) {
         x = tg.x,
         z = tg.z;
       const hit = [],
-        RE = r.el || 'feu', // V2.6 : l'élément choisi du héros
+        RE = r.el || 'feu', // l'élément choisi du héros
         cn = { n: 0 };
       for (const e of s.enemies)
         if (e.hp > 0 && !e.bur && Math.hypot(e.x - x, e.z - z) < (r.r || BAL.metR) + (e.boss ? 1.5 : 0)) {
@@ -58,7 +58,7 @@ function step(s, dt, inp) {
           else elState(s, e, RE, cn);
           hit.push(e);
         }
-      if (r.tn) tintUlt(s, null, hit, x, z, -1, r.tn); // ultime teinté (V2.2)
+      if (r.tn) tintUlt(s, null, hit, x, z, -1, r.tn); // ultime teinté
       if (r.fz) {
         zoneAdd(s, x, z, (r.r || BAL.metR) * 0.6, RE, r.fz); // Artilleur (spA2) : le météore laisse des flammes (ou la zone de l'élément choisi)
         for (const q of s.zones) if (q.el === RE && Math.hypot(q.x - x, q.z - z) < 1.6) q.hero = 1;
@@ -76,7 +76,7 @@ function step(s, dt, inp) {
       const c = s.enemies.filter(e => e.hp > 0 && !e.bur && Math.hypot(e.x - st.x, e.z - st.z) < (st.r || BAL.stormR));
       for (let i = 0; i < 3 && c.length; i++) {
         const e = c.splice(Math.floor(s.rng() * c.length), 1)[0],
-          SE = st.el || 'elec'; // V2.6 : l'élément choisi du héros
+          SE = st.el || 'elec'; // l'élément choisi du héros
         hurtE(
           e,
           BAL.stormDmg * (1 + 0.08 * (lvl(s, s.wave) - 1)) * mult(SE, e.el, e.boss, BAL.strong + s.m.strong),
@@ -85,7 +85,7 @@ function step(s, dt, inp) {
         );
         if (SE !== 'elec') elState(s, e, SE, { n: 0 });
         s.events.push({ k: 'bolt2', x: e.x, z: e.z, tn: st.tn || '', el: SE });
-        if (st.tn) tintUlt(s, null, [e], 0, 0, -1, st.tn); // ultime teinté (V2.2)
+        if (st.tn) tintUlt(s, null, [e], 0, 0, -1, st.tn); // ultime teinté
       }
     }
     s.storms = s.storms.filter(st => st.t > 0);
@@ -104,7 +104,7 @@ function step(s, dt, inp) {
   }
   auraStep(s, dt);
   botTick(s, dt);
-  // apparitions (V2.0) : chacun surgit de la mer face à sa plage, n'importe où sur la côte, et gagne la terre à gué
+  // apparitions : chacun surgit de la mer face à sa plage, n'importe où sur la côte, et gagne la terre à gué
   while (!s.client && s.queue.length && s.queue[0].t <= s.t) {
     const q = s.queue.shift(),
       n = lvl(s, s.wave);
@@ -201,7 +201,7 @@ function step(s, dt, inp) {
     if (e.mark > 0) e.mark -= dt;
     const hold = e.k === 'rng' && Math.hypot(e.x, e.z) <= 16; // le tireur s'arrête à portée du cœur et le bombarde
     if (s.flood > 0 && e.k !== 'air') {
-      const FE = s.floodEl || 'eau'; // V2.6 : l'élément choisi du héros (Sanctuaire)
+      const FE = s.floodEl || 'eau'; // l'élément choisi du héros (Sanctuaire)
       e.slow = Math.max(e.slow, 0.25);
       if (FE === 'feu') e.burn = Math.max(e.burn, 0.6);
       else if (FE === 'bois') e.poi = Math.max(e.poi || 0, 0.6);
@@ -244,7 +244,7 @@ function step(s, dt, inp) {
       e.x = Math.cos(a) * (R_ISLE + 4);
       e.z = Math.sin(a) * (R_ISLE + 4);
       e.sea = [L[0], L[1]];
-    } // autre filet (audit V2.0, problème 4) : sur une plage coupée du cœur, il repart à l'eau vers une plage ouverte
+    } // autre filet : sur une plage coupée du cœur, il repart à l'eau vers une plage ouverte
     if (e.sea) {
       const dx = e.sea[0] - e.x,
         dz = e.sea[1] - e.z,
@@ -458,7 +458,7 @@ function step(s, dt, inp) {
           e.imm = 2.2;
         }
       } else if (z.el === 'vent') {
-        e.slow = Math.max(e.slow, 0.3); // tourbillon de Vent (V2.1) : ralentit et soulève les petits ennemis qui y entrent
+        e.slow = Math.max(e.slow, 0.3); // tourbillon de Vent : ralentit et soulève les petits ennemis qui y entrent
         if (liftable(e)) lift(e, 0.6);
       } else if (z.el === 'elec' && zapNow && zn < 3) {
         zn++;
@@ -486,15 +486,15 @@ function step(s, dt, inp) {
       if (e.hp <= 0 || e.bur || b.hit.includes(e.id)) continue;
       const r = rOf(e),
         cy = cyOf(e),
-        u = Math.max(0, Math.min(1, ((e.x - x0) * sx + (cy - y0) * sy + (e.z - z0) * sz) / sl)); // le choc est cherché sur tout le trajet du pas, pas seulement à son bout (audit V2.0, problème 10)
+        u = Math.max(0, Math.min(1, ((e.x - x0) * sx + (cy - y0) * sy + (e.z - z0) * sz) / sl)); // le choc est cherché sur tout le trajet du pas, pas seulement à son bout
       if ((e.x - x0 - sx * u) ** 2 + (cy - y0 - sy * u) ** 2 + (e.z - z0 - sz * u) ** 2 < r * r) {
         const cr = s.rng() < (b.cr === undefined ? BAL.crit : b.cr),
           ef = mult(b.el, e.el, e.boss, BAL.strong + s.m.strong),
           od = Math.hypot(e.x - b.ox, e.z - b.oz),
           far =
             (b.zf && od > BAL.zephFar ? 1 + b.zf : 1) * // Zéphyr : plus fort de loin
-            (b.sf && od > BAL.snipFar ? 1 + b.sf : 1) * // … et encore plus en Sniper (V2.2)
-            (b.iso && isolated(s, e) ? 1 + b.iso : 1); // Volt Lame : une cible seule (V2.2)
+            (b.sf && od > BAL.snipFar ? 1 + b.sf : 1) * // … et encore plus en Sniper
+            (b.iso && isolated(s, e) ? 1 + b.iso : 1); // Volt Lame : une cible seule
         hurtE(
           e,
           b.dmg * fallK(b) * (cr ? b.ck || BAL.critK : 1) * ef * far * (e.boss ? 1 + (b.bb || 0) : 1),
@@ -592,7 +592,7 @@ function step(s, dt, inp) {
       if (e.hp <= 0) continue;
       const d2 = (e.x - t.x) ** 2 + (e.z - t.z) ** 2;
       if (d2 <= R * R && sees(t.type, e, d2)) {
-        const pr = (t.type === 'canon' ? e.hp : -e.rem) + (e.k === 'tank' || e.k === 'gol' ? 1e6 : 0); // rôle Tank (V2.2) : il attire les tirs
+        const pr = (t.type === 'canon' ? e.hp : -e.rem) + (e.k === 'tank' || e.k === 'gol' ? 1e6 : 0); // rôle Tank : il attire les tirs
         if (pr > bp) {
           b2 = bp;
           t2 = tg;
@@ -719,7 +719,7 @@ function step(s, dt, inp) {
     s.next = genWave(s, s.wave + 1);
   }
 }
-// LES RÔLES DES ENNEMIS (V2.2). L'assassin (le Furtif, l'Éclat) : un héros debout et au sol à BAL.assR m ou moins, il quitte sa route et fonce sur lui
+// LES RÔLES DES ENNEMIS. L'assassin (le Furtif, l'Éclat) : un héros debout et au sol à BAL.assR m ou moins, il quitte sa route et fonce sur lui
 // pendant BAL.assT s, puis souffle BAL.assRest s. Il va tout droit et reprend sa route si un mur ou une colline le bloque.
 const ASSN = { ste: 1, ecl: 1 };
 function assTarget(s, e, hs, dt) {
@@ -770,7 +770,7 @@ function chaseMove(s, e, h, m) {
   e.dz = dz / l;
   return true;
 }
-// Braise, voie Mage de bataille (V2.2) : une aura brûle les ennemis à BAL.auraR m (+spB1) de lui. L'hôte blesse ; chacun montre l'aura de son héros.
+// Braise, voie Mage de bataille : une aura brûle les ennemis à BAL.auraR m (+spB1) de lui. L'hôte blesse ; chacun montre l'aura de son héros.
 function auraStep(s, dt) {
   const hs = [s.hero];
   for (const k in s.others) hs.push(s.others[k]);
@@ -790,7 +790,7 @@ function auraStep(s, dt) {
       }
   }
 }
-// Volt, voie Lame (V2.2) : une cible est seule quand aucun autre ennemi n'est à BAL.lameR m d'elle
+// Volt, voie Lame : une cible est seule quand aucun autre ennemi n'est à BAL.lameR m d'elle
 function isolated(s, e) {
   for (const o of s.enemies) if (o !== e && o.hp > 0 && Math.hypot(o.x - e.x, o.z - e.z) < BAL.lameR) return false;
   return true;

@@ -6,7 +6,7 @@
 // ---------------------------------------------------------------- les emplacements (SLOTS)
 // un emplacement : id (= sa place dans SLOTS), k : 'toit' / 'balcon' / 'mur' / 'int' (couloir), x, y, z, n : nom affiché ;
 // f : façade (balcons) ; lv : niveau (balcons, couloirs) ; r : route (murs d'avenue).
-// Numéros : 0-7 toit, 8-15 balcons (2e et 4e), 16-23 murs d'avenue, 24-31 couloirs, 32-39 balcons (V1.7), 40-55 balcons du 1er et du 3e (V1.8).
+// Numéros : 0-7 toit, 8-15 balcons (2e et 4e), 16-23 murs d'avenue, 24-31 couloirs, 32-39 balcons qui font le tour, 40-55 balcons du 1er et du 3e.
 const SLOTS = [];
 for (const q of [
   [-10.6, -10.6, 'coin nord-ouest'],
@@ -57,22 +57,22 @@ for (let r = 0; r < 4; r++)
       n: 'Mur ' + R.n.toLowerCase() + (s < 0 ? ' (gauche)' : ' (droite)')
     });
   }
-// V1.4 : les couloirs, mode fuite seulement
+// les couloirs, mode fuite seulement
 for (let lv = 1; lv < NLV; lv++)
   for (const q of INTSL)
     SLOTS.push({ id: SLOTS.length, k: 'int', lv, x: q[0], y: LVY(lv), z: q[1], n: 'Couloir ' + lv + 'e étage (' + q[2] + ')' });
-// V1.7 : 8 emplacements de plus sur les balcons qui font le tour (numéros à la suite : les anciennes sauvegardes gardent leurs tourelles)
+// 8 emplacements de plus sur les balcons qui font le tour (numéros à la suite : les anciennes sauvegardes gardent leurs tourelles)
 for (let f = 0; f < 4; f++)
   for (const q of [
     [5.2, 2, ', autre côté'],
     [-5.2, 4, ', autre côté']
   ])
     addBalSlot(f, q);
-// V1.8 : balcons au 1er et au 3e aussi (numéros 40 à 55)
+// balcons au 1er et au 3e aussi (numéros 40 à 55)
 for (const lv of [1, 3]) for (let f = 0; f < 4; f++) for (const u of [-5.2, 5.2]) addBalSlot(f, [u, lv]);
 // l'emplacement s est-il utilisable (arbre P, mode m) ? toit toujours, couloirs en mode fuite, murs avec la case Murs
 const slotOn = (P, s, m) => s.k === 'toit' || (s.k === 'int' && m === 'out') || (s.k === 'balcon' && P.bal) || (s.k === 'mur' && P.mur);
-// V3.3 (sa demande : « spawn sans tourelle j1, elle fait tout le boulot ») : en mode fuite, le jour 1 se joue sans tourelle ; celles du plan reviennent au jour 2
+// en mode fuite, le jour 1 se joue sans tourelle ; celles du plan reviennent au jour 2
 const turOff = S => S.mode === 'out' && S.day === 1 && !S.endless;
 // pose S.tur d'après le plan (save.layout : id d'emplacement → type), dans la limite S.P.turrets, en gardant l'état des tourelles inchangées.
 // Une tourelle : slot, ty ('mg' / 'la' / 'mo' / 'fl'), x, y, z (bouche), k, f ; cd : recharge ; ti, tg : cible (zombie, et sa génération Z.gen) ;

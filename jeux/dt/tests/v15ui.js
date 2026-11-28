@@ -13,8 +13,8 @@ const {chromium}=require('playwright');const path=require('path');
   const inter=(a,c)=>a&&c&&a.l<c.r-1&&c.l<a.r-1&&a.t<c.b-1&&c.t<a.b-1;
   const inView=a=>a&&a.l>=0&&a.t>=0&&a.r<=966&&a.b<=366;
   await p.goto('file://'+path.resolve('test3d.html'));await p.waitForTimeout(900);
-  T('titre V4.9',(await p.title())==='Dernier Toit. V4.9',await p.title());
-  T('accueil V4.9',(await txt('.ver'))==='V4.9');
+  T('titre V5.6',(await p.title())==='Dernier Toit. V5.6',await p.title());
+  T('accueil V5.6',(await txt('.ver'))==='V5.6');
 
   // ---- mode « Ils arrivent » : pas de masse dans la barre
   await p.evaluate(()=>{const s=__dt.save;s.runs=5;s.runsOut=5;s.mode='in';s.lv.w_masse=1;__dt.newGame(1);document.getElementById('big').style.display='none';});

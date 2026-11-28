@@ -8,7 +8,7 @@
 // Fournit aux autres dossiers : HEROS, HKEYS, ELKEYS, ELNOM, ELDE, ELFX, heroRole, heroHp, outside (affichage, interface : menu, boutons) ;
 // useHeroSkill, useHeroUlt (interface) ; lignePercant, rafale (multi.js).
 
-// V3.0 : un héros (clé = élément, gardée dans save.hero) : n nom, el élément, c couleur, role ; sk, ul : noms de la compétence et de l'ultime ;
+// un héros (clé = élément, gardée dans save.hero) : n nom, el élément, c couleur, role ; sk, ul : noms de la compétence et de l'ultime ;
 // cd : recharge de la compétence (s, réduite par la case Rechargement) ; pas, skd, uld : descriptions du passif, de la compétence, de l'ultime (menu)
 const HEROS = {
   feu: {
@@ -426,7 +426,7 @@ function useHeroSkill(S) {
     }
     if (m.kHeal) S.p.hp = Math.min(S.p.hpMax, S.p.hp + m.kHeal * soinK(S));
     // V4.9 : Soigneuse, Bouclier d'eau (spA2) : 30, 10 s
-    if (voieDe(S, 'eau', 'a') && m.spA2 > 0) bouclier(S);
+    if (voieDe(S, 'eau', 'a') && m.spA2 > 0) bouclierMaree(S, gx, gy, gz, R);
     S.ev.push({ k: 'maree', x: gx, y: gy, z: gz, r: R, ec: elH(S) });
   } else if (h === 'bois' && voieDe(S, 'bois', 'b')) plonge(S, a, m, pw, true, true);
   else if (h === 'bois') {

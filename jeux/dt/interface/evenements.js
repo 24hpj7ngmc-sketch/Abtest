@@ -26,6 +26,10 @@ function chuteTick() {
   chuteV.hidden = false;
   $('chuteT').textContent = 'De retour sur le toit dans ' + Math.ceil(d) + ' s';
 }
+// le son d'un sort suit l'élément choisi du héros (ev.ec) : un son par élément (sons/sound.js). Pour l'élément d'origine de l'événement (nat),
+// son son habituel (def) ; sinon celui de l'élément choisi
+const SON_SORT = { feu: 'fireball', eau: 'vague', bois: 'ronces', terre: 'rempart', elec: 'eclair', vent: 'rafale' };
+const sonSort = (ev, nat, def) => (ev.ec && ev.ec !== nat && SON_SORT[ev.ec] ? SON_SORT[ev.ec] : def);
 function events() {
   for (const ev of S.ev) {
     gfxEvent(ev, S);
@@ -121,7 +125,7 @@ function events() {
         SND.play('boss');
       }
     }
-    // V1.5 : cloisons, masse, planches
+    // cloisons, masse, planches
     else if (k === 'wallhit') SND.at('wallhit', ev.x, ev.z, 0, ev.y);
     else if (k === 'wallbreak') SND.at('wallbreak', ev.x, ev.z, 0, ev.y);
     else if (k === 'swing') SND.play('swing');
@@ -144,7 +148,7 @@ function events() {
       }
     }
     // ('decoy', 'mlaunch' et les autres : rien de plus que l'affichage)
-    // V3.9 : variantes de zombies (la première de chaque sorte, dans la partie)
+    // variantes de zombies (la première de chaque sorte, dans la partie)
     else if (k === 'variant') {
       SND.play('boss');
       toast(ZT[ev.ty].n.toUpperCase() + ' : ' + VARD[ev.ty], 3600);
@@ -159,31 +163,31 @@ function events() {
     else if (k === 'zip') SND.play('dash');
     else if (k === 'grappin')
       SND.play('dash'); // V4.7 : le crochet part (la traction fait le bruit de l'escalade)
-    // V3.0 : héros
+    // héros
     else if (k === 'refus') {
       SND.play('no');
       toast(ev.why, 1600);
-    } else if (k === 'brasier0') SND.play('fireball');
-    else if (k === 'meteor') SND.at('meteor', ev.x, ev.z, 0, 25);
-    else if (k === 'maree') SND.at('vague', ev.x, ev.z, 0, ev.y);
-    else if (k === 'ronces') SND.at('ronces', ev.x, ev.z, 0, ev.y);
-    else if (k === 'fleche') SND.at('fleche', ev.x0, ev.z0, 0, ev.y0);
-    else if (k === 'rempart') SND.at('rempart', ev.x, ev.z, 0, 0);
-    else if (k === 'rempart_fin') SND.at(ev.broke ? 'eboul' : 'enfonce', ev.x, ev.z, 0, 0);
+    } else if (k === 'brasier0') SND.play(sonSort(ev, 'feu', 'fireball'));
+    else if (k === 'meteor') SND.at(sonSort(ev, 'feu', 'meteor'), ev.x, ev.z, 0, 25);
+    else if (k === 'maree') SND.at(sonSort(ev, 'eau', 'vague'), ev.x, ev.z, 0, ev.y);
+    else if (k === 'ronces') SND.at(sonSort(ev, 'bois', 'ronces'), ev.x, ev.z, 0, ev.y);
+    else if (k === 'fleche') SND.at(sonSort(ev, 'bois', 'fleche'), ev.x0, ev.z0, 0, ev.y0);
+    else if (k === 'rempart') SND.at(sonSort(ev, 'terre', 'rempart'), ev.x, ev.z, 0, 0);
+    else if (k === 'rempart_fin') SND.at(sonSort(ev, 'terre', ev.broke ? 'eboul' : 'enfonce'), ev.x, ev.z, 0, 0);
     else if (k === 'zap') {
       if (ev.small) SND.at('zap', ev.x1, ev.z1, 0, ev.y1);
-      else SND.at('tonnerre', ev.x1, ev.z1, 0, ev.y1);
-    } else if (k === 'eclair') SND.play('eclair');
+      else SND.at(sonSort(ev, 'elec', 'tonnerre'), ev.x1, ev.z1, 0, ev.y1);
+    } else if (k === 'eclair') SND.play(sonSort(ev, 'elec', 'eclair'));
     // V4.9 : les voies
     else if (k === 'acheve') SND.at('zap', ev.x, ev.z, 0, ev.y);
     else if (k === 'relance') toast('Fulgurance relancé !', 1200);
     else if (k === 'bouclier') SND.play('vague');
     else if (k === 'plonge') SND.play('dash');
-    else if (k === 'onde_roc') SND.at('eboul', ev.x, ev.z, 0, 0);
+    else if (k === 'onde_roc') SND.at(sonSort(ev, 'terre', 'eboul'), ev.x, ev.z, 0, 0);
     // V4.8 : Zéphyr
-    else if (k === 'rafale') SND.play('rafale');
-    else if (k === 'percant') SND.play('percant');
-    else if (k === 'hult') SND.play('ult', ev.h);
+    else if (k === 'rafale') SND.play(sonSort(ev, 'vent', 'rafale'));
+    else if (k === 'percant') SND.play(sonSort(ev, 'vent', 'percant'));
+    else if (k === 'hult') SND.play('ult', ev.ec || ev.h);
   }
   chuteTick();
   S.ev.length = 0;

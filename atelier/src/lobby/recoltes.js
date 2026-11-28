@@ -1,5 +1,5 @@
 // [lobby/recoltes.js] Les récoltes : chaque bâtiment qui produit a une réserve, qu'on ramasse en passant ; préparatifs pour la prochaine partie.
-// ---- LES RÉCOLTES (V8.6) : le village travaille pour le joueur. Chaque bâtiment qui produit a une réserve, qui se remplit à chaque partie terminée et, plus lentement, avec le temps.
+// ---- LES RÉCOLTES : le village travaille pour le joueur. Chaque bâtiment qui produit a une réserve, qui se remplit à chaque partie terminée et, plus lentement, avec le temps.
 // On ramasse en passant devant le bâtiment : rien à toucher. Trois réserves de ressources (mine et musée : or céleste ; hall : éclats du héros incarné)
 // et trois préparatifs pour la prochaine partie, un seul d'avance chacun (marchand : bourse de départ ; salle d'armes : affûtage ; verger : provisions).
 const HVH = 6,

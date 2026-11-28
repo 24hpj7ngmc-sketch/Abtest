@@ -74,7 +74,7 @@ for (const e of ELS) flashMat[e] = glowM(K.hex(K.mix(K.EL[e].glow, 0xfff0c0, 0.5
 const splM = glowM(0xe6f8ff, 0.9);
 let canToastW = 0;
 function splash(x, z, n, pw) {
-  if (n >= 6 && typeof SND !== 'undefined') SND.at('splash', x, z);
+  if (n >= 6) SND.at('splash', x, z);
   for (let i = 0; i < n && parts.length < 150; i++) {
     const m = new THREE.Sprite(splM);
     m.position.set(x, -1.2, z);
@@ -114,7 +114,7 @@ function cannonFx(ev) {
     y1 = (ev.y || 0) + 2.2;
   flash(x0, 3.2, z0, 7, 'feu');
   smoke(x0, 3.4, z0, 5);
-  if (typeof SND !== 'undefined') SND.at('cannon', x0, z0);
+  SND.at('cannon', x0, z0);
   if (parts.length < 170) {
     const m = new THREE.Sprite(flashMat.feu);
     m.position.set(x0, 3, z0);
@@ -136,7 +136,7 @@ function cannonFx(ev) {
     ringFx(ev.x, ev.z, 5, 'feu', 0.5);
     burst(ev.x, y1, ev.z, 'feu', 12, 1.3);
     smoke(ev.x, y1, ev.z, 5);
-    if (typeof SND !== 'undefined') SND.at('stone', ev.x, ev.z);
+    SND.at('stone', ev.x, ev.z);
     if (Math.hypot(camera.position.x - ev.x, camera.position.z - ev.z) < 26) shake = Math.max(shake, 0.3);
   }, T * 1000);
 }

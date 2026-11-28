@@ -1,5 +1,11 @@
 # Dernier Toit — notes de fabrication (V1.0, 19/11/2026)
 
+## V5.6 (28/11/2026) : les bugs de Frédéric, puis le nettoyage
+Frédéric : « Go faire tous les bugs. Ensuite tu peux clean ton code. »
+**Bugs.** (1) « Ils arrivent » : l'arme en main est neutre (pas d'élément) ; le code l'était déjà chez soi, non reproduit ; `heroGear` le dit maintenant explicitement et un joueur sans héros est dessiné avec l'arme neutre. (2) Répulsion d'Ondine (voie a) : le bouclier protège les alliés dans la zone : la Soigneuse publie `p.B`, chaque téléphone se pose le sien (`bouclierMaree`, `bouclierAllie`, `multiBoucliers`). (3) Relance de l'Escarmoucheur chez l'invité : jugée dans le miroir des zombies (`skillInvite`) ; l'hôte ne rejoue plus ni `relance` ni `bouclier` à l'écran (`MSANS`). (4) L'instantané porte l'élément choisi des sorts : 3 bits par objet à la fin de la chaîne, seulement quand un élément est choisi (`mSecEls`, fin de `mLit`) ; compatible dans les deux sens. (5) Les sons des sorts suivent l'élément (`SON_SORT`, `sonSort` dans interface/evenements.js). (6) Marche des avatars : amplitude × `pas` de la recette (1 par défaut). (7) Références d'images faites (`tests/images-ref/`, `tests/ecrans-ref/`, 21 + 14 PNG, regardées avant) ; les tests comparent à 0 pixel.
+**Nettoyage.** Plus de gardes `typeof … === 'function'` sur des fonctions qui existent toujours (multi.js, boucle.js, menu.js, joueurs.js, lobby.js) ; branche « mode fuite » de `useOnde` retirée (jamais appelée : le héros a son ultime) ; tests retirés : `bouchon-multi.js` (les vraies règles du multi existent) et `simtest.js` (banc non lancé, seul usage de la branche retirée) ; `couleurarme`, `elheros`, `elsorts` entrent dans `tout.js` ; trois tests périmés remis à jour (version, `accepte`, champs de `joueursDistants`) ; commentaires « V1.x à V3.x : » et longs historiques raccourcis (l'histoire est ici).
+Tests : `tests/v56regles.js` (règles) et `tests/v56page.js` (page). Empreinte inchangée. Non vérifié : le vrai three.js r128, le téléphone, un vrai réseau ; les images de référence dépendent de `gfx/models/` (à refaire avec `--ref`, après les avoir regardées, quand les modèles communs changent).
+
 ## V5.5 (28/11/2026) : les six héros ont chacun leur modèle 3D
 `gfx/models/roc.js`, `sylve.js`, `volt.js`, `ondine.js`, `zephyr.js` (copies de l'atelier, assemblées par `build.py` après `braise.js`). `hero.avatar` (mains.js) aiguille par identité (`ctx.hero`) vers les six modèles, repli sur le gardien. `joueur.corps` (joueurs.js) lit la recette comme pour Braise (`arme: 1`, `jambes`, `mainD`) ; les pièces de magie en plus ne sont pas gardées sur les joueurs. Rien d'autre ne change (règles, empreinte identiques).
 Non vérifié : le vrai three.js r128, le téléphone.
@@ -12,7 +18,7 @@ Plonge, étourdir du Séisme, brûler des feux au sol) est remplacé quand `elS`
 (`S.fires[].el`) prend l'élément choisi (zombies.js). Les entités gardent `ec` (boule, ronces, rempart, gardiens, orage, météores, Déluge `S.floodEc`) et les événements
 `ec` (= elH). Affichage : `HXE` / `hxSk` / `hxK` / `hxC` / `hxTeinte` / `hxPool` (heros.js) : particules, anneaux, vagues, voile, ciel, pools additifs recolorés, modèles
 (`ctx.el` de hx.rempart, ronce, arbre, flèche, météore, pic ; réserves des autres éléments créées au premier besoin). Tableaux de données : metD ×7, arwD ×9, spkD ×6.
-Test : tests/elsorts.js. Empreinte inchangée. Non fait : en multi, les effets des autres joueurs vus par un invité gardent les couleurs d'origine (instantané sans élément).
+Test : tests/elsorts.js. Empreinte inchangée. (Fait en V5.6 : en multi, l'instantané porte l'élément des sorts.)
 Non vérifié : le vrai three.js r128, le téléphone, l'équilibre des effets Élec / Feu rebondissants des sorts (leurs dégâts d'éclaboussure s'ajoutent comme sur les balles).
 
 ## V5.2 (28/11/2026) : l'élément du héros se choisit

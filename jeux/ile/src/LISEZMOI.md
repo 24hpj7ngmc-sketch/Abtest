@@ -14,11 +14,13 @@ Le jeu est une seule page, assemblée par `build.py` à partir des fichiers ci-d
 - `regles/terrassement.js` : Murs et fosses : vérifier puis poser une ligne de murs, creuser, et ce que ça change pour les ennemis et le héros.
 - `regles/ennemis.js` : Les ennemis : types, boss, composition des vagues, apparition, attaquants spéciaux de la campagne.
 - `regles/defenses.js` : Les défenses : Renfort et ses ruines, pose libre, amélioration, spécialisation, zones d'effet, impact d'un tir.
-- `regles/heros.js` : Les cinq héros : passif, compétence et ultime de chacun.
+- `regles/armes.js` : Les armes du joueur dans la partie : l'élément de chaque arme, et les améliorations du marchand d'armes (tirs multiples, explosions, ricochets, chaînes…).
+- `regles/heros.js` : Les six héros : passif, compétence et ultime de chacun (le même kit dans tous les jeux du projet).
 - `regles/joueur.js` : Le joueur dans la partie : objectifs de vague, héros blessé ou à terre, lance-flammes, déplacement et tir (heroStep).
 - `regles/bots-chantier.js` : Les bots joueurs (mode dev, esclaves) — ce qu'ils bâtissent : avant-poste, couloirs, choix du prochain chantier.
 - `regles/bots.js` : Les bots joueurs — le chef de chantier, et ce que fait un bot à chaque instant (botTick).
 - `regles/boucle.js` : step() : un pas de la partie (vague, ennemis, défenses, effets, bonus, fin). C'est le cœur des règles.
+- `regles/ciel.js` : La vue du ciel vue par les règles : le chrono de 30 s entre deux vagues et les joueurs « Prêts ». L'affichage est dans interface/ciel.js.
 - `regles/auto.js` : Mode normal : des défenses se gèrent seules avec le pot commun ; conseiller d'élément ; tir auto sur cible.
 - `regles/reseau.js` : Le réseau de la partie : l'hôte met l'état du monde en compact (snap), les invités le recopient (applySnap).
 
@@ -26,6 +28,7 @@ Le jeu est une seule page, assemblée par `build.py` à partir des fichiers ci-d
 
 - `interface/base.js` : La base de la page : $, le lien avec le lobby (LOBBY, versLobby), les réglages, couleurs, icônes, et l'arbre du marchand de la partie (TREES.run).
 - `interface/armes.js` : Les six armes telles que la partie les connaît (modèle, recul, zoom, profil de base), les bonus venus du lobby (heroMods), et le panneau du marchand.
+- `interface/arsenal.js` : Tes armes dans la partie : le choix de 3 armes et de leur élément au début, le marchand d'armes, les effets des améliorations à l'écran, et ce que le multi en dit.
 - `interface/modes.js` : Le mode de tir (bouton, auto, auto sur cible), le mode de jeu reçu du lobby, et le mode dev de la partie.
 - `interface/hud.js` : L'état de la partie côté page (sim, outil en main), la barre d'outils, la roulette des éléments, les entrées, les textes du HUD.
 - `interface/commandes.js` : Les commandes universelles : Action et Saut dans le coin, Sneak, Compétence, Ultime, Renfort et le bouton libre le long de l'arc.
@@ -38,6 +41,7 @@ Le jeu est une seule page, assemblée par `build.py` à partir des fichiers ci-d
 - `interface/carte.js` : La grande carte et les options de la partie (on y entre en touchant la mini-carte).
 - `interface/guide.js` : Le Guide partout : le panneau commun (#guideV), la fiche « Règles » de L'Île des Cinq et ses cinq onglets, le Guide près du cœur.
 - `interface/reperes.js` : Repères à l'écran : nombres qui s'envolent, triangles et flèches vers les ennemis hors du champ.
+- `interface/ciel.js` : La vue du ciel entre deux vagues : la caméra monte façon Clash of Clans, on pose, on améliore, on mure et on creuse au doigt, puis « Prêt ».
 - `interface/boucle.js` : La boucle de la page : resize, frame() (une image : entrées, règles, affichage, HUD), démarrage.
 
 ## Les sons (`src/sons/`)
@@ -49,7 +53,8 @@ Le jeu est une seule page, assemblée par `build.py` à partir des fichiers ci-d
 - `affichage/scene.js` : La scène 3D de la partie : matériaux du ciel et de la mer, caméra, lumières, modèles préparés par élément.
 - `affichage/modeles.js` : Des modèles aux objets affichés (mdlOf), textures et halos, le sol de l'île et la mer, les étiquettes.
 - `affichage/decor.js` : Le décor de l'île : ciel, cœur, navires et écume, étals (marchand, esclaves, Guide), végétation semée puis écartée là où l'on bâtit, collines.
-- `affichage/themes.js` : Les thèmes de la campagne : un décor par type (Feu, Eau, Terre, Élec, Bois) — ciel, lumière, sol, volcans, étangs, cristaux.
+- `affichage/armurier.js` : L'étal du marchand d'armes : à 12 m du cœur, loin des chemins et des autres étals. On s'en approche, le bouton « Armes » apparaît (interface/arsenal.js).
+- `affichage/themes.js` : Les thèmes de la campagne : un décor par type (Feu, Eau, Terre, Élec, Nature, Vent) — ciel, lumière, sol, volcans, étangs, cristaux.
 - `affichage/ambiance.js` : Autour du joueur : pollen, défenses et leurs signes, fantôme de pose, murs et fosses affichés, l'arme en main (setGun, handsTick).
 - `affichage/entites.js` : Les entités : tirs, barres de vie, ruines, bonus à ramasser, ennemis (enemyView).
 - `affichage/animations.js` : Animations des ennemis et des défenses, rayons, éclairs, orage (calculées à l'affichage : les règles n'en dépendent pas).
@@ -58,6 +63,6 @@ Le jeu est une seule page, assemblée par `build.py` à partir des fichiers ci-d
 
 ## Les modèles 3D (`gfx/`)
 
-- `gfx/kit.js` : le kit de modélisation (formes → maillages colorés par sommet). `gfx/models/*.js` : un modèle par objet du jeu.
-- `gfx/armes/mains.js` : les six armes du projet, venues telles quelles de l'atelier de Dernier Toit. On ne le modifie pas ici : on le remplace.
+- `gfx/kit.js` : le kit de modélisation (formes → maillages colorés par sommet). `gfx/models/*.js` : un modèle par objet du jeu, dont les six héros (`braise`, `roc`, `sylve`, `volt`, `ondine`, `zephyr`). Ces modèles sont communs aux trois jeux : un autre atelier les gère et les recopie, on ne les modifie pas ici.
+- `gfx/armes/mains.js` : les six armes du projet, venues telles quelles de l'atelier de Dernier Toit (teintées par `ctx.el`). On ne le modifie pas ici : on le remplace.
 - `gfx/three-lite.js` : le moteur d'aperçu des tests (remplace three.js, que les tests ne peuvent pas télécharger).

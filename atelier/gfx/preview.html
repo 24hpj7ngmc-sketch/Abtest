@@ -28,7 +28,7 @@ window.runPreview=function(cfg){
   sun.target.position.set(cx,0,cz);sun.position.set(cx+SUN.x*200,SUN.y*200,cz+SUN.z*200);{const c=sun.shadow.camera,s=Math.max(12,size*1.6);c.left=-s;c.right=s;c.top=s;c.bottom=-s;c.near=1;c.far=460;}
   const sheet=document.createElement('canvas');sheet.width=TW*cols;sheet.height=TH*rows;const g2=sheet.getContext('2d');
   views.forEach((v,i)=>{ // v = {az (degrés, 0 = face au modèle, côté +Z), el (degrés), d (distance, en multiples de la taille), ty (hauteur visée), eye (hauteur fixe de l'œil), label}
-    const d=((v.d||1.7)*size+(v.dAdd||0))*(cfg.zoom||1),az=(v.az||0)*Math.PI/180,el=(v.el===undefined?12:v.el)*Math.PI/180,tx=cx+(v.tx||0),ty=v.ty===undefined?cy:v.ty,tz=cz+(v.tz||0);
+    const d=(v.dAbs!==undefined?v.dAbs:(v.d||1.7)*size+(v.dAdd||0))*(cfg.zoom||1),az=(v.az||0)*Math.PI/180,el=(v.el===undefined?12:v.el)*Math.PI/180,tx=(v.abs?0:cx)+(v.tx||0),ty=v.ty===undefined?cy:v.ty,tz=(v.abs?0:cz)+(v.tz||0);
     let px=tx+Math.sin(az)*Math.cos(el)*d,py=ty+Math.sin(el)*d,pz=tz+Math.cos(az)*Math.cos(el)*d;if(v.eye!==undefined){py=v.eye;}cam.position.set(px,Math.max(.15,py),pz);cam.fov=v.fov||cfg.fov||50;cam.updateProjectionMatrix();cam.lookAt(tx,ty,tz);
     renderer.render(scene,cam);g2.drawImage(cv,(i%cols)*TW,Math.floor(i/cols)*TH);g2.fillStyle='rgba(0,0,0,.55)';g2.fillRect((i%cols)*TW,Math.floor(i/cols)*TH,TW,18);g2.fillStyle='#fff';g2.font='12px sans-serif';g2.fillText(v.label||('vue '+(i+1)),(i%cols)*TW+6,Math.floor(i/cols)*TH+13);});
   cv.style.display='none';document.body.appendChild(sheet);sheet.id='sheet';

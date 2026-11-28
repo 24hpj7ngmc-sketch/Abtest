@@ -130,5 +130,5 @@ function prepFree(p) {
   PREP.delete(p.id);
 }
 const elCtx = el => ({ el, P: K.EL[el] || K.EL.feu });
-// les ennemis du Vent (V2.1) : la palette du Vent sur l'allure des ennemis de l'Eau (leurs modèles n'ont pas encore de décor « vent » à eux)
+// les ennemis du Vent : la palette du Vent sur l'allure des ennemis de l'Eau (leurs modèles n'ont pas encore de décor « vent » à eux)
 const elCtxE = el => (el === 'vent' ? { el: 'eau', P: K.EL.vent } : elCtx(el));

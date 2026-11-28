@@ -3,7 +3,7 @@
 // qui frappe les zombies proches et casse les cloisons visées.
 // Fournit aux autres dossiers : WEAP, WKEYS, weapOf (affichage, interface : choix de l'arme, photos, sons) ; useMasse (interface).
 
-// V2.2 : les armes de L'Île des Cinq (mode « Ils s'échappent » ; « Ils arrivent » garde le fusil). Le fusil est la référence ; l'arbre « Fusil »
+// les armes de L'Île des Cinq (mode « Ils s'échappent » ; « Ils arrivent » garde le fusil). Le fusil est la référence ; l'arbre « Fusil »
 // (Calibre, Cadence, Œil de lynx, Perforant, Balles explosives) vaut pour toutes.
 // n, short : noms (menu, barre) ; dmg et rate multiplient les dégâts et la cadence du fusil (S.P.rDmg, S.P.rRate) ; range : portée (m) ;
 // crit : chance de critique en plus ; critK : multiplicateur du critique ; pierce : zombies traversés en plus ; wall : dégâts d'une balle perdue
@@ -51,7 +51,7 @@ const WEAP = {
     kick: 2.2,
     scope: 1
   },
-  // V3.9 : fusil à pompe (8 plombs en gerbe, dégâts qui baissent avec la distance, casse bien les cloisons) et lance-flammes (cône de 10 m, enflamme)
+  // fusil à pompe (8 plombs en gerbe, dégâts qui baissent avec la distance, casse bien les cloisons) et lance-flammes (cône de 10 m, enflamme)
   pompe: {
     n: 'Fusil à pompe',
     short: 'Pompe',
@@ -87,7 +87,7 @@ const WEAP = {
 const WKEYS = ['fusil', 'pistolet', 'assaut', 'sniper', 'pompe', 'lance'];
 // l'arme en main (toujours le fusil en « Ils arrivent »)
 const weapOf = S => WEAP[S.mode === 'out' && WEAP[S.weap] ? S.weap : 'fusil'];
-// V3.9 : le lance-flammes : tout ce qui est dans le cône devant (10 m, ~22°), sans mur entre deux, brûle (40 zombies au plus par tic)
+// le lance-flammes : tout ce qui est dans le cône devant (10 m, ~22°), sans mur entre deux, brûle (40 zombies au plus par tic)
 function flameShoot(S, W) {
   const p = S.p,
     P = S.P,

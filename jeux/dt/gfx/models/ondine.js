@@ -1,6 +1,6 @@
 // ONDINE — l'héroïne Support, vue par ses coéquipiers. Fichier commun, comme braise.js (même interface, même gabarit).
 // ≈ 1,8 m, origine aux pieds, regarde vers −Z. Pièces : body, armL, armR (pivots aux épaules, comme le gardien), puis magL et magR
-// (la magie de soin au-dessus des paumes, qui flotte). En plus de la recette : jambes (premiers objets de body : jambe droite puis
+// (la magie de soin au-dessus des paumes, qui flotte). En plus de la recette : pas (multiplicateur de l'amplitude de marche des jambes, 1 par défaut ; les longues robes en veulent moins) ; jambes (premiers objets de body : jambe droite puis
 // gauche, autant chacune) ; mainD (objets du bras droit à garder quand elle tient une arme).
 // ctx.arme : elle tient une arme : bras le long du corps, sans la magie des mains.
 // Langage des formes : courbes, vagues et rondeurs (robe en cloche à plusieurs pans, châle rond, longs cheveux ondulés).
@@ -372,6 +372,14 @@
         }
       );
     }
-    return { parts, bake: { ground: 0.2, groundH: 0.6, map: { s: 'm' } }, scale: 1, labelY: 2.15, jambes, mainD };
+    return {
+      parts,
+      bake: { ground: 0.2, groundH: 0.6, map: { s: 'm' } },
+      scale: 1,
+      labelY: 2.15,
+      jambes,
+      pas: 0.4,
+      mainD
+    };
   };
 }

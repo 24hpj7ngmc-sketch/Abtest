@@ -229,7 +229,7 @@ function aimPoint(S, maxd) {
   t = rayWall(o[0], o[1], o[2], d[0], d[1], d[2], t);
   return [o[0] + d[0] * t, Math.max(0, o[1] + d[1] * t), o[2] + d[2] * t, t];
 }
-// ---------------------------------------------------------------- V3.4 : l'escalier qui porte
+// ---------------------------------------------------------------- l'escalier qui porte
 // L'escalier : un seul chemin du hall du rez-de-chaussée jusqu'au toit. Dans la cage, pousser le joystick dans le sens des marches suffit :
 // on suit les volées et le palier sans frotter les murs, la caméra prend les virages. Aux étages (devant les portes), on reprend la main.
 // SP : P les points du chemin, cg[i] = 1 si le point est dans la cage (0 : devant les portes d'un étage), seg les longueurs, acc les
@@ -379,7 +379,7 @@ function glideStep(S, dt, tx, tz, sp, m) {
   return true;
 }
 // ---------------------------------------------------------------- les boutiques
-// V3.5 : la boutique la plus proche (à 2,4 m, même étage), −1 sinon ; mode fuite seulement
+// la boutique la plus proche (à 2,4 m, même étage), −1 sinon ; mode fuite seulement
 const shopNear = S => {
   if (S.mode !== 'out') return -1;
   const p = S.p;
