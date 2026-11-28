@@ -15,10 +15,11 @@ const CAT = {
   hall: {
     n: 'Hall des héros',
     m: 'vil.hall',
-    r: 6.6,
+    r: 10.6,
     u: 1,
     up: 1,
     mx: 6,
+    fix: 1,
     act: 'hall',
     ly: 11.6,
     col: '#ffcf5a',
@@ -144,8 +145,9 @@ let vilId = 1,
   museeV = null;
 const mdlFor = (C, B) => C.ms[Math.abs(Math.round(B.x * 7 + B.z * 13)) % C.ms.length];
 // un bâtiment améliorable monte jusqu'au niveau `mx` (6) : chaque niveau l'agrandit de 6 % et augmente son bonus
+// fix : le Hall (la cathédrale) garde sa taille, à l'échelle du joueur qui y entre ; son modèle s'embellit avec le niveau (ctx.lvl)
 const lvOf = B => Math.max(1, Math.min(CAT[B.t].mx || 3, B.l || 1)),
-  kOf = B => (!CAT[B.t].up ? 1 : 1 + 0.06 * (lvOf(B) - 1)),
+  kOf = B => (!CAT[B.t].up || CAT[B.t].fix ? 1 : 1 + 0.06 * (lvOf(B) - 1)),
   rOf = B => CAT[B.t].r * kOf(B),
   myVil = () => (VISIT.on ? VISIT.mine.vil : save.vil),
   myB = B => (VISIT.on ? VISIT.mine.vil.find(o => o.t === B.t) : B),
@@ -153,14 +155,47 @@ const lvOf = B => Math.max(1, Math.min(CAT[B.t].mx || 3, B.l || 1)),
     const B = myVil().find(B => B.t === t);
     return B ? lvOf(B) : 0;
   };
-// la colonne de lumière au-dessus d'un héros du hall (une seule géométrie pour tous)
-const pillarG = new THREE.CylinderGeometry(1, 1, 70, 12, 1, true);
+// au Hall, chaque héros exposé a son cône de lumière qui tombe de la voûte et sa plaque (une seule géométrie pour tous)
+const hallConeG = new THREE.ConeGeometry(1.05, 6.2, 16, 1, true),
+  hallPlG = new THREE.PlaneGeometry(0.56, 0.21);
+// la plaque au pied d'un héros exposé : son nom et son rôle, gravés en or sur le bronze
+function hallPlaque(e) {
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 96;
+  const g = c.getContext('2d');
+  g.fillStyle = '#3b2a16';
+  g.fillRect(0, 0, 256, 96);
+  g.strokeStyle = '#ffcf5a';
+  g.lineWidth = 6;
+  g.strokeRect(5, 5, 246, 86);
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.fillStyle = '#ffe6a6';
+  g.font = "700 40px 'Chakra Petch',sans-serif";
+  g.fillText(EL[e].hero.toUpperCase(), 128, 38, 228);
+  g.fillStyle = '#e8d6b0';
+  g.font = "600 25px 'Barlow',sans-serif";
+  g.fillText(ROLE[e], 128, 72, 228);
+  return new THREE.Mesh(hallPlG, new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c) }));
+}
+// un point du repère d'un bâtiment (x, z) dans le monde (sans échelle : sert au Hall, qui ne grandit pas)
+function vilMonde(B, x, z) {
+  const c = Math.cos(B.r),
+    s = Math.sin(B.r);
+  return [B.x + x * c + z * s, B.z - x * s + z * c];
+}
 function vilView(B) {
   const C = CAT[B.t],
     g = new THREE.Group(),
     inn = new THREE.Group(),
     lv = lvOf(B),
-    m = mdlOf(mdlFor(C, B), C.el ? elCtx(B.el || 'feu') : undefined, C.el ? B.el : undefined, { cast: false });
+    m = mdlOf(
+      mdlFor(C, B),
+      C.fix ? { lvl: lv } : C.el ? elCtx(B.el || 'feu') : undefined,
+      C.fix ? 'n' + lv : C.el ? B.el : undefined,
+      { cast: false }
+    );
   inn.add(m);
   g.add(inn);
   if (C.up) inn.scale.setScalar(kOf(B));
@@ -170,6 +205,7 @@ function vilView(B) {
     {
       const pr = m.userData.prep;
       l.position.y = C.up && pr.max ? pr.max[1] * (pr.scale || 1) * kOf(B) + 1.7 : C.ly;
+      if (pr.lab) l.position.set(pr.lab[0], pr.lab[1], pr.lab[2]);
     }
     g.add(l);
     lobText(l, C.n.toUpperCase(), C.d + (C.up ? ' · niv. ' + lv : ''), C.col);
@@ -178,40 +214,49 @@ function vilView(B) {
       const h = lobLabel(4.2);
       h.visible = false;
       g.userData.hvY = l.position.y + 1.75;
-      h.position.y = g.userData.hvY;
+      h.position.set(l.position.x, g.userData.hvY, l.position.z);
       g.add(h);
       g.userData.hv = h;
     }
   }
+  // le Hall, une cathédrale : ses murs arrêtent le joueur (cercles du modèle, mis dans le monde), et les six héros y sont exposés comme des figures de cire,
+  // chacun sur son socle, dans l'élément choisi par le joueur : pose figée, cône de lumière de sa couleur, halo, plaque à son nom
   if (B.t === 'hall') {
-    const sp = m.userData.prep.spots || [];
+    const pr = m.userData.prep,
+      sp = pr.spots || [];
+    g.userData.cols = (pr.col || []).map(o => vilMonde(B, o[0], o[1]).concat(o[2]));
+    g.userData.porte = pr.porte || [0, rOf(B)];
     g.userData.heroes = sp.map(S => {
       const ee = elH(S.el),
         av = mdlOf('hero.avatar', avCtx(S.el, ee), avKey(S.el, ee), { cast: false });
       av.position.set(S.x, S.y, S.z);
-      av.rotation.y = S.a + Math.PI;
+      av.rotation.y = S.ry;
       inn.add(av);
       const col = new THREE.Color(elc(ee)).getHex(),
         beam = new THREE.Mesh(
-          pillarG,
+          hallConeG,
           new THREE.MeshBasicMaterial({
             color: col,
             transparent: true,
-            opacity: 0.2,
+            opacity: 0.1,
             blending: THREE.AdditiveBlending,
             depthWrite: false,
             side: THREE.DoubleSide,
             fog: false
           })
         );
-      beam.position.set(S.x, 36, S.z);
-      beam.scale.set(0.6, 1, 0.6);
+      beam.position.set(S.x, S.y + 3.1, S.z);
       inn.add(beam);
-      const glow = new THREE.Sprite(glowM(col, 0.5));
-      glow.position.set(S.x, S.y + 1.1, S.z);
-      glow.scale.setScalar(3);
+      const glow = new THREE.Sprite(glowM(col, 0.4));
+      glow.position.set(S.x, S.y + 1.05, S.z);
+      glow.scale.setScalar(2.4);
       inn.add(glow);
-      return { el: S.el, ee, av, beam, glow, y: S.y, a: S.a, w: 0 };
+      const pl = hallPlaque(S.el);
+      pl.rotation.order = 'YXZ';
+      pl.rotation.set(-0.19, S.plaque[3], 0);
+      pl.position.set(S.plaque[0], S.plaque[1], S.plaque[2]);
+      inn.add(pl);
+      return { el: S.el, ee, av, beam, glow, pl, x: S.x, y: S.y, z: S.z, w: 0 };
     });
   }
   if (B.t === 'musee') {
@@ -457,6 +502,27 @@ function terrLocks() {
       for (let i = i0; i <= i1; i++) if (Math.hypot(-VH + i * VC - B.x, -VH + j * VC - B.z) < R) TLOCK[i + j * VW] = 1;
   }
 }
+// le Hall est devenu une cathédrale (V13.4), plus grande que l'ancienne rotonde : un décor resté dans son emprise est rangé, et son or rendu
+{
+  const H = save.vil.find(B => B.t === 'hall');
+  if (H) {
+    const c = Math.cos(H.r),
+      s = Math.sin(H.r),
+      dedans = B => {
+        const dx = B.x - H.x,
+          dz = B.z - H.z,
+          x = dx * c - dz * s,
+          z = dx * s + dz * c;
+        return Math.abs(x) < 7.8 && z > -10.4 && z < 9.6;
+      },
+      hors = save.vil.filter(B => B !== H && !CAT[B.t].up && dedans(B));
+    if (hors.length) {
+      save.gold = (save.gold || 0) + hors.reduce((a, B) => a + (B.c || 0), 0);
+      save.vil = save.vil.filter(B => !hors.includes(B));
+      persist();
+    }
+  }
+}
 for (const B of save.vil) vilAdd(B);
 VILOK = true;
 terraPlan();
@@ -486,7 +552,7 @@ function vilWhy(k, x, z) {
   return '';
 }
 
-// le héros du Hall change d'élément : son avatar est refait (même place) et son halo prend la couleur de l'élément choisi
+// le héros du Hall change d'élément : son avatar est refait (même place) et son cône de lumière et son halo prennent la couleur de l'élément choisi
 function hallAv(H) {
   const ee = elH(H.el),
     p = H.av.parent,

@@ -1180,6 +1180,14 @@ button:focus-visible {
   background: rgba(255, 255, 255, 0.14);
   box-shadow: 0 0 0 2px var(--c);
 }
+/* au Hall : le héros exposé devant lequel on a ouvert le panneau (pas encore incarné) */
+.pick.vu {
+  box-shadow:
+    0 0 0 2px var(--c),
+    0 0 14px var(--c);
+  outline: 2px dashed rgba(255, 255, 255, 0.55);
+  outline-offset: 3px;
+}
 #eGain {
   display: flex;
   gap: 6px;

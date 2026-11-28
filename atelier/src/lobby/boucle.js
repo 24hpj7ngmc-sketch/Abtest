@@ -4,13 +4,19 @@ function lobTurn(dx, dy) {
   LB.yaw -= dx * 0.0055;
   LB.pitch = Math.max(-1.3, Math.min(1.3, LB.pitch - dy * 0.0055));
 }
-// les obstacles pleins au sol, en cercles [x, z, rayon] : les poteaux et arbres fixes, ceux du parvis, les bâtiments (le Hall et les chemins se traversent)
+// les obstacles pleins au sol, en cercles [x, z, rayon] : les poteaux et arbres fixes, ceux du parvis, les bâtiments (les chemins se traversent) ;
+// le Hall, une cathédrale où l'on entre, donne les siens : murs, piliers, socles, autel (cols, calculés à la pose)
 function lobCercles() {
   const L = LOBS.slice();
   if (PAY) for (const o of PAY.obs) L.push(o);
   for (const B of save.vil) {
     const C = CAT[B.t];
-    if (C.pass || B.t === 'hall') continue;
+    if (C.pass) continue;
+    if (B.t === 'hall') {
+      const g = vilV.get(B.id);
+      if (g && g.userData.cols) for (const o of g.userData.cols) L.push(o);
+      continue;
+    }
     const br = rOf(B);
     L.push([B.x, B.z, Math.max(0.45, br * (br > 2 ? 0.72 : 1))]);
   }
@@ -154,8 +160,17 @@ function lobbyTick(dt, now) {
     if (GUIDE.g && !GUIDE.tp) see({ k: 'guide', id: 'guide' }, GUIDE.x, GUIDE.z, 4.4);
     for (const G of LGAMES) see({ k: 'portal', G, id: G.id }, G.x, G.z, 7.5);
     for (const B of save.vil) {
-      const C = CAT[B.t];
-      if (C.act) see({ k: C.act, id: B.t + lvOf(B), B }, B.x, B.z, rOf(B) + 3.6);
+      const C = CAT[B.t],
+        u = B.t === 'hall' && vilV.get(B.id) && vilV.get(B.id).userData;
+      // au Hall : la porte ouvre le panneau, comme avant ; dedans, chaque héros exposé se regarde de l'allée (Action ouvre le panneau sur lui)
+      if (u && u.porte) {
+        const q = vilMonde(B, u.porte[0], u.porte[1]);
+        see({ k: C.act, id: B.t + lvOf(B), B }, q[0], q[1], 4.4);
+        for (const H of u.heroes) {
+          const a = vilMonde(B, H.x - Math.sign(H.x) * 1.6, H.z);
+          see({ k: 'heros', e: H.el, id: 'heros' + H.el, B }, a[0], a[1], 2.3);
+        }
+      } else if (C.act) see({ k: C.act, id: B.t + lvOf(B), B }, B.x, B.z, rOf(B) + 3.6);
     }
   } else if (LB.tool === 'marteau') {
     lobAim();
@@ -235,6 +250,7 @@ function lobbyTick(dt, now) {
     (LB.a ? 1 : 0) +
     '|' +
     (LB.takeB ? LB.takeB.id : '') +
+    (near && near.e ? elH(near.e) : '') +
     '|' +
     save.vil.length +
     '|' +
@@ -272,34 +288,48 @@ function lobbyTick(dt, now) {
         t1 = WT[tWeap].short + ' · ' + EL[wEl(tWeap)].n;
         w = 'Montrer';
       } else if (near) {
-        w = near.k === 'guide' ? 'Parler' : near.k === 'portal' || near.k === 'maison' ? 'Entrer' : 'Ouvrir';
-        t1 =
+        w =
           near.k === 'guide'
-            ? GD
-              ? 'Le Guide · la visite continue'
-              : 'Le Guide · pose-lui une question'
-            : near.k === 'portal'
-              ? near.G.open
-                ? 'Entrer · ' + near.G.t
-                : 'Portail scellé'
-              : near.k === 'hall'
-                ? 'Hall des héros · ' + EL[tHero].hero
-                : near.k === 'armes'
-                  ? "Salle d'armes · " + WT[tWeap].title.toLowerCase() + ' niv. ' + wLevel(tWeap)
-                  : near.k === 'musee'
-                    ? 'Musée · ' + lootN() + ' / ' + LOOT.length
-                    : near.k === 'shop'
-                      ? 'Marchand · ' + save.gold + ' or'
-                      : near.k === 'mine'
-                        ? "Mine d'étoiles · +" + mineG() + ' or par partie'
-                        : near.k === 'taverne'
-                          ? 'Taverne · ' + save.q.filter(q => q.p >= q.n).length + ' défi(s) à réclamer'
-                          : near.k === 'verger'
-                            ? 'Verger céleste · provisions ' +
-                              ((save.hv.s.verger || 0) >= 1 ? 'prêtes' : 'en préparation')
-                            : 'Entrer chez toi';
+            ? 'Parler'
+            : near.k === 'portal' || near.k === 'maison'
+              ? 'Entrer'
+              : near.k === 'heros'
+                ? 'Voir'
+                : 'Ouvrir';
+        t1 =
+          near.k === 'heros'
+            ? EL[near.e].hero +
+              ' · ' +
+              ROLE[near.e] +
+              ' · ' +
+              EL[elH(near.e)].n +
+              (near.e === tHero ? ' · incarné' : '')
+            : near.k === 'guide'
+              ? GD
+                ? 'Le Guide · la visite continue'
+                : 'Le Guide · pose-lui une question'
+              : near.k === 'portal'
+                ? near.G.open
+                  ? 'Entrer · ' + near.G.t
+                  : 'Portail scellé'
+                : near.k === 'hall'
+                  ? 'Hall des héros · ' + EL[tHero].hero
+                  : near.k === 'armes'
+                    ? "Salle d'armes · " + WT[tWeap].title.toLowerCase() + ' niv. ' + wLevel(tWeap)
+                    : near.k === 'musee'
+                      ? 'Musée · ' + lootN() + ' / ' + LOOT.length
+                      : near.k === 'shop'
+                        ? 'Marchand · ' + save.gold + ' or'
+                        : near.k === 'mine'
+                          ? "Mine d'étoiles · +" + mineG() + ' or par partie'
+                          : near.k === 'taverne'
+                            ? 'Taverne · ' + save.q.filter(q => q.p >= q.n).length + ' défi(s) à réclamer'
+                            : near.k === 'verger'
+                              ? 'Verger céleste · provisions ' +
+                                ((save.hv.s.verger || 0) >= 1 ? 'prêtes' : 'en préparation')
+                              : 'Entrer chez toi';
         alt = near.k === 'portal' && !near.G.open;
-        if (near.B && CAT[near.B.t].up && near.k !== 'mine' && near.k !== 'verger')
+        if (near.B && CAT[near.B.t].up && near.k !== 'mine' && near.k !== 'verger' && near.k !== 'heros')
           t2 = lvOf(near.B) < (CAT[near.B.t].mx || 3) ? 'Améliorer · niv. ' + (lvOf(near.B) + 1) : 'Niveau maximum';
       }
     }
@@ -346,18 +376,22 @@ function lobbyTick(dt, now) {
         u.pop = undefined;
       }
     }
-    if (u.heroes)
+    // au Hall, les héros exposés ne bougent pas (figures de cire ; seule la magie de leurs mains tourne) ; celui qu'on incarne a la lumière la plus forte.
+    // De loin (plus de 60 m), l'intérieur n'est pas dessiné.
+    if (u.heroes) {
+      const vu = Math.hypot(LB.x - g.position.x, LB.z - g.position.z) < 60;
       for (const H of u.heroes) {
         const me = H.el === tHero;
+        H.av.visible = H.beam.visible = H.glow.visible = H.pl.visible = vu;
+        if (!vu) continue;
         if (H.ee !== elH(H.el)) hallAv(H);
         H.w += ((me ? 1 : 0) - H.w) * Math.min(1, dt * 5);
-        K.pose(H.av, t, H.a, 0.1 + 0.25 * H.w);
-        H.beam.visible = H.w > 0.02;
-        H.beam.material.opacity = 0.3 * H.w + 0.03 * Math.sin(t * 2 + H.a);
-        H.glow.scale.setScalar(2 + 2.6 * H.w + Math.sin(t * 2.2 + H.a) * 0.2);
-        H.glow.material.opacity = 0.2 + 0.45 * H.w;
-        H.av.position.y = H.y + H.w * (0.12 + Math.sin(t * 1.5) * 0.05);
+        K.pose(H.av, t, H.x, 0);
+        H.beam.material.opacity = 0.09 + 0.2 * H.w + 0.02 * Math.sin(t * 2 + H.z);
+        H.glow.scale.setScalar(2.2 + 1.8 * H.w + Math.sin(t * 2.2 + H.z) * 0.12);
+        H.glow.material.opacity = 0.25 + 0.4 * H.w;
       }
+    }
     if (u.loot)
       for (const V of u.loot)
         if (V.it.visible) {

@@ -3,7 +3,7 @@ import re,sys,os,subprocess,shutil
 # V13.2 : roc, sylve, volt, ondine, zephyr = les cinq autres héros (MODELS['hero.roc'] …), communs aux trois jeux ; hero.avatar aiguille vers les six modèles par identité
 # V12.8 : braise.js = Braise, le Mage de feu (MODELS['hero.braise']), fichier commun aux trois jeux ; hero.avatar (mains.js) le rend quand el = 'feu'
 # V12.7 : armes.js = copie de jeux/dt/gfx/models/mains.js (les armes en main vm.*) ; il passe AVANT mains.js pour que le hero.avatar du lobby l'emporte sur le sien
-ORDER=['shared.js','nature.js','monde.js','armes.js','braise.js','roc.js','sylve.js','volt.js','ondine.js','zephyr.js','mains.js','lobby.js','pay_a.js','pnj.js']   # V11.1 : les modèles de l'ancienne partie intégrée (ennemis, boss, défenses, navire) sont retirés ; ils vivent dans l'atelier de L'Île des Cinq
+ORDER=['shared.js','nature.js','monde.js','armes.js','braise.js','roc.js','sylve.js','volt.js','ondine.js','zephyr.js','mains.js','lobby.js','cathedrale.js','pay_a.js','pnj.js']   # V11.1 : les modèles de l'ancienne partie intégrée (ennemis, boss, défenses, navire) sont retirés ; ils vivent dans l'atelier de L'Île des Cinq
 def strip(js):   # retire les lignes de commentaire entières (les commentaires en fin de ligne restent)
     return '\n'.join(l for l in js.split('\n') if not l.strip().startswith('//'))
 kit=open('gfx/kit.js').read().replace("if(typeof module!=='undefined')module.exports=K;","")

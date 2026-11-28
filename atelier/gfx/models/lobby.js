@@ -1,6 +1,6 @@
 // L'ÎLE CÉLESTE — le lobby : une île qui flotte au-dessus des nuages, où chaque joueur bâtit son village et sculpte son relief.
-// vil.dessous (roche sous l'île), vil.hall, vil.maison, vil.musee, vil.armes, vil.fontaine (bâtiments), lob.astre (astrolabe),
-// lob.socle + lob.butin (trophées du musée), lob.etoile, lob.banniere, lob.ilot (îlots à la dérive), lob.sceau (chaînes du portail fermé)
+// vil.dessous (roche sous l'île), vil.maison, vil.musee, vil.armes, vil.fontaine (bâtiments), lob.astre (astrolabe),
+// lob.socle + lob.butin (trophées du musée), lob.etoile, lob.banniere, lob.ilot (îlots à la dérive), lob.sceau (chaînes du portail fermé). Le Hall des héros (vil.hall) est dans cathedrale.js.
 {
 const {PAL,TAU}=K,PI=Math.PI;
 const MARB=0xe9e4d8,MARBD=0xcfc8ba,NUIT=0x2c3a78,NUITD=0x1c2553,NUITL=0x4a5aa8,ORC=PAL.gold,ROSE=0xe7c7d8;
@@ -107,28 +107,6 @@ MODELS['vil.dessous']=ctx=>{const b=K.make(401),R=38;
   for(let i=0;i<16;i++){const a=i*TAU/16+.3,r=12+b.rnd()*20,l=1.8+b.rnd()*3.4;b.add(K.oct(.6),{p:[Math.sin(a)*r,-8-b.rnd()*7-l,Math.cos(a)*r],s:[.7,l*1.6,.7],c:0x8fd6ff,c2:0xe6f6ff,ch:'g',jit:.05});}
   return{parts:[{name:'body',b}],bake:{jit:.02}};};
 
-// ---------------------------------------------------------------- vil.hall : le hall des héros — rotonde de marbre à dix colonnes, coupole bleu nuit ; les six héros se tiennent dedans (spots)
-const hallTemple=ctx=>{const b=K.make(411),spots=[];
-  b.add(K.cyl(6.1,6.4,.3,24),{p:[0,.15,0],c:PAL.stone,c2:MARBD});b.add(K.cyl(5.4,5.6,.3,24),{p:[0,.45,0],c:MARBD,c2:MARB});
-  b.add(K.cyl(4.9,4.9,.04,24),{p:[0,.62,0],c:NUIT,jit:0});b.add(K.torus(4.92,.06,5,32),{p:[0,.63,0],r:[PI/2,0,0],c:ORC,ch:'s',jit:0});
-  // colonnes cannelées, base et chapiteau
-  for(let i=0;i<10;i++){const a=i*TAU/10+TAU/20,x=Math.sin(a)*4.9,z=Math.cos(a)*4.9;
-    b.add(K.box(.8,.22,.8),{p:[x,.71,z],r:[0,a,0],c:MARBD});b.add(K.cyl(.26,.31,4.3,8),{p:[x,2.95,z],c:MARBD,c2:MARB});b.add(K.box(.78,.24,.78,1,1),{p:[x,5.2,z],r:[0,a,0],c:MARB,c2:0xffffff});
-    b.add(K.torus(.3,.04,4,8),{p:[x,4.95,z],r:[PI/2,0,0],c:ORC,ch:'s',jit:0});}
-  // entablement, frise d'or, coupole et son étoile
-  b.add(K.cyl(5.5,5.5,.5,24,{open:true}),{p:[0,5.57,0],c:MARB,c2:0xffffff});b.add(K.cyl(5.5,5.5,.04,24),{p:[0,5.33,0],c:MARBD,jit:0});b.add(K.cyl(5.7,5.5,.14,24),{p:[0,5.88,0],c:ORC,ch:'s',jit:0});
-  b.add(K.dome(5.2,24,6),{p:[0,5.95,0],s:[1,.62,1],c:TOIT,c2:TOITL,jit:.04});
-  for(let i=0;i<10;i++){const a=i*TAU/10;b.add(K.tube([[Math.sin(a)*5.2,5.97,Math.cos(a)*5.2],[Math.sin(a)*3.9,8.15,Math.cos(a)*3.9],[Math.sin(a)*1.6,9.1,Math.cos(a)*1.6]],[.07,.06,.05],4),{c:ORC,ch:'s',jit:0});}
-  b.add(K.cyl(.5,.9,.5,8),{p:[0,9.3,0],c:ORC,ch:'s'});b.add(K.oct(.5),{p:[0,10.2,0],s:[1,1.7,1],c:0xbfe9ff,c2:0xffffff,ch:'g',jit:.04});
-  // au centre : vasque où brûle une flamme d'étoile ; six plinthes, une par héros
-  b.add(K.cyl(.9,.6,.7,10),{p:[0,.98,0],c:PAL.bronze,c2:PAL.bronzeL,ch:'s'});b.add(K.ico(.42,1),{p:[0,1.55,0],s:[1,1.3,1],c:0xfff2c4,ch:'g',jit:0});
-  // V13.2 : six plinthes (Zéphyr, le Vent, a la sienne), espacées de 60°
-  [...ELK,'vent'].forEach((el,k)=>{const a=k*TAU/6,x=Math.sin(a)*3,z=Math.cos(a)*3,E=K.EL[el];spots.push({el,x,z,y:1.02,a});
-    b.add(K.cyl(.72,.82,.38,10),{p:[x,.82,z],c:MARBD,c2:MARB});b.add(K.torus(.76,.045,4,14),{p:[x,1.0,z],r:[PI/2,0,0],c:E.main,ch:'g',jit:0});
-    b.add(K.prism([[-.3,3.9],[0,4.75],[.3,3.9]],.03),{p:[0,.65,0],r:[0,a,0],c:E.main,ch:'g',jit:0});});
-  return{parts:[{name:'body',b}],bake:{ground:.15,groundH:.6},spots,rad:6.6};};
-
-MODELS['vil.hall']=hallTemple;
 
 // ---------------------------------------------------------------- vil.maison : la maison du joueur — soubassement de pierre, colombages, toit bleu, cheminée, lanterne (porte côté +Z)
 const maison1=ctx=>{const b=K.make(421);

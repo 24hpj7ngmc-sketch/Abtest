@@ -261,7 +261,7 @@ function lobAct(n) {
     return;
   }
   if (LB.tool === 'main' && n === 2) {
-    if (N && N.B) {
+    if (N && N.B && N.k !== 'heros') {
       if (VISIT.on) {
         toast(VISITNO);
         toastT = 3.5;
@@ -299,6 +299,7 @@ function lobAct(n) {
       SND.play('tick');
     }
   } else if (N.k === 'hall') hallOpen();
+  else if (N.k === 'heros') hallOpen(N.e);
   else if (N.k === 'armes') openTree('arme');
   else if (N.k === 'musee') lootOpen();
   else if (N.k === 'shop') shopOpen();

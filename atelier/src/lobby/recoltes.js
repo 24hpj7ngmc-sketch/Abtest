@@ -146,7 +146,7 @@ function upDraw() {
         ? `<div class="srow"><span><b>${H.n}</b><small>${H.t(H.v(l))} à ta prochaine partie. Prête toutes les deux parties, ou en ${HVI} h. ${s >= 1 ? (hvHeld(B.t) ? 'Prête, mais tu en emportes déjà une.' : 'Prête : passe devant le bâtiment.') : 'En préparation : ' + Math.round(s * 100) + ' %.'}</small></span></div>`
         : `<div class="srow"><span><b>Récolte</b><small>+${H.per(l)} ${H.u} à chaque partie terminée, et un peu avec le temps. En réserve : ${Math.floor(s)} sur ${hvCap(B.t, l)}. On ramasse en passant devant.</small></span></div>`;
     })() +
-    `<p>${mx ? 'Ce bâtiment est à son niveau maximum.' : why || "Le bâtiment s'agrandit. +20 renom."}</p>`;
+    `<p>${mx ? 'Ce bâtiment est à son niveau maximum.' : why || (B.t === 'hall' ? "La cathédrale s'embellit" : "Le bâtiment s'agrandit") + '. +20 renom.'}</p>`;
   if (!mx && !why)
     $('upGo').onclick = () => {
       if (!save.dev) save.gold -= c;

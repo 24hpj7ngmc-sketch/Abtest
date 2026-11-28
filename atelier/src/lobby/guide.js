@@ -70,7 +70,7 @@ const GSTEPS = [
   {
     b: 'hall',
     t: () =>
-      "Le Hall des héros : tu y choisis qui tu incarnes, et chaque héros a son arbre, payé avec les éclats qu'il gagne aux portails. Va devant, touche Action, regarde, puis referme.",
+      "Le Hall des héros, notre cathédrale : tes six héros y sont exposés, chacun sur son socle. Entre par la grande porte, approche-toi d'un héros et touche Action : son élément, sa voie, son arbre (payé avec les éclats qu'il gagne aux portails), et de quoi l'incarner. Regarde, puis referme.",
     ok: () => gSeen('hallV')
   },
   {
@@ -127,7 +127,7 @@ const GSTEPS = [
     b: 'hall',
     side: -0.55,
     t: () =>
-      "Un bâtiment ne dépasse jamais le Hall, et le Hall ne monte que si tout le village est à son niveau : c'est l'évolution de ton île, de 1 à 6. Maintenant prends le Marteau, dans la barre du bas.",
+      "Un bâtiment ne dépasse jamais le Hall, et le Hall ne monte que si tout le village est à son niveau : c'est l'évolution de ton île, de 1 à 6. À chaque niveau la cathédrale s'embellit : vitraux, contreforts, tours, flèche, dorures. Maintenant prends le Marteau, dans la barre du bas.",
     ok: () => LB.tool === 'marteau'
   },
   {
@@ -171,7 +171,12 @@ function guideStart() {
   SND.play('pure');
 }
 function guideAt(S) {
-  return S.at ? S.at() : S.b ? gDoor(gB(S.b), S.side) : null;
+  if (S.at) return S.at();
+  if (!S.b) return null;
+  const B = gB(S.b),
+    u = B.t === 'hall' && vilV.get(B.id) && vilV.get(B.id).userData;
+  // le Hall, une cathédrale : la colonne de lumière se pose devant sa grande porte
+  return u && u.porte ? vilMonde(B, u.porte[0], u.porte[1] + 0.6) : gDoor(B, S.side);
 }
 function guideStep() {
   const S = GD.L[GD.i];
@@ -288,7 +293,9 @@ function guideTopics() {
       [
         B(
           'hall',
-          'Choisir son héros et ouvrir son arbre. Produit des éclats pour le héros incarné. ' + up('hall') + '.'
+          "La cathédrale de tes six héros : entre, approche-toi d'un héros exposé et touche Action pour choisir son élément, sa voie, ouvrir son arbre ou l'incarner (la porte ouvre le panneau du héros incarné). Produit des éclats pour le héros incarné. " +
+            up('hall') +
+            '.'
         ),
         B('maison', 'Là où tu te réveilles ; réglages. ' + up('maison') + '.'),
         B(

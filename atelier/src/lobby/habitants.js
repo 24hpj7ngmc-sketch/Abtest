@@ -9,7 +9,7 @@ const pnjFree = (x, z) => {
   if (Math.hypot(x, z) > RI - 4.5 || hAt(x, z) < -0.5) return false;
   for (const B of save.vil) {
     if (CAT[B.t].pass) continue;
-    if (Math.hypot(x - B.x, z - B.z) < Math.max(0.5, rOf(B) * 0.8) + 1) return false;
+    if (Math.hypot(x - B.x, z - B.z) < Math.max(0.5, rOf(B) * (B.t === 'hall' ? 1 : 0.8)) + 1) return false;
   }
   for (const o of LOBS) if (Math.hypot(x - o[0], z - o[1]) < o[2] + 1) return false;
   for (const o of PAY.obs) if (Math.hypot(x - o[0], z - o[1]) < o[2] + 1) return false;
@@ -158,7 +158,8 @@ function pnjTick(dt, t) {
         for (const B of save.vil) {
           const C = CAT[B.t];
           if (C.pass) continue;
-          const br = Math.max(0.5, rOf(B) * 0.8) + 0.45,
+          // la cathédrale du Hall occupe tout son cercle (tours, abside) : les habitants en font le tour
+          const br = Math.max(0.5, rOf(B) * (B.t === 'hall' ? 1 : 0.8)) + 0.45,
             ex = nx - B.x,
             ez = nz - B.z,
             e = Math.hypot(ex, ez);

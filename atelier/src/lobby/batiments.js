@@ -1,6 +1,9 @@
 // [lobby/batiments.js] Les panneaux des bâtiments : hall des héros, maison, marchand céleste, musée.
-// ---- hall des héros : on y choisit qui l'on incarne
-function hallOpen() {
+// ---- hall des héros : on y choisit qui l'on incarne. Ouvert devant un héros exposé dans la cathédrale, le panneau montre CE héros (hallVu) :
+// son élément, sa voie, son arbre, et le bouton pour l'incarner ; ouvert par la porte, il montre le héros incarné
+let hallVu = null;
+function hallOpen(e) {
+  hallVu = HEROS.includes(e) ? e : tHero;
   $('hallV').hidden = false;
   SND.play('tick');
   hallDraw();
@@ -29,26 +32,51 @@ function heroCards(id, redraw) {
     );
 }
 function hallDraw() {
-  heroCards('hallB', hallDraw);
-  $('hallT').textContent =
-    'Tu incarnes ' +
-    EL[tHero].hero +
-    ', ' +
-    ROLE[tHero] +
-    ' : ' +
-    PASSIF[tHero] +
-    '. Son kit est le même dans tous les jeux ; son élément se choisit ci-dessous (' +
-    EL[elH(tHero)].n +
-    "), et ses armes du même élément frappent 10 % plus fort. Touche un héros pour l'incarner.";
-  $('hallA').textContent = 'Arbre de ' + EL[tHero].hero + ' · ' + save.sh[tHero] + ' éclats';
-  helRow('hallEl', tHero, () => {
+  // panneau fermé : il montrera le héros incarné (le héros vu ne vaut que le temps d'une ouverture)
+  if ($('hallV').hidden) hallVu = null;
+  const e = HEROS.includes(hallVu) ? hallVu : tHero,
+    me = e === tHero;
+  heroCards('hallB', () => {
+    hallVu = tHero;
+    hallDraw();
+  });
+  if (!me) {
+    const c = $('hallB').querySelector('.pick[data-el="' + e + '"]');
+    if (c) c.classList.add('vu');
+  }
+  $('hallT').textContent = me
+    ? 'Tu incarnes ' +
+      EL[e].hero +
+      ', ' +
+      ROLE[e] +
+      ' : ' +
+      PASSIF[e] +
+      '. Son kit est le même dans tous les jeux ; son élément se choisit ci-dessous (' +
+      EL[elH(e)].n +
+      "), et ses armes du même élément frappent 10 % plus fort. Touche un héros pour l'incarner."
+    : 'Devant toi : ' +
+      EL[e].hero +
+      ', ' +
+      ROLE[e] +
+      ' : ' +
+      PASSIF[e] +
+      '. Son élément : ' +
+      EL[elH(e)].n +
+      ' (il se choisit ci-dessous). Tu incarnes ' +
+      EL[tHero].hero +
+      ' : touche « Incarner » ou sa carte pour jouer avec ' +
+      EL[e].hero +
+      '.';
+  $('hallI').hidden = me;
+  $('hallI').textContent = 'Incarner ' + EL[e].hero;
+  $('hallA').textContent = 'Arbre de ' + EL[e].hero + ' · ' + save.sh[e] + ' éclats';
+  helRow('hallEl', e, () => {
     SND.play('pure');
     lobSync();
     hallDraw();
   });
-  // la voie du héros incarné : deux choix à partir du niveau VOIE_NIV ; et l'ultime, qui prend l'élément de l'arme en main
-  const e = tHero,
-    v = voieOf(e),
+  // la voie du héros montré : deux choix à partir du niveau VOIE_NIV ; et l'ultime, qui prend l'élément de l'arme en main
+  const v = voieOf(e),
     nb = hBase(e);
   $('hallVoie').innerHTML =
     `<h2>Voie de ${EL[e].hero}</h2>` +
@@ -85,12 +113,19 @@ function hallDraw() {
     EL[wEl(w, e)].n +
     '), en plus de son effet.';
 }
+// l'arbre est celui du héros incarné : ouvrir celui d'un autre héros, c'est l'incarner (comme les onglets de l'arbre)
 $('hallA').onclick = () => {
+  if (HEROS.includes(hallVu)) lobHero(hallVu);
   $('hallV').hidden = true;
   openTree('hero');
 };
+$('hallI').onclick = () => {
+  if (HEROS.includes(hallVu)) lobHero(hallVu);
+  hallDraw();
+};
 $('hallX').onclick = () => {
   $('hallV').hidden = true;
+  hallVu = null;
 };
 // ---- la maison : réglages, et point de réveil
 function homeOpen() {
