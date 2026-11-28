@@ -7,6 +7,9 @@ Le jeu arrive en **un seul fichier**, `ile-pour-lobby.js`, à coller tel quel da
 
 Le jeu **n'écrit aucune sauvegarde**. Tout ce qui dure reste au lobby : or céleste, éclats, arbres des héros et des armes, campagne, défis, butin, réglages.
 
+## V2.8 (28/11/2026) — les six héros ont chacun leur modèle 3D
+Rien ne change dans le contrat (`opts`, `rappels`, tables). `IleDesCinq.version` vaut `'V2.8'`. Les coéquipiers ont le modèle de leur héros (identité `hero`), à la couleur de leur élément choisi, avec ses pièces animées.
+
 ## V2.6 (28/11/2026) — les sorts suivent l'élément choisi du héros
 Rien ne change dans le contrat (`opts`, `rappels`, tables). `IleDesCinq.version` vaut `'V2.6'`. Avec `opts.elHeros`, la compétence et l'ultime des six héros gardent leur mécanique et leurs chiffres, mais leurs dégâts prennent l'élément choisi (boucle des faiblesses, effet d'état de cet élément : le Feu brûle, l'Eau ralentit, la Nature empoisonne, la Terre étourdit, l'Élec rebondit, le Vent soulève les petits) et leurs animations, zones au sol comprises, sa couleur. Les noms des sorts ne changent pas. L'ultime teinté par l'arme s'ajoute comme avant. Sans `elHeros`, bots et esclaves : rien ne change (simulation à graine fixe identique).
 

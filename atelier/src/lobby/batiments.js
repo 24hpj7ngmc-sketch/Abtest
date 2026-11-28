@@ -6,10 +6,11 @@ function hallOpen() {
   hallDraw();
 }
 // la carte d'un héros, la même au hall et aux deux portails (V11.4 ; rôles en V12.1) : portrait, nom, rôle et niveau, compétence et ultime, son élément choisi et éclats ; la toucher, c'est l'incarner
-// V12.9 : le portrait suit l'élément choisi (HPHOTO[élément] pour un gardien ; HPHOTO['braise_' + élément] pour Braise)
-const hPicK = e => (e === 'feu' ? 'braise_' + elH(e) : elH(e)),
+// V13.2 : le portrait suit le héros et son élément choisi : HPHOTO['<modèle>_<élément>'] (braise_feu, roc_eau, sylve_bois, volt_elec, ondine_vent, zephyr_terre…)
+const hPicK = e =>
+    ({ feu: 'braise', terre: 'roc', bois: 'sylve', elec: 'volt', eau: 'ondine', vent: 'zephyr' })[e] + '_' + elH(e),
   hPic = e => {
-    const p = typeof HPHOTO === 'object' ? HPHOTO[hPicK(e)] || HPHOTO[elH(e)] : '';
+    const p = typeof HPHOTO === 'object' ? HPHOTO[hPicK(e)] : '';
     return p ? `<img class="hpic" src="${p}" alt="">` : '';
   };
 function heroCards(id, redraw) {

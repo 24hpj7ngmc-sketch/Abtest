@@ -2,7 +2,7 @@
 #   →  construit/ile.html (la page du jeu, celle qui tourne dans le cadre), construit/all.js (son script seul),
 #      construit/ile-pour-lobby.js (LE FICHIER À COLLER DANS LE LOBBY : le pont src/pont-lobby.js rempli avec la page, la version et les tables publiques)
 import re,sys,os,subprocess,shutil
-ORDER=['shared.js','enemy_b.js','bestiaire1.js','bestiaire2.js','defenses.js','nature.js','monde.js','braise.js','mains.js','pnj.js','navire.js']   # V8.0 : defaults.js retiré ; V2.4 : braise.js (Braise, le Mage de feu, commun aux trois jeux) (ses huit modèles de secours étaient tous redéfinis plus loin)
+ORDER=['shared.js','enemy_b.js','bestiaire1.js','bestiaire2.js','defenses.js','nature.js','monde.js','braise.js','roc.js','sylve.js','volt.js','ondine.js','zephyr.js','mains.js','pnj.js','navire.js']   # V8.0 : defaults.js retiré ; V2.8 : roc, sylve, volt, ondine, zephyr (les cinq autres héros, communs aux trois jeux) ; V2.4 : braise.js (Braise, le Mage de feu, commun aux trois jeux) (ses huit modèles de secours étaient tous redéfinis plus loin)
 def strip(js):   # retire les lignes de commentaire entières (les commentaires en fin de ligne restent)
     return '\n'.join(l for l in js.split('\n') if not l.strip().startswith('//'))
 kit=open('gfx/kit.js').read().replace("if(typeof module!=='undefined')module.exports=K;","")

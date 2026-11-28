@@ -107,7 +107,7 @@ MODELS['vil.dessous']=ctx=>{const b=K.make(401),R=38;
   for(let i=0;i<16;i++){const a=i*TAU/16+.3,r=12+b.rnd()*20,l=1.8+b.rnd()*3.4;b.add(K.oct(.6),{p:[Math.sin(a)*r,-8-b.rnd()*7-l,Math.cos(a)*r],s:[.7,l*1.6,.7],c:0x8fd6ff,c2:0xe6f6ff,ch:'g',jit:.05});}
   return{parts:[{name:'body',b}],bake:{jit:.02}};};
 
-// ---------------------------------------------------------------- vil.hall : le hall des héros — rotonde de marbre à dix colonnes, coupole bleu nuit ; les cinq héros se tiennent dedans (spots)
+// ---------------------------------------------------------------- vil.hall : le hall des héros — rotonde de marbre à dix colonnes, coupole bleu nuit ; les six héros se tiennent dedans (spots)
 const hallTemple=ctx=>{const b=K.make(411),spots=[];
   b.add(K.cyl(6.1,6.4,.3,24),{p:[0,.15,0],c:PAL.stone,c2:MARBD});b.add(K.cyl(5.4,5.6,.3,24),{p:[0,.45,0],c:MARBD,c2:MARB});
   b.add(K.cyl(4.9,4.9,.04,24),{p:[0,.62,0],c:NUIT,jit:0});b.add(K.torus(4.92,.06,5,32),{p:[0,.63,0],r:[PI/2,0,0],c:ORC,ch:'s',jit:0});
@@ -120,9 +120,10 @@ const hallTemple=ctx=>{const b=K.make(411),spots=[];
   b.add(K.dome(5.2,24,6),{p:[0,5.95,0],s:[1,.62,1],c:TOIT,c2:TOITL,jit:.04});
   for(let i=0;i<10;i++){const a=i*TAU/10;b.add(K.tube([[Math.sin(a)*5.2,5.97,Math.cos(a)*5.2],[Math.sin(a)*3.9,8.15,Math.cos(a)*3.9],[Math.sin(a)*1.6,9.1,Math.cos(a)*1.6]],[.07,.06,.05],4),{c:ORC,ch:'s',jit:0});}
   b.add(K.cyl(.5,.9,.5,8),{p:[0,9.3,0],c:ORC,ch:'s'});b.add(K.oct(.5),{p:[0,10.2,0],s:[1,1.7,1],c:0xbfe9ff,c2:0xffffff,ch:'g',jit:.04});
-  // au centre : vasque où brûle une flamme d'étoile ; cinq plinthes, une par héros
+  // au centre : vasque où brûle une flamme d'étoile ; six plinthes, une par héros
   b.add(K.cyl(.9,.6,.7,10),{p:[0,.98,0],c:PAL.bronze,c2:PAL.bronzeL,ch:'s'});b.add(K.ico(.42,1),{p:[0,1.55,0],s:[1,1.3,1],c:0xfff2c4,ch:'g',jit:0});
-  ELK.forEach((el,k)=>{const a=angOf(k),x=Math.sin(a)*3,z=Math.cos(a)*3,E=K.EL[el];spots.push({el,x,z,y:1.02,a});
+  // V13.2 : six plinthes (Zéphyr, le Vent, a la sienne), espacées de 60°
+  [...ELK,'vent'].forEach((el,k)=>{const a=k*TAU/6,x=Math.sin(a)*3,z=Math.cos(a)*3,E=K.EL[el];spots.push({el,x,z,y:1.02,a});
     b.add(K.cyl(.72,.82,.38,10),{p:[x,.82,z],c:MARBD,c2:MARB});b.add(K.torus(.76,.045,4,14),{p:[x,1.0,z],r:[PI/2,0,0],c:E.main,ch:'g',jit:0});
     b.add(K.prism([[-.3,3.9],[0,4.75],[.3,3.9]],.03),{p:[0,.65,0],r:[0,a,0],c:E.main,ch:'g',jit:0});});
   return{parts:[{name:'body',b}],bake:{ground:.15,groundH:.6},spots,rad:6.6};};

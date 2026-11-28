@@ -1225,8 +1225,8 @@
   };
   // ---------------------------------------------------------------- hero.avatar : le gardien vu par ses coéquipiers (≈ 1,8 m, regarde vers −Z)
   MODELS['hero.avatar'] = ctx => {
-    // V5.1 : Braise (feu) a son propre modèle, MODELS['hero.braise'] (gfx/models/braise.js, commun aux trois jeux)
-    if (ctx.el === 'feu' && MODELS['hero.braise']) return MODELS['hero.braise'](ctx);
+    // V5.1 : les six héros ont leur modèle (MODELS['hero.braise'], roc, sylve, volt, ondine, zephyr : gfx/models/, communs aux trois jeux) ; l'identité (ctx.hero) choisit, le gardien sert de repli
+    { const N = { feu: 'braise', terre: 'roc', bois: 'sylve', elec: 'volt', eau: 'ondine', vent: 'zephyr' }[ctx.hero || ctx.el], M = N && MODELS['hero.' + N]; if (M) return M(ctx); }
     const P = ctx.P || K.EL.feu,
       b = K.make(71),
       aL = K.make(72),

@@ -8,7 +8,7 @@ const GANT=K.mix(PAL.dirt,PAL.sand,.36),GANT_D=K.shade(PAL.dirt,.86),CUIR=K.mix(
 
 // ---------------------------------------------------------------- hero.avatar : le gardien vu par ses coéquipiers (≈ 1,8 m, regarde vers −Z)
 MODELS['hero.avatar']=ctx=>{
-  if((ctx.hero||ctx.el)==='feu'&&MODELS['hero.braise'])return MODELS['hero.braise'](ctx);
+  { const N = { feu: 'braise', terre: 'roc', bois: 'sylve', elec: 'volt', eau: 'ondine', vent: 'zephyr' }[ctx.hero || ctx.el], M = N && MODELS['hero.' + N]; if (M) return M(ctx); }
   const P=ctx.P||K.EL.feu,b=K.make(71),aL=K.make(72),aR=K.make(73),TUN=P.main;
   // --- bottes à revers et jambes
   b.sym(sd=>{b.add(K.box(.13,.1,.27,.85,.75),{p:[sd*.11,.05,-.035],c:CUIR_D});

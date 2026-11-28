@@ -50,6 +50,9 @@ DernierToit.fermer(); // retirer le jeu sans attendre le joueur (aucun « fin »
 - `sansFin` : partie sans fin (après une victoire, « Continuer sans fin » lance une nouvelle partie, qui enverra son propre `fin`) ;
 - « Rejouer » à l'écran de fin relance une partie dans l'iframe : un `fin` par partie, à récompenser chacun.
 
+## V5.5 : les six héros ont chacun leur modèle 3D
+Rien ne change dans le contrat. `DernierToit.version` vaut `'V5.5'`. Les coéquipiers vus sur le toit (`joueur.corps`) ont le modèle de leur héros (Braise, Roc, Sylve, Volt, Ondine, Zéphyr), à la couleur de leur élément choisi ; le gardien ne sert plus que de repli.
+
 ## V5.3 : les sorts suivent l'élément choisi du héros
 
 Rien à changer côté lobby (`opts.elHeros` de la V5.2 suffit) : la compétence et l'ultime des six héros gardent leur mécanique, leurs chiffres et leurs noms, mais leur effet

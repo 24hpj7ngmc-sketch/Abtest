@@ -1,5 +1,9 @@
 # Notes de travail — L'Île des Cinq (le mini-jeu, dans son propre atelier)
 
+## V2.8 (28 nov. 2026) — les six héros ont chacun leur modèle 3D
+- `gfx/models/roc.js`, `sylve.js`, `volt.js`, `ondine.js`, `zephyr.js` (copies de l'atelier), ajoutés à `ORDER` de `build.py` (avant `mains.js` ; `GARDE` garde `hero.avatar` du lobby, qui aiguille par identité vers les six modèles, repli sur le gardien). Les coéquipiers (`mateView`) les montrent avec leurs pièces de magie animées par `K.pose` (champ `anim`, aucun nom en dur).
+- Aucune règle ne change. Non vérifié : le vrai three.js r128, le téléphone.
+
 ## V2.6 (28 nov. 2026) — les sorts suivent l'élément choisi
 - Décision de Frédéric (28/11) : « Seul le type de dégâts et les animations changent. » Noms des sorts inchangés (renommés plus tard, globalement). Compétence et ultime des six héros : `const E = elOf(h)` (regles/heros.js) remplace l'élément fixe dans `mult(...)`, les zones au sol (`zoneAdd(..., E, ...)`, `zonePw` garde le même débit de dégâts Feu 8/s ↔ Nature 3/s) et les tours des Gardiens ; `elState(s, e, el, c)` applique l'effet d'état de l'élément à la place de celui de l'élément d'origine (brûle, ralentit, empoisonne, étourdit, un arc d'Élec (6 au plus par sort), soulève). Avec l'élément d'origine, le code d'avant est gardé tel quel.
 - Météores (`r.el`), Orage (`st.el`), Déluge (`s.floodEl`) : l'élément voyage avec l'objet dans `boucle.js`. Déluge : brûlure/poison/soulèvement légers en continu pour Feu/Nature/Vent, sinon ralenti (Terre, Élec : pas d'effet de plus). Tir perçant : l'élément choisi s'il y en a un, sinon l'élément de l'arme comme avant.

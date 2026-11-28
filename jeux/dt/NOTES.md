@@ -1,5 +1,9 @@
 # Dernier Toit — notes de fabrication (V1.0, 19/11/2026)
 
+## V5.5 (28/11/2026) : les six héros ont chacun leur modèle 3D
+`gfx/models/roc.js`, `sylve.js`, `volt.js`, `ondine.js`, `zephyr.js` (copies de l'atelier, assemblées par `build.py` après `braise.js`). `hero.avatar` (mains.js) aiguille par identité (`ctx.hero`) vers les six modèles, repli sur le gardien. `joueur.corps` (joueurs.js) lit la recette comme pour Braise (`arme: 1`, `jambes`, `mainD`) ; les pièces de magie en plus ne sont pas gardées sur les joueurs. Rien d'autre ne change (règles, empreinte identiques).
+Non vérifié : le vrai three.js r128, le téléphone.
+
 ## V5.3 (28/11/2026) : les sorts suivent l'élément choisi du héros
 Décision de Frédéric (28/11) : « Seul le type de dégâts et les animations changent. » Les noms des sorts ne changent PAS (renommage global plus tard). Règles : `elS(S)`
 (heros.js : l'élément choisi s'il n'est pas la clé du héros, sinon null = comme avant) ; `S.sortEl` posé autour des coups d'un sort, `hurtZ` appelle `sortEffet` (heros.js :
