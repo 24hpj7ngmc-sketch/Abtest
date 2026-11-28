@@ -246,8 +246,8 @@ const HSPEC = {
       ['Rempart élargi', 1, 250, 'kWide', 1, L => (L ? 7 : 5) + ' blocs de large', 1]
     ],
     u: [
-      ['Rayon du Séisme', 2, 90, 'uRad', 2, L => BAL.quakeR + 2 * L + ' m'],
-      ['Étourdissement du Séisme', 2, 90, 'uDur', 0.5, L => f(BAL.quakeT + 0.5 * L, 1) + ' s'],
+      ["Rayon de l'Onde de choc", 2, 90, 'uRad', 2, L => BAL.quakeR + 2 * L + ' m'],
+      ["Étourdissement de l'Onde de choc", 2, 90, 'uDur', 0.5, L => f(BAL.quakeT + 0.5 * L, 1) + ' s'],
       ["Charge de l'ultime", 2, 100, 'uCharge', 0.15, L => '+' + 15 * L + ' %']
     ],
     p: [
@@ -263,22 +263,22 @@ const HSPEC = {
   },
   elec: {
     k: [
-      ["Recharge de l'Éclair", 3, 60, 'abCd', 1, L => BAL.dashCd - L + ' s'],
-      ["Longueur de l'Éclair", 2, 80, 'kLen', 3, L => BAL.dashLen + 3 * L + ' m'],
+      ['Recharge de la Fulgurance', 3, 60, 'abCd', 1, L => BAL.dashCd - L + ' s'],
+      ['Longueur de la Fulgurance', 2, 80, 'kLen', 3, L => BAL.dashLen + 3 * L + ' m'],
       ['Sillage électrique', 1, 250, 'kTrail', 1, L => (L ? "laisse un champ d'orage 3 s" : 'aucun sillage'), 1]
     ],
     u: [
-      ["Durée de l'Orage", 2, 90, 'uDur', 2, L => BAL.stormT + 2 * L + ' s'],
-      ["Rayon de l'Orage", 2, 90, 'uRad', 3, L => BAL.stormR + 3 * L + ' m'],
+      ['Durée du Déchaînement', 2, 90, 'uDur', 2, L => BAL.stormT + 2 * L + ' s'],
+      ['Rayon du Déchaînement', 2, 90, 'uRad', 3, L => BAL.stormR + 3 * L + ' m'],
       ["Charge de l'ultime", 2, 100, 'uCharge', 0.15, L => '+' + 15 * L + ' %']
     ],
     p: [['Tirs en chaîne', 2, 120, 'pA', 1, L => 'saute sur ' + (1 + L) + ' voisin' + (L ? 's' : '')]]
   },
   bois: {
     k: [
-      ['Recharge des Ronces', 3, 60, 'abCd', 1.5, L => f(BAL.ronceCd - 1.5 * L, 1) + ' s'],
-      ['Rayon des Ronces', 2, 80, 'abRad', 1.5, L => f(BAL.ronceR + 1.5 * L, 1) + ' m'],
-      ['Durée des Ronces', 2, 90, 'kDur', 2, L => BAL.ronceT + 2 * L + ' s']
+      ['Recharge des Entraves', 3, 60, 'abCd', 1.5, L => f(BAL.ronceCd - 1.5 * L, 1) + ' s'],
+      ['Rayon des Entraves', 2, 80, 'abRad', 1.5, L => f(BAL.ronceR + 1.5 * L, 1) + ' m'],
+      ['Durée des Entraves', 2, 90, 'kDur', 2, L => BAL.ronceT + 2 * L + ' s']
     ],
     u: [
       ['Durée des Gardiens', 2, 90, 'uDur', 5, L => BAL.guardT + 5 * L + ' s'],
@@ -289,9 +289,9 @@ const HSPEC = {
   },
   feu: {
     k: [
-      ['Recharge du Brasier', 3, 60, 'abCd', 1, L => BAL.fbCd - L + ' s'],
-      ['Rayon du Brasier', 2, 80, 'abRad', 1.5, L => f(BAL.fbR + 1.5 * L, 1) + ' m'],
-      ['Puissance du Brasier', 3, 90, 'abDmg', 0.25, L => '+' + 25 * L + ' %']
+      ["Recharge de l'Orbe", 3, 60, 'abCd', 1, L => BAL.fbCd - L + ' s'],
+      ["Rayon de l'Orbe", 2, 80, 'abRad', 1.5, L => f(BAL.fbR + 1.5 * L, 1) + ' m'],
+      ["Puissance de l'Orbe", 3, 90, 'abDmg', 0.25, L => '+' + 25 * L + ' %']
     ],
     u: [
       ['Météores en plus', 2, 110, 'uExtra', 2, L => BAL.metN + 2 * L + ' météores'],
@@ -311,12 +311,12 @@ const HSPEC = {
   },
   eau: {
     k: [
-      ['Recharge de la Marée', 3, 60, 'abCd', 1.5, L => f(BAL.tideCd - 1.5 * L, 1) + ' s'],
-      ['Soin de la Marée', 3, 80, 'kHeal', 10, L => BAL.tideHeal + 10 * L + ' PV'],
-      ['Recul de la Marée', 2, 80, 'kLen', 2, L => BAL.tideKnock + 2 * L + ' m']
+      ['Recharge de la Répulsion', 3, 60, 'abCd', 1.5, L => f(BAL.tideCd - 1.5 * L, 1) + ' s'],
+      ['Soin de la Répulsion', 3, 80, 'kHeal', 10, L => BAL.tideHeal + 10 * L + ' PV'],
+      ['Recul de la Répulsion', 2, 80, 'kLen', 2, L => BAL.tideKnock + 2 * L + ' m']
     ],
     u: [
-      ['Durée du Déluge', 2, 90, 'uDur', 2, L => BAL.floodT + 2 * L + ' s'],
+      ['Durée du Sanctuaire', 2, 90, 'uDur', 2, L => BAL.floodT + 2 * L + ' s'],
       ['Cœur soigné', 2, 120, 'uExtra', 1, L => '+' + (BAL.floodCore + L) + ' au cœur'],
       ["Charge de l'ultime", 2, 100, 'uCharge', 0.15, L => '+' + 15 * L + ' %']
     ],
@@ -325,10 +325,10 @@ const HSPEC = {
   // Zéphyr, le Tireur (V12.1) : chiffres du lobby en premier jet, aucun jeu collé ne le joue encore
   vent: {
     k: [
-      ['Recharge de la Rafale', 3, 60, 'abCd', 1, L => 14 - L + ' s'],
+      ['Recharge du Bond', 3, 60, 'abCd', 1, L => 14 - L + ' s'],
       ['Longueur du bond', 2, 80, 'kLen', 2, L => 8 + 2 * L + ' m'],
       [
-        'Rafale qui repousse',
+        'Bond qui repousse',
         1,
         250,
         'kPush',

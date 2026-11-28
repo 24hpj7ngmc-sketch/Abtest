@@ -30,7 +30,7 @@ const VOIES = {
     a: { n: 'Colosse', d: '+25 de vie', c1: '+25 de vie par niveau', c2: 'chaque coup sur un zombie à moins de 5 m te rend 2 de vie' },
     b: {
       n: 'Plongeur',
-      d: "les Ronces deviennent un bond de 8 m vers ta cible : à l'arrivée, un roncier et un poison de 6 s autour",
+      d: "les Entraves deviennent un bond de 8 m vers ta cible : à l'arrivée, un roncier et un poison de 6 s autour",
       c1: '+2 m de bond par niveau',
       c2: 'le poison passe aux voisins (3 m) quand un empoisonné meurt'
     }
@@ -38,21 +38,21 @@ const VOIES = {
   elec: {
     a: {
       n: 'Lame',
-      d: 'balles et Éclair : +50 % sur un zombie isolé (personne à moins de 4 m)',
+      d: 'balles et Fulgurance : +50 % sur un zombie isolé (personne à moins de 4 m)',
       c1: '+20 % par niveau',
       c2: 'achève un zombie que tu laisses sous 15 % de sa vie'
     },
     b: {
       n: 'Escarmoucheur',
-      d: "chaque zombie tué rend 2,5 % de la recharge de l'Éclair (on en tue des centaines par jour)",
+      d: "chaque zombie tué rend 2,5 % de la recharge de la Fulgurance (on en tue des centaines par jour)",
       c1: '+1,5 point par niveau',
-      c2: "un zombie tué par l'Éclair le relance aussitôt"
+      c2: "un zombie tué par la Fulgurance le relance aussitôt"
     }
   },
   feu: {
     a: {
       n: 'Artilleur',
-      d: 'tes armes portent 10 m plus loin ; le Brasier laisse un feu plus large (6 m)',
+      d: 'tes armes portent 10 m plus loin ; l\'Orbe laisse un feu plus large (6 m)',
       c1: '+5 m de portée par niveau',
       c2: 'chaque météore laisse le sol en feu 4 s'
     },
@@ -66,15 +66,15 @@ const VOIES = {
   eau: {
     a: {
       n: 'Soigneuse',
-      d: 'tous tes soins +20 % (vie qui remonte, Marée, Déluge pour la ville)',
+      d: 'tous tes soins +20 % (vie qui remonte, Répulsion, Sanctuaire pour la ville)',
       c1: '+15 % par niveau',
-      c2: 'la Marée te pose un bouclier de 30 (10 s)'
+      c2: 'la Répulsion te pose un bouclier de 30 (10 s)'
     },
     b: {
       n: 'Entraveuse',
-      d: "la Marée immobilise les zombies qu'elle touche 1,5 s (les gros, ralentis)",
+      d: "la Répulsion immobilise les zombies qu'elle touche 1,5 s (les gros, ralentis)",
       c1: '+0,5 s par niveau',
-      c2: 'le Déluge immobilise aussi tous les zombies dehors à son arrivée'
+      c2: 'le Sanctuaire immobilise aussi tous les zombies dehors à son arrivée'
     }
   },
   vent: {
@@ -98,7 +98,7 @@ const voieDe = (S, h, v) => S.hero === h && S.voie === v;
 const voieNom = S => (S.hero && S.voie && VOIES[S.hero] ? VOIES[S.hero][S.voie].n : '');
 
 // ---------------------------------------------------------------- sur les balles
-// le multiplicateur de dégâts d'une balle (ou de l'Éclair) sur le zombie i, touché à dist m : Lame (isolé), Sniper (au-delà de 40 m)
+// le multiplicateur de dégâts d'une balle (ou de la Fulgurance) sur le zombie i, touché à dist m : Lame (isolé), Sniper (au-delà de 40 m)
 function voieDegats(S, i, dist) {
   if (voieDe(S, 'vent', 'a')) return dist > 40 ? 1.15 + S.hm.spA1 : 1;
   if (!voieDe(S, 'elec', 'a')) return 1;
@@ -173,7 +173,7 @@ function voieCoup(S, d) {
   }
   return d;
 }
-// un zombie tué par le joueur (killZ, pas l'effet d'un invité) : Escarmoucheur, 2,5 % (+ spB1 / 10) de la recharge de l'Éclair rendus ;
+// un zombie tué par le joueur (killZ, pas l'effet d'un invité) : Escarmoucheur, 2,5 % (+ spB1 / 10) de la recharge de la Fulgurance rendus ;
 // Plongeur (spB2) : le poison d'un empoisonné passe aux voisins à moins de 3 m (3 s)
 function voieTue(S, i, own) {
   const Z = S.z;
@@ -194,7 +194,7 @@ function bouclier(S) {
 }
 
 // ---------------------------------------------------------------- les compétences
-// Plongeur : les Ronces deviennent un bond vers le point visé a (8 m + spB1 au plus, arrêté par les murs, petit saut) ; à l'arrivée
+// Plongeur : les Entraves deviennent un bond vers le point visé a (8 m + spB1 au plus, arrêté par les murs, petit saut) ; à l'arrivée
 // (le point visé s'il est à portée, sinon là où le bond s'arrête), un roncier de 3,5 m (4 s) et du poison 6 s, 30 × force, à moins de 3,5 m.
 // bouge : faux chez l'hôte qui joue la compétence d'un invité (l'invité bouge chez lui) ; effet : faux chez l'invité (l'hôte s'en charge)
 function plonge(S, a, m, pw, bouge, effet) {
@@ -213,15 +213,19 @@ function plonge(S, a, m, pw, bouge, effet) {
     y1 = atteint ? a[1] : floorAt(x1, z1, p.y + 0.5),
     x0 = p.x,
     z0 = p.z;
+  // V5.3 : l'élément choisi qui remplace celui du sort (null : comme avant)
+  const ec = elS(S);
   if (effet) {
     gridEach(S, x1, z1, 3.5, i => {
       if (Z.st[i] === 0 || Math.abs(Z.y[i] - y1) > 2.5 || (Z.x[i] - x1) ** 2 + (Z.z[i] - z1) ** 2 > 12.25) return;
-      Z.psn[i] = Math.max(Z.psn[i], 6);
+      if (!ec) Z.psn[i] = Math.max(Z.psn[i], 6);
+      S.sortEl = ec;
       hurtZ(S, i, 30 * pw, 'p');
+      S.sortEl = null;
     });
-    S.thorns.push({ x: x1, y: y1, z: z1, r: 3.5 + m.abRad, t: 4 + m.kDur, dps: 22 * pw, pulse: 0 });
+    S.thorns.push({ x: x1, y: y1, z: z1, r: 3.5 + m.abRad, t: 4 + m.kDur, dps: 22 * pw, pulse: 0, ec });
   }
-  S.ev.push({ k: 'ronces', x: x1, y: y1, z: z1, r: 3.5 + m.abRad });
+  S.ev.push({ k: 'ronces', x: x1, y: y1, z: z1, r: 3.5 + m.abRad, ec: elH(S) });
   if (bouge) {
     p.x = x1;
     p.z = z1;
@@ -232,7 +236,7 @@ function plonge(S, a, m, pw, bouge, effet) {
       p.ground = false;
     }
     p.inv = 0.5;
-    S.ev.push({ k: 'plonge', x0, z0, y: p.y, x1, y1, z1 });
+    S.ev.push({ k: 'plonge', x0, z0, y: p.y, x1, y1, z1, ec: elH(S) });
   }
 }
 // Avant-garde : un rempart qui charge (wall.ch : mètres qui restent, à 14 m/s, vers l'extérieur) ; il pousse devant lui ce qu'il touche,
@@ -273,7 +277,7 @@ function chargeRempart(S, wall, dt) {
       gridEach(S, wall.x, wall.z, 5, i => {
         if (outside(Z, i) && !Z.fant[i] && (Z.x[i] - wall.x) ** 2 + (Z.z[i] - wall.z) ** 2 < 25) renverse(i);
       });
-      S.ev.push({ k: 'onde_roc', x: wall.x, z: wall.z, r: 5 });
+      S.ev.push({ k: 'onde_roc', x: wall.x, z: wall.z, r: 5, ec: wall.ec || 'terre' });
     }
     wall.pris = null;
   }

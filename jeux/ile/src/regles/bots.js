@@ -281,14 +281,14 @@ function botThink(s, o, dt) {
           ) ||
           cnt(o.x, o.z, BAL.tideR) >= 4;
       else if (o.el === 'vent')
-        use = cnt(o.x, o.z, 5) >= 2 && !goal; // Zéphyr : la Rafale l'éloigne des ennemis trop proches
+        use = cnt(o.x, o.z, 5) >= 2 && !goal; // Zéphyr : le Bond l'éloigne des ennemis trop proches
       else use = false; // Roc garde son Rempart : un mur de plus au mauvais endroit gênerait la zone de tir
       if (use && ability(s, o) && o.el === 'eau')
         for (const h of hs)
           if (!(h.down > 0) && Math.hypot(h.x - o.x, h.z - o.z) < BAL.tideR)
             h.hp = Math.min(h.maxHp, h.hp + BAL.tideHeal + (o.m.kHeal || 0));
     }
-  } // la Marée d'un bot soigne tous les héros autour de lui
+  } // la Répulsion d'un bot soigne tous les héros autour de lui
   if (o.ult >= 100 && s.phase === 'wave' && ULT[o.el]) {
     const N = en.filter(e => e.hp > 0).length,
       boss = en.some(e => e.boss && e.hp > 0);

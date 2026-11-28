@@ -13,6 +13,8 @@ function hurtZ(S, i, dmg, src) {
   if (Z.st[i] === 0 || Z.hp[i] <= 0) return false;
   // V4.9 : pendant un ultime teinté, l'effet de l'élément de l'arme (voies.js)
   if (S.ultEl) teinte(S, i, dmg);
+  // V5.3 : pendant un sort à l'élément choisi, l'effet de cet élément (heros.js : sortEffet)
+  if (S.sortEl) sortEffet(S, i, dmg);
   Z.hp[i] -= dmg;
   if (Z.hp[i] <= 0) {
     killZ(S, i, src);
@@ -75,9 +77,12 @@ function addCorpse(S, x, y, z, yaw, vx, vy, vz, ty, va, st) {
 }
 // une explosion de rayon r en (x, y, z) : dégâts pleins au centre, moitié au bord ; les cadavres qu'elle fait sont projetés ;
 // en mode fuite, elle abîme aussi les cloisons proches. kind (affichage, sons) : 's' balle explosive, 'm' obus de mortier ou sous-munition,
-// 'M' missile, 'A' bombe de la frappe aérienne, météore ou leurre piégé, 'B' Brasier ('b' par défaut, jamais utilisé)
+// 'M' missile, 'A' bombe de la frappe aérienne, météore ou leurre piégé, 'B' Orbe ('b' par défaut, jamais utilisé)
 function boom(S, x, y, z, r, dmg, src, kind) {
-  S.ev.push({ k: 'boom', x, y, z, r, kind: kind || 'b' });
+  const ev = { k: 'boom', x, y, z, r, kind: kind || 'b' };
+  // V5.3 : un sort à l'élément choisi (S.sortEl) : l'affichage dessine l'explosion à sa palette
+  if (S.sortEl) ev.ec = S.sortEl;
+  S.ev.push(ev);
   // V4.3 : chez l'hôte du multi, les dernières explosions partent dans l'instantané (S.mBooms, créé par encodeInstantane)
   if (S.mBooms) {
     S.mBoomN = ((S.mBoomN || 0) + 1) & 255;
@@ -109,7 +114,7 @@ function boom(S, x, y, z, r, dmg, src, kind) {
 // V4.2 (sa demande du 22/11 : « mourir ne doit pas ressembler à une défaite ») : en mode fuite, le joueur tombé se relève tout seul
 // sur le toit au bout de RELEVE secondes (comme le héros de L'Île des Cinq) ; la horde file pendant ce temps. Seule la ville finit la partie.
 const RELEVE = 8;
-// le joueur mordu (rien en mode invincible, ni pendant l'Éclair, ni tombé) ; à 0 : il tombe (mode fuite, événement tombe),
+// le joueur mordu (rien en mode invincible, ni pendant la Fulgurance, ni tombé) ; à 0 : il tombe (mode fuite, événement tombe),
 // ou c'est la défaite (« Ils arrivent », why = 'joueur')
 function hurtP(S, dmg) {
   const p = S.p;

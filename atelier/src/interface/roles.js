@@ -4,7 +4,7 @@
 // que lorsqu'il l'annonce (demandes claude/demande-<jeu>-roles-elements.md). ELS reste la liste des cinq éléments que connaissent les jeux collés.
 EL.bois.n = 'Nature';
 EL.vent = { n: 'Vent', c: '#8fe6dc', hero: 'Zéphyr' };
-KIT.vent = { skill: 'Rafale', ult: 'Tir perçant', tag: 'Tireur · Rafale · Tir perçant' };
+KIT.vent = { skill: 'Bond', ult: 'Tir perçant', tag: 'Tireur · Bond · Tir perçant' };
 const HEROS = ELS.concat('vent'),
   ROLE = { terre: 'Tank', bois: 'Combattant', elec: 'Assassin', feu: 'Mage', eau: 'Support', vent: 'Tireur' },
   // la boucle des faiblesses à six, telle que la fiche la fixe (chacun bat le suivant) ; les jeux collés appliquent encore la leur (BEATS, à cinq)
@@ -98,7 +98,7 @@ const VOIE_NIV = 10,
             250,
             'spB2',
             1,
-            L => (L ? "une élimination pendant l'Éclair le relance" : 'pas de relance'),
+            L => (L ? 'une élimination pendant la Fulgurance le relance' : 'pas de relance'),
             1
           ]
         ]
@@ -142,7 +142,7 @@ const VOIE_NIV = 10,
             250,
             'spA2',
             1,
-            L => (L ? 'la Marée pose un bouclier sur les alliés' : 'pas de bouclier'),
+            L => (L ? 'la Répulsion pose un bouclier sur les alliés' : 'pas de bouclier'),
             1
           ]
         ]
@@ -158,7 +158,7 @@ const VOIE_NIV = 10,
             250,
             'spB2',
             1,
-            L => (L ? 'le Déluge immobilise à son arrivée' : "le Déluge n'immobilise pas"),
+            L => (L ? 'le Sanctuaire immobilise à son arrivée' : "le Sanctuaire n'immobilise pas"),
             1
           ]
         ]

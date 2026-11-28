@@ -16,7 +16,7 @@ const HEROS = {
     el: 'Feu',
     c: '#ff6a3d',
     role: 'Mage',
-    sk: 'Brasier',
+    sk: 'Orbe',
     ul: 'Météores',
     cd: 11,
     pas: 'Tes balles enflamment et éclaboussent autour de la cible',
@@ -28,8 +28,8 @@ const HEROS = {
     el: 'Eau',
     c: '#3fa9ff',
     role: 'Support',
-    sk: 'Marée',
-    ul: 'Déluge',
+    sk: 'Répulsion',
+    ul: 'Sanctuaire',
     cd: 13,
     pas: 'Tu te soignes vite et tes balles ralentissent',
     skd: "Une vague déferle là où tu vises : elle repousse vers l'immeuble, ralentit et blesse",
@@ -40,7 +40,7 @@ const HEROS = {
     el: 'Nature',
     c: '#5fd068',
     role: 'Combattant',
-    sk: 'Ronces',
+    sk: 'Entraves',
     ul: 'Gardiens',
     cd: 12,
     pas: 'Tes balles empoisonnent',
@@ -53,7 +53,7 @@ const HEROS = {
     c: '#cf9a5c',
     role: 'Tank',
     sk: 'Rempart',
-    ul: 'Séisme',
+    ul: 'Onde de choc',
     cd: 15,
     pas: 'Plus de vie (+50), coups encaissés amortis',
     skd: 'Un mur de pierre en travers de la rue que tu vises : la horde bute dessus',
@@ -64,8 +64,8 @@ const HEROS = {
     el: 'Élec',
     c: '#ffd93b',
     role: 'Assassin',
-    sk: 'Éclair',
-    ul: 'Orage',
+    sk: 'Fulgurance',
+    ul: 'Déchaînement',
     cd: 9,
     pas: 'Sprint plus rapide, balles qui sautent sur un voisin, moins de vie (−15)',
     skd: 'Tu files tout droit sur 14 m en électrocutant ce que tu traverses, intouchable un instant',
@@ -77,7 +77,7 @@ const HEROS = {
     el: 'Vent',
     c: '#8fe6dc',
     role: 'Tireur',
-    sk: 'Rafale',
+    sk: 'Bond',
     ul: 'Tir perçant',
     cd: 14,
     pas: 'Plus de dégâts plus la cible est loin (+20 % au-delà de 30 m)',
@@ -213,7 +213,26 @@ function effetBalle(S, el, i, dmg, x, y, z, b, pA) {
 // V4.8 : prédilection : une arme de l'élément du héros fait 10 % de dégâts en plus (balles et lance-flammes)
 // V5.2 : l'élément choisi du héros (elH)
 const predilK = S => (S.hero && S.elArme === elH(S) ? 1.1 : 1);
-// Rafale (Zéphyr) : un bond en arrière de 8 m (+ kLen), arrêté par les murs, avec un petit saut ; kPush (et pousse : faux chez un invité
+// V5.3 : l'élément qui remplace celui du sort : l'élément choisi du héros quand il n'est pas sa clé ; null : le sort est comme avant (V5.2)
+const elS = S => {
+  const e = elH(S);
+  return S.hero && e !== S.hero ? e : null;
+};
+// V5.3 : pendant que le sort frappe (S.sortEl), hurtZ appelle sortEffet : l'effet des balles de cet élément (chiffres de base) sur le zombie i,
+// une fois par seconde et par zombie (S.sortT). Même mécanique que l'ultime teinté (voies.js : teinte), avec ses propres garde-fous
+function sortEffet(S, i, dmg) {
+  const el = S.sortEl,
+    Z = S.z;
+  if (!S.sortT || Z.st[i] === 0 || S.sortT[i] > S.t) return;
+  S.sortT[i] = S.t + 1;
+  const u = S.ultEl;
+  S.sortEl = null;
+  S.ultEl = null;
+  effetBalle(S, el, i, Math.min(dmg, 60 * hpMul(S.day)), Z.x[i], Z.y[i] + 1, Z.z[i], HM_ZERO, 0);
+  S.ultEl = u;
+  S.sortEl = el;
+}
+// Bond (Zéphyr) : un bond en arrière de 8 m (+ kLen), arrêté par les murs, avec un petit saut ; kPush (et pousse : faux chez un invité
 // du multi, l'hôte s'en charge) : au départ, les zombies à moins de 5 m sont repoussés de 5 m (dehors, pas les gros ; ceux d'un mur
 // d'avenue en tombent ; dedans, ralentis 1,5 s)
 function rafale(S, m, pousse) {
@@ -256,7 +275,7 @@ function rafale(S, m, pousse) {
     p.ground = false;
   }
   p.inv = 0.4;
-  S.ev.push({ k: 'rafale', x0, y: p.y + 1, z0, x1: p.x, z1: p.z });
+  S.ev.push({ k: 'rafale', x0, y: p.y + 1, z0, x1: p.x, z1: p.z, ec: elH(S) });
 }
 // Tir perçant (Zéphyr) : la ligne du tir, de l'œil dans l'axe de la vue, jusqu'au sol ou à 200 m (les murs ne l'arrêtent pas) ;
 // [x0, y0, z0, x1, y1, z1, longueur, dx, dy, dz]
@@ -287,27 +306,29 @@ function tirPercant(S, m, pw) {
       r = w / 2 + T.r;
     if (ex * ex + ey * ey + ez * ez < r * r) hurtZ(S, i, dmg, 'p');
   }
-  S.ev.push({ k: 'percant', x0: l[0], y0: l[1], z0: l[2], x1: l[3], y1: l[4], z1: l[5], w });
+  S.ev.push({ k: 'percant', x0: l[0], y0: l[1], z0: l[2], x1: l[3], y1: l[4], z1: l[5], w, ec: elH(S) });
 }
-// compétence du héros (bouton Compétence, double appui) ; renvoie true si elle part. Pendant le jour seulement, sauf l'Éclair de Volt
-// et la Rafale de Zéphyr (V4.8 : bond en arrière, rafale()).
-// Éclair : bond de 14 m (arrêté par les murs), électrocute ce qu'il traverse ; les autres visent aimPoint : Brasier (boule de feu, S.fballs),
-// Marée (vague : ralentit, blesse, repousse vers l'immeuble), Ronces (roncier, S.thorns), Rempart (mur dans la rue, S.ramparts ; refusé ailleurs)
+// compétence du héros (bouton Compétence, double appui) ; renvoie true si elle part. Pendant le jour seulement, sauf la Fulgurance de Volt
+// et le Bond de Zéphyr (V4.8 : bond en arrière, rafale()).
+// Fulgurance : bond de 14 m (arrêté par les murs), électrocute ce qu'il traverse ; les autres visent aimPoint : Orbe (boule de feu, S.fballs),
+// Répulsion (vague : ralentit, blesse, repousse vers l'immeuble), Entraves (roncier, S.thorns), Rempart (mur dans la rue, S.ramparts ; refusé ailleurs)
 function useHeroSkill(S) {
   const h = S.hero;
   if (!h || S.hab > 0 || S.p.dead || S.p.down > 0 || S.phase === 'dead' || S.phase === 'won') return false;
   if (h !== 'elec' && h !== 'vent' && S.phase !== 'day') return false;
-  // V4.8 : pas de Rafale en grimpant ni sur la tyrolienne
+  // V4.8 : pas de Bond en grimpant ni sur la tyrolienne
   if (h === 'vent' && (S.p.clb || S.p.zip)) return false;
   const hero = HEROS[h],
     pw = hPow(S),
     cd = (hero.cd * S.P.mis.cd) / 22,
     Z = S.z,
-    m = S.hm;
+    m = S.hm,
+    // V5.3 : l'élément choisi qui remplace celui du sort (null : comme avant)
+    ec = elS(S);
   // V4.3 : chez un invité du multi, l'hôte l'exécute (multi.js : action 'c')
   if (S.invite) return skillInvite(S, h, cd);
   if (h === 'elec') {
-    // Éclair : un bond horizontal de 14 m, arrêté par les murs
+    // Fulgurance : un bond horizontal de 14 m, arrêté par les murs
     const p = S.p,
       fx = -Math.sin(p.yaw),
       fz = -Math.cos(p.yaw),
@@ -318,6 +339,7 @@ function useHeroSkill(S) {
       x1 = p.x + fx * dash,
       z1 = p.z + fz * dash;
     let tue = false;
+    S.sortEl = ec;
     for (let k = 0; k < S.nAct; k++) {
       const i = S.act[k];
       if (Z.st[i] === 0 || Math.abs(Z.y[i] - p.y) > 2.2) continue;
@@ -332,19 +354,22 @@ function useHeroSkill(S) {
         if (hurtZ(S, i, 70 * pw * voieDegats(S, i, 0), 'p') || voieAcheve(S, i)) tue = true;
       }
     }
+    S.sortEl = null;
     p.x = x1;
     p.z = z1;
     p.vx = fx * 7;
     p.vz = fz * 7;
     p.inv = 0.6;
-    // V4.9 : Escarmoucheur, Relance (spB2) : un zombie tué par l'Éclair le relance
+    // V4.9 : Escarmoucheur, Relance (spB2) : un zombie tué par la Fulgurance le relance
     S.hab = tue && voieDe(S, 'elec', 'b') && m.spB2 > 0 ? 0.3 : cd;
-    S.ev.push({ k: 'eclair', x0, y: p.y + 1, z0, x1, z1 });
+    S.ev.push({ k: 'eclair', x0, y: p.y + 1, z0, x1, z1, ec: elH(S) });
     if (S.hab < 1) S.ev.push({ k: 'relance' });
     return true;
   }
   if (h === 'vent') {
+    S.sortEl = ec;
     rafale(S, m, true);
+    S.sortEl = null;
     S.hab = cd;
     return true;
   }
@@ -366,9 +391,10 @@ function useHeroSkill(S) {
       T: 0.3 + a[3] / 90,
       pw,
       r: 5 + m.abRad,
-      feuR: voieDe(S, 'feu', 'a') ? 6 : 4.2
+      feuR: voieDe(S, 'feu', 'a') ? 6 : 4.2,
+      ec
     });
-    S.ev.push({ k: 'brasier0' });
+    S.ev.push({ k: 'brasier0', ec: elH(S) });
   } else if (h === 'eau') {
     const R = 8,
       piege = voieDe(S, 'eau', 'b') ? 1.5 + m.spB1 : 0;
@@ -378,8 +404,12 @@ function useHeroSkill(S) {
       const dx = Z.x[i] - gx,
         dz = Z.z[i] - gz;
       if (dx * dx + dz * dz > R * R) continue;
-      Z.slow[i] = Math.max(Z.slow[i], 3.5);
-      if (hurtZ(S, i, 55 * pw, 'p')) continue;
+      // V5.3 : le ralentissement est l'effet de l'Eau : avec un autre élément choisi, c'est le sien (sortEffet)
+      if (!ec) Z.slow[i] = Math.max(Z.slow[i], 3.5);
+      S.sortEl = ec;
+      const mort = hurtZ(S, i, 55 * pw, 'p');
+      S.sortEl = null;
+      if (mort) continue;
       // V4.9 : Entraveuse : immobilisés 1,5 s (+ spB1), dehors ; les gros restent ralentis
       if (piege && outside(Z, i) && !bigZ(Z.ty[i])) Z.root[i] = Math.max(Z.root[i], piege);
       if (outside(Z, i)) {
@@ -397,11 +427,11 @@ function useHeroSkill(S) {
     if (m.kHeal) S.p.hp = Math.min(S.p.hpMax, S.p.hp + m.kHeal * soinK(S));
     // V4.9 : Soigneuse, Bouclier d'eau (spA2) : 30, 10 s
     if (voieDe(S, 'eau', 'a') && m.spA2 > 0) bouclier(S);
-    S.ev.push({ k: 'maree', x: gx, y: gy, z: gz, r: R });
+    S.ev.push({ k: 'maree', x: gx, y: gy, z: gz, r: R, ec: elH(S) });
   } else if (h === 'bois' && voieDe(S, 'bois', 'b')) plonge(S, a, m, pw, true, true);
   else if (h === 'bois') {
-    S.thorns.push({ x: gx, y: gy, z: gz, r: 5.2 + m.abRad, t: 6 + m.kDur, dps: 22 * pw, pulse: 0 });
-    S.ev.push({ k: 'ronces', x: gx, y: gy, z: gz, r: 5.2 + m.abRad });
+    S.thorns.push({ x: gx, y: gy, z: gz, r: 5.2 + m.abRad, t: 6 + m.kDur, dps: 22 * pw, pulse: 0, ec });
+    S.ev.push({ k: 'ronces', x: gx, y: gy, z: gz, r: 5.2 + m.abRad, ec: elH(S) });
   } else if (h === 'terre') {
     if (gy > 0.8) {
       S.ev.push({ k: 'refus', why: 'Vise la rue' });
@@ -429,16 +459,17 @@ function useHeroSkill(S) {
       renvoi: gard && m.spA2 > 0 ? 0.5 : 0,
       ch: avg ? 6 + m.spB1 : 0,
       onde: avg && m.spB2 > 0 ? 1 : 0,
-      dg: 30 * pw * hpMul(S.day)
+      dg: 30 * pw * hpMul(S.day),
+      ec
     });
-    S.ev.push({ k: 'rempart', x: gx, z: gz, nx, nz, half, ch: avg ? 6 + m.spB1 : 0 });
+    S.ev.push({ k: 'rempart', x: gx, z: gz, nx, nz, half, ch: avg ? 6 + m.spB1 : 0, ec: elH(S) });
   }
   S.hab = cd;
   return true;
 }
-// ultime du héros (bouton Ultime, double appui ; S.ult chargé à 1 en tuant). Météores (S.meteors), Déluge (S.flood ; ville et joueur soignés),
-// Gardiens (trois arbres aux sorties les plus chargées, S.guards), Séisme (immédiat : dehors blessés, entravés ou ralentis ; dedans, près du
-// joueur, blessés), Orage (S.storms, là où l'on vise), Tir perçant (V4.8, immédiat : tirPercant)
+// ultime du héros (bouton Ultime, double appui ; S.ult chargé à 1 en tuant). Météores (S.meteors), Sanctuaire (S.flood ; ville et joueur soignés),
+// Gardiens (trois arbres aux sorties les plus chargées, S.guards), Onde de choc (immédiat : dehors blessés, entravés ou ralentis ; dedans, près du
+// joueur, blessés), Déchaînement (S.storms, là où l'on vise), Tir perçant (V4.8, immédiat : tirPercant)
 function useHeroUlt(S) {
   const h = S.hero;
   if (!h || S.ult < 1 || S.phase !== 'day' || S.p.down > 0) return false;
@@ -449,7 +480,9 @@ function useHeroUlt(S) {
     Z = S.z,
     m = S.hm,
     // V4.9 : ultime teinté (voies.js : l'élément de l'arme s'il n'est pas celui du héros), posé sur ce qui dure, et ici pour l'immédiat
-    el = teinteDe(S, h);
+    el = teinteDe(S, h),
+    // V5.3 : l'élément choisi qui remplace celui du sort (null : comme avant)
+    ec = elS(S);
   S.ultEl = el;
   if (h === 'feu')
     // V4.9 : Artilleur, Sol en feu (spA2) : chaque météore laisse le sol en feu 4 s
@@ -458,12 +491,14 @@ function useHeroUlt(S) {
       t: 0,
       r: 5.5 + m.uRad,
       el,
+      ec,
       feu: voieDe(S, 'feu', 'a') && m.spA2 > 0 ? 1 : 0
     });
   else if (h === 'eau') {
     S.floodOwn = undefined;
     S.flood = 8 * Math.sqrt(pw) + m.uDur;
     S.floodEl = el;
+    S.floodEc = ec;
     S.city = Math.min(S.P.hp, S.city + (15 * pw + 5 * m.uExtra) * soinK(S));
     S.p.hp = S.p.hpMax;
     // V4.9 : Entraveuse, Lame de fond (spB2) : à son arrivée, tous les petits dehors immobilisés 1,5 s (+ spB1)
@@ -487,7 +522,8 @@ function useHeroUlt(S) {
         t: 15 * Math.sqrt(pw) + m.uDur,
         cd: S.rnd() * 0.4,
         pw,
-        el
+        el,
+        ec
       });
     }
   } else if (h === 'terre') {
@@ -496,24 +532,37 @@ function useHeroUlt(S) {
       const st = Z.st[i];
       if (st === 0) continue;
       if (outside(Z, i) && Math.hypot(Z.x[i], Z.z[i]) < 30 + 8 * (pw - 1) + m.uRad) {
-        if (hurtZ(S, i, 40 * pw * hpMul(S.day), 'p')) continue;
-        if (bigZ(Z.ty[i])) Z.slow[i] = Math.max(Z.slow[i], 3);
-        else Z.root[i] = 2.5 + m.uDur;
+        S.sortEl = ec;
+        const mort = hurtZ(S, i, 40 * pw * hpMul(S.day), 'p');
+        S.sortEl = null;
+        if (mort) continue;
+        // V5.3 : l'étourdissement est l'effet de la Terre : avec un autre élément choisi, c'est le sien (sortEffet)
+        if (!ec) {
+          if (bigZ(Z.ty[i])) Z.slow[i] = Math.max(Z.slow[i], 3);
+          else Z.root[i] = 2.5 + m.uDur;
+        }
         if (st === 5) {
           Z.st[i] = 1;
           Z.y[i] = 0;
           if (S.mode === 'out') outRoute(S, i);
         }
       } else if ((st === 3 || st === 7) && Math.hypot(Z.x[i] - S.p.x, Z.y[i] - S.p.y, Z.z[i] - S.p.z) < 12) {
-        if (!hurtZ(S, i, 90 * pw, 'p')) Z.root[i] = 2;
+        S.sortEl = ec;
+        const mort = hurtZ(S, i, 90 * pw, 'p');
+        S.sortEl = null;
+        if (!mort && !ec) Z.root[i] = 2;
       }
     }
   } else if (h === 'elec') {
     const a = aimPoint(S, 160);
-    S.storms.push({ x: a[0], y: a[1], z: a[2], t: 6 * Math.sqrt(pw) + m.uDur, r: 16 + m.uRad, zap: 0, pw, el });
-  } else if (h === 'vent') tirPercant(S, m, pw);
+    S.storms.push({ x: a[0], y: a[1], z: a[2], t: 6 * Math.sqrt(pw) + m.uDur, r: 16 + m.uRad, zap: 0, pw, el, ec });
+  } else if (h === 'vent') {
+    S.sortEl = ec;
+    tirPercant(S, m, pw);
+    S.sortEl = null;
+  }
   S.ultEl = null;
-  S.ev.push({ k: 'hult', h, el });
+  S.ev.push({ k: 'hult', h, el, ec: elH(S) });
   return true;
 }
 // ce qui dure, à chaque pas : boules de feu (explosion à l'arrivée, flammes au sol), ronciers, remparts (fin : temps ou casse),
@@ -526,8 +575,11 @@ function heroStep(S, dt) {
     f.t += dt;
     if (f.t >= f.T) {
       f.done = 1;
+      S.sortEl = f.ec;
       boom(S, f.x1, f.y1 + 0.3, f.z1, f.r, 130 * f.pw, 'p', 'B');
-      if (f.y1 < 0.8) S.fires.push({ x: f.x1, z: f.z1, r: f.feuR || 4.2, t: 5, dps: 24 * f.pw, own: f.own });
+      S.sortEl = null;
+      // V5.3 : le feu au sol prend l'élément choisi (el : sa couleur et son effet, zombies.js)
+      if (f.y1 < 0.8) S.fires.push({ x: f.x1, z: f.z1, r: f.feuR || 4.2, t: 5, dps: 24 * f.pw, own: f.own, el: f.ec });
     }
   }
   S.fballs = S.fballs.filter(f => !f.done);
@@ -543,9 +595,12 @@ function heroStep(S, dt) {
       const dx = Z.x[i] - th.x,
         dz = Z.z[i] - th.z;
       if (dx * dx + dz * dz > th.r * th.r) return;
-      Z.slow[i] = Math.max(Z.slow[i], 0.3);
+      // V5.3 : le ralentissement est l'effet de la Nature (ici, celui de l'élément choisi s'il est autre : sortEffet)
+      if (!th.ec) Z.slow[i] = Math.max(Z.slow[i], 0.3);
       if (root && Z.ty[i] < 3) Z.root[i] = Math.max(Z.root[i], 0.45);
+      S.sortEl = th.ec;
       hurtZ(S, i, th.dps * dt, 'p');
+      S.sortEl = null;
     });
   }
   S.thorns = S.thorns.filter(th => th.t > 0);
@@ -560,7 +615,7 @@ function heroStep(S, dt) {
     wall.t -= dt;
     if (wall.t <= 0 || wall.hp <= 0) {
       wall.done = 1;
-      S.ev.push({ k: 'rempart_fin', id: wall.id, x: wall.x, z: wall.z, broke: wall.hp <= 0 });
+      S.ev.push({ k: 'rempart_fin', id: wall.id, x: wall.x, z: wall.z, broke: wall.hp <= 0, ec: wall.ec || 'terre' });
     }
   }
   S.ramparts = S.ramparts.filter(wall => !wall.done);
@@ -591,9 +646,10 @@ function heroStep(S, dt) {
         met: 1,
         own: met.own,
         el: met.el,
+        ec: met.ec,
         feu: met.feu
       });
-      S.ev.push({ k: 'meteor', x: Z.x[best], z: Z.z[best], t: 0.55 });
+      S.ev.push({ k: 'meteor', x: Z.x[best], z: Z.z[best], t: 0.55, ec: met.ec || 'feu' });
     }
   }
   S.meteors = S.meteors.filter(met => met.n > 0);
@@ -605,8 +661,11 @@ function heroStep(S, dt) {
     for (let k = 0; k < S.nAct; k++) {
       const i = S.act[k];
       if (!outside(Z, i)) continue;
-      Z.slow[i] = Math.max(Z.slow[i], 0.25);
+      // V5.3 : le ralentissement est l'effet de l'Eau (ici, celui de l'élément choisi s'il est autre : sortEffet)
+      if (!S.floodEc) Z.slow[i] = Math.max(Z.slow[i], 0.25);
+      S.sortEl = S.floodEc;
       hurtZ(S, i, Z.hm[i] * 0.035 * uPow(S) * dt, 'p');
+      S.sortEl = null;
     }
     S.ultEl = null;
   }
@@ -629,10 +688,13 @@ function heroStep(S, dt) {
       }
     });
     if (best >= 0) {
-      S.ev.push({ k: 'fleche', x0: gd.x, y0: 5, z0: gd.z, x1: Z.x[best], y1: Z.y[best] + 1.1, z1: Z.z[best] });
-      Z.psn[best] = Math.max(Z.psn[best], 4);
+      S.ev.push({ k: 'fleche', x0: gd.x, y0: 5, z0: gd.z, x1: Z.x[best], y1: Z.y[best] + 1.1, z1: Z.z[best], ec: gd.ec || 'bois' });
+      // V5.3 : le poison est l'effet de la Nature (ici, celui de l'élément choisi s'il est autre : sortEffet)
+      if (!gd.ec) Z.psn[best] = Math.max(Z.psn[best], 4);
       S.ultEl = gd.el || null;
+      S.sortEl = gd.ec;
       hurtZ(S, best, 34 * gd.pw, 'p');
+      S.sortEl = null;
       S.ultEl = null;
     }
   }
@@ -660,10 +722,13 @@ function heroStep(S, dt) {
         z0: Z.z[i] + (S.rnd() - 0.5) * 4,
         x1: Z.x[i],
         y1: Z.y[i] + 1,
-        z1: Z.z[i]
+        z1: Z.z[i],
+        ec: storm.ec || 'elec'
       });
       S.ultEl = storm.el || null;
+      S.sortEl = storm.ec;
       hurtZ(S, i, 48 * storm.pw, 'p');
+      S.sortEl = null;
       S.ultEl = null;
     }
   }

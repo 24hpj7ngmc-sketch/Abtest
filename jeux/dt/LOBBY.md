@@ -50,6 +50,14 @@ DernierToit.fermer(); // retirer le jeu sans attendre le joueur (aucun « fin »
 - `sansFin` : partie sans fin (après une victoire, « Continuer sans fin » lance une nouvelle partie, qui enverra son propre `fin`) ;
 - « Rejouer » à l'écran de fin relance une partie dans l'iframe : un `fin` par partie, à récompenser chacun.
 
+## V5.3 : les sorts suivent l'élément choisi du héros
+
+Rien à changer côté lobby (`opts.elHeros` de la V5.2 suffit) : la compétence et l'ultime des six héros gardent leur mécanique, leurs chiffres et leurs noms, mais leur effet
+élémentaire et leurs couleurs (boule, explosion, météores, zones au sol, vagues, éclairs, voile) sont ceux de l'élément choisi (Feu brûle, Eau ralentit, Nature empoisonne,
+Terre repousse / étourdit, Élec rebondit, Vent soulève les petits : le code des balles). Sans élément choisi (élément = clé du héros), tout reste comme en V5.2.
+Multi : chez l'hôte, le sort d'un invité suit l'`eh` de cet invité ; chez l'invité, ses propres sorts suivent son élément, mais les effets des AUTRES joueurs vus dans
+l'instantané gardent les couleurs d'origine de leur héros (l'instantané ne dit pas l'élément : à faire avec un champ de plus). `DernierToit.version` vaut `'V5.3'`.
+
 ## V5.2 : l'élément du héros se choisit (contrat V12.9)
 
 `opts.elHeros` (facultatif : `'feu'|'eau'|'bois'|'terre'|'elec'|'vent'`) : l'élément choisi du héros, au Hall. La clé `opts.heros` reste son identité (kit, voies,

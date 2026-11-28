@@ -233,7 +233,7 @@ const INP = { f: 0, r: 0, fire: false, ads: false, yaw: 0, pitch: 0 };
   S3.p.yaw = 0;
   A.useHeroSkill(S3);
   T(
-    "Relance (spB2) : un zombie tué par l'Éclair le relance (pas sans tué)",
+    "Relance (spB2) : un zombie tué par la Fulgurance le relance (pas sans tué)",
     S2.hab <= 0.3 && S3.hab > 5,
     S2.hab + ' · ' + S3.hab.toFixed(1)
   );
@@ -253,7 +253,7 @@ const INP = { f: 0, r: 0, fire: false, ads: false, yaw: 0, pitch: 0 };
   T('Artilleur : les armes portent 15 m plus loin (10 + spA1)', perte(S, i) > 0 && perte(base, j) === 0, 'portée ' + R);
   regarde(S, [0, 0, -30]);
   A.useHeroSkill(S);
-  T('Artilleur : le Brasier laisse un feu de 6 m', S.fballs[0].feuR === 6);
+  T('Artilleur : l\'Orbe laisse un feu de 6 m', S.fballs[0].feuR === 6);
   S.ult = 1;
   zombie(S, 0, -40);
   A.useHeroUlt(S);
@@ -293,7 +293,7 @@ const INP = { f: 0, r: 0, fire: false, ads: false, yaw: 0, pitch: 0 };
   T('Soigneuse : la vie remonte 35 % plus vite (20 + spA1)', Math.abs((S.p.hp - 10) / (base.p.hp - 10) - 1.35) < 1e-6);
   regarde(S, [0, 0, -30]);
   A.useHeroSkill(S);
-  T("Bouclier d'eau (spA2) : la Marée pose 30 de bouclier", S.p.boucl === 30 && S.ev.some(e => e.k === 'bouclier'));
+  T("Bouclier d'eau (spA2) : la Répulsion pose 30 de bouclier", S.p.boucl === 30 && S.ev.some(e => e.k === 'bouclier'));
   S.god = false;
   const h0 = S.p.hp;
   A.hurtP(S, 20 / S.P.armor);
@@ -309,12 +309,12 @@ const INP = { f: 0, r: 0, fire: false, ads: false, yaw: 0, pitch: 0 };
   regarde(S, [0, 0, -30]);
   A.useHeroSkill(S);
   T(
-    'Entraveuse : la Marée immobilise 2 s (1,5 + spB1) ; un Colosse, seulement ralenti',
+    'Entraveuse : la Répulsion immobilise 2 s (1,5 + spB1) ; un Colosse, seulement ralenti',
     Math.abs(S.z.root[i] - 2) < 1e-6 && S.z.root[g] === 0 && S.z.slow[g] > 0
   );
   S.ult = 1;
   A.useHeroUlt(S);
-  T('Lame de fond (spB2) : le Déluge immobilise tous les petits dehors', Math.abs(S.z.root[j] - 2) < 1e-6);
+  T('Lame de fond (spB2) : le Sanctuaire immobilise tous les petits dehors', Math.abs(S.z.root[j] - 2) < 1e-6);
 }
 
 // ---- Zéphyr
@@ -394,7 +394,7 @@ const INP = { f: 0, r: 0, fire: false, ads: false, yaw: 0, pitch: 0 };
   A.useHeroUlt(S);
   A.useHeroUlt(base);
   T(
-    'Séisme avec une arme de Feu : séisme de lave (les zombies brûlent) ; avec la Terre, rien de plus',
+    'Onde de choc avec une arme de Feu : séisme de lave (les zombies brûlent) ; avec la Terre, rien de plus',
     S.z.burn[i] > 0 && base.z.burn[j] === 0 && S.ev.some(e => e.k === 'hult' && e.el === 'feu')
   );
   const V = partie('vent', null, {}, 'bois');
@@ -423,7 +423,7 @@ const INP = { f: 0, r: 0, fire: false, ads: false, yaw: 0, pitch: 0 };
   const z1 = O.ev.filter(e => e.k === 'zap').length;
   pas(O, 10);
   T(
-    "Déluge avec une arme d'Élec : des arcs, une fois par seconde au plus par zombie",
+    "Sanctuaire avec une arme d'Élec : des arcs, une fois par seconde au plus par zombie",
     z1 >= 1 && O.ev.filter(e => e.k === 'zap').length === z1,
     z1
   );

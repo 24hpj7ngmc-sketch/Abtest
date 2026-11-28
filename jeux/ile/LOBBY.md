@@ -7,6 +7,9 @@ Le jeu arrive en **un seul fichier**, `ile-pour-lobby.js`, à coller tel quel da
 
 Le jeu **n'écrit aucune sauvegarde**. Tout ce qui dure reste au lobby : or céleste, éclats, arbres des héros et des armes, campagne, défis, butin, réglages.
 
+## V2.6 (28/11/2026) — les sorts suivent l'élément choisi du héros
+Rien ne change dans le contrat (`opts`, `rappels`, tables). `IleDesCinq.version` vaut `'V2.6'`. Avec `opts.elHeros`, la compétence et l'ultime des six héros gardent leur mécanique et leurs chiffres, mais leurs dégâts prennent l'élément choisi (boucle des faiblesses, effet d'état de cet élément : le Feu brûle, l'Eau ralentit, la Nature empoisonne, la Terre étourdit, l'Élec rebondit, le Vent soulève les petits) et leurs animations, zones au sol comprises, sa couleur. Les noms des sorts ne changent pas. L'ultime teinté par l'arme s'ajoute comme avant. Sans `elHeros`, bots et esclaves : rien ne change (simulation à graine fixe identique).
+
 ## V2.5 (28/11/2026) — l'élément du héros se choisit (contrat V12.9)
 - **Nouveau** : `opts.elHeros`, une des six clés (`feu eau bois terre elec vent`). Absent ou inconnu : la clé du héros, comme avant. Annoncé dans `IleDesCinq.accepte` (`'elHeros'`). `IleDesCinq.version` vaut `'V2.5'`.
 - La clé `opts.heros` reste l'identité (kit, voies, rôle, nom, modèle, butin, records). L'élément choisi remplace la clé là où elle servait d'élément pour le héros du joueur : couleurs de l'avatar, de l'arme et de l'interface, bonus de prédilection (+10 % si l'élément de l'arme = l'élément choisi), élément d'une arme sans choix (écran des 3 armes, `opts.elements`), effets propres du héros (ralenti, poison, soulèvement, chaîne, éclats), Renfort, teinte de l'ultime. Les armes gardent leur élément choisi.
@@ -24,7 +27,7 @@ Rien ne change dans le contrat (`opts`, `rappels`, tables). `IleDesCinq.version`
 
 | | |
 |---|---|
-| `IleDesCinq.version` | `'V2.4'` |
+| `IleDesCinq.version` | `'V2.6'` |
 | `IleDesCinq.HEROS`, `.ARMES` | les clés acceptées |
 | `IleDesCinq.accepte` | ce que le jeu sait lire : `mode, campagne, tuto, bonus, gains, reglages, multi, paie, elements, voie` |
 | `IleDesCinq.tables` | des tables du jeu en lecture seule (voir plus bas) |

@@ -63,7 +63,7 @@ const {chromium}=require('playwright');const path=require('path');const broker=r
  const vB=()=>G(Bp,()=>{const g=__g(),o=Object.values(g.LN.av)[0];return o?{aw:o.aw,vis:!!o.vis,gun:!!o.gun,ix:o.ix,exT:o.exT,n:Object.keys(g.LN.av).length,err:window.__mdlErr||[]}:null;});
  let vb=await vB();ok('A sans l\'outil Arme : B voit son avatar sans arme (téléphone qui n\'envoie rien)',!!vb&&vb.aw===''&&!vb.vis,vb);
  await G(A,()=>{const g=__g();g.setWeap('assaut');g.save.wel={assaut:'elec'};g.lobTool('arme');});await Bp.waitForTimeout(1500);vb=await vB();
- ok('A prend l\'arme : B voit un avatar avec le fusil d\'assaut d\'Éclair dans la main',!!vb&&vb.aw==='assaut|elec'&&vb.vis&&vb.gun&&!vb.err.length,vb);
+ ok('A prend l\'arme : B voit un avatar avec le fusil d\'assaut d\'Fulgurance dans la main',!!vb&&vb.aw==='assaut|elec'&&vb.vis&&vb.gun&&!vb.err.length,vb);
  const colB=await G(Bp,()=>{const o=Object.values(__g().LN.av)[0],c=[0,0,0];let n=0;o.gun.traverse(m=>{const q=m.geometry&&m.geometry.attributes&&m.geometry.attributes.color;if(q)for(let i=0;i<q.count;i++){c[0]+=q.array[i*3];c[1]+=q.array[i*3+1];c[2]+=q.array[i*3+2];n++;}});return c.map(v=>v/n);});
  const colA=await G(A,()=>{const o=__g().LA.g,c=[0,0,0];let n=0;o.traverse(m=>{const q=m.geometry&&m.geometry.attributes&&m.geometry.attributes.color;if(q)for(let i=0;i<q.count;i++){c[0]+=q.array[i*3];c[1]+=q.array[i*3+1];c[2]+=q.array[i*3+2];n++;}});return c.map(v=>v/n);});
  ok('la couleur de l\'arme chez B est celle de l\'élément choisi par A (même teinte que chez A)',ds(colA,colB)<.02,[colA,colB]);

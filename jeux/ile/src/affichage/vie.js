@@ -147,7 +147,13 @@ function viewsTick(dt, now, h) {
   sync(views.pu, sim.pups, pupView, (p, v) => pupTick(p, v, now));
   sync(
     views.st,
-    sim.storms.map(st => ({ id: Math.round(st.x) * 1000 + Math.round(st.z), x: st.x, z: st.z, r: st.r || BAL.stormR })),
+    sim.storms.map(st => ({
+      id: Math.round(st.x) * 1000 + Math.round(st.z),
+      x: st.x,
+      z: st.z,
+      r: st.r || BAL.stormR,
+      el: st.el
+    })),
     stormView,
     (st, v) => {
       v.position.set(st.x, 0, st.z);

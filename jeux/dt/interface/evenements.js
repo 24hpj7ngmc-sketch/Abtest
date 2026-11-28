@@ -176,7 +176,7 @@ function events() {
     } else if (k === 'eclair') SND.play('eclair');
     // V4.9 : les voies
     else if (k === 'acheve') SND.at('zap', ev.x, ev.z, 0, ev.y);
-    else if (k === 'relance') toast('Éclair relancé !', 1200);
+    else if (k === 'relance') toast('Fulgurance relancé !', 1200);
     else if (k === 'bouclier') SND.play('vague');
     else if (k === 'plonge') SND.play('dash');
     else if (k === 'onde_roc') SND.at('eboul', ev.x, ev.z, 0, 0);

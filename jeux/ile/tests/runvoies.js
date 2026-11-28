@@ -15,7 +15,7 @@ const {chromium}=require('playwright');const path=require('path');
    // Roc, Gardien : un allié près de lui prend 30 % de moins ; il renvoie les coups (spA2)
    {const s=mk('feu',{});s.others.x={el:'terre',m:{voA:1,spA1:1,spA2:1},x:s.hero.x+2,z:s.hero.z,y:0};const h=s.hero;h.hp=100;g.hurtHero(s,h,10);const a=100-h.hp;delete s.others.x;h.hp=100;g.hurtHero(s,h,10);R.gard={avec:a,sans:100-h.hp};
     const s2=mk('terre',{voA:1,spA2:1},1);const e=s2.enemies[0];e.x=s2.hero.x+2;e.z=s2.hero.z;e.ha=0;s2.hero.hp=999;s2.hero.maxHp=999;for(let i=0;i<3;i++)g.step(s2,.05,I);R.gard.renvoi=Math.round(5000-e.hp);}
-   // Sylve, Colosse : plus de vie ; Plongeur : elle bondit, les Ronces poussent là où elle retombe
+   // Sylve, Colosse : plus de vie ; Plongeur : elle bondit, les Entraves poussent là où elle retombe
    {R.col=[g.heroHpOf('bois',{}),g.heroHpOf('bois',{voA:1,spA1:50})];const s=mk('bois',{voB:1,spB1:2});const h=s.hero,x0=h.x,z0=h.z;g.ability(s,h,[0,h.x,h.z,0,h.x,h.z-20]);const zn=s.zones.find(q=>q.el==='bois');R.plonge={d:Math.hypot(h.x-x0,h.z-z0),zone:zn?Math.hypot(zn.x-h.x,zn.z-h.z):99};}
    // Volt, Lame : +30 % sur une cible seule, achève sous 15 % ; Escarmoucheur : une élimination rend de la recharge
    {const s=mk('elec',{voA:1,spA2:1},2);const[e,o]=s.enemies;e.x=0;e.z=-40;o.x=30;o.z=-40;const sh=fire(s,s.hero)[0];R.lame={iso:sh.iso,exe:sh.exe};
@@ -26,13 +26,13 @@ const {chromium}=require('playwright');const path=require('path');
    // Braise, Artilleur : plus de portée ; Mage de bataille : l'aura brûle autour de lui
    {const s=mk('feu',{voA:1,spA1:5});const a=fire(s,s.hero)[0].life;const s2=mk('feu',{});const b=fire(s2,s2.hero)[0].life;R.arti=[+(a*60).toFixed(0),+(b*60).toFixed(0)];
     const s3=mk('feu',{voB:1},2);const[e,o]=s3.enemies;e.x=s3.hero.x+2;e.z=s3.hero.z;o.x=s3.hero.x+10;o.z=s3.hero.z;e.stun=o.stun=99;for(let i=0;i<20;i++)g.step(s3,.05,I);R.aura=[Math.round(5000-e.hp),Math.round(5000-o.hp)];}
-   // Ondine, Soigneuse : soin renforcé et bouclier ; Entraveuse : la Marée immobilise
+   // Ondine, Soigneuse : soin renforcé et bouclier ; Entraveuse : la Répulsion immobilise
    {const s=mk('eau',{voA:1,spA2:1});const h=s.hero;h.hp=10;g.tide(s,h,null);R.soin={hp:Math.round(h.hp-10),shd:h.shd};h.hp=100;g.hurtHero(s,h,10);R.soin.apres=h.hp;
     const s2=mk('eau',{voB:1,spB1:0.5},1);const e=s2.enemies[0];e.x=s2.hero.x+3;e.z=s2.hero.z;g.tide(s2,s2.hero,null);R.entr=+e.stun.toFixed(1);}
    // Zéphyr, Sniper : bonus au-delà de 40 m, tir chargé après une pause ; Mitrailleur : plus vite en courant
    {const s=mk('vent',{voA:1,spA2:1});const h=s.hero;h.lsT=5;const a=fire(s,h,2);R.snip={sf:a[0].sf,c1:+(a[0].dmg/a[1].dmg).toFixed(2),ap:!!a[0].ap};
     const s2=mk('vent',{voB:1,spB1:0.08});const h2=s2.hero;h2.cd=0;h2.px=h2.x;h2.pz=h2.z;h2.x+=0.5;g.heroStep(s2,h2,{fire:true},.05,false);const c1=h2.cd;const s3=mk('vent',{});const h3=s3.hero;h3.cd=0;g.heroStep(s3,h3,{fire:true},.05,false);R.mit=+(h3.cd/c1).toFixed(2);}
-   // l'ultime teinté : le Séisme de Roc avec une arme de Feu brûle ; avec une arme de Terre, rien de plus
+   // l'ultime teinté : l'Onde de choc de Roc avec une arme de Feu brûle ; avec une arme de Terre, rien de plus
    {const s=mk('terre',{},2);const h=s.hero;h.wEl='feu';s.enemies.forEach((e,i)=>{e.x=h.x+2+i;e.z=h.z;});g.quake(s,h);R.tint={brule:s.enemies.map(e=>+(e.burn>0)),ev:s.events.some(v=>v.k==='tint'&&v.el==='feu')};
     const s2=mk('terre',{},1);s2.hero.wEl='terre';s2.enemies[0].x=s2.hero.x+2;s2.enemies[0].z=s2.hero.z;g.quake(s2,s2.hero);R.tint.terre=s2.events.some(v=>v.k==='tint');
     const s3=mk('eau',{},2);s3.hero.wEl='terre';g.deluge(s3,s3.hero);R.tint.deluge=s3.enemies.map(e=>+(e.stun>0));}
@@ -45,12 +45,12 @@ const {chromium}=require('playwright');const path=require('path');
    return R;});
  ok('Roc Avant-garde : charge de '+R.charge.d.toFixed(1)+' m (recharge '+R.charge.ab+' s, pas de mur), renverse '+R.charge.st.join(''),R.charge.d>9.5&&R.charge.d<10.6&&R.charge.ab===18&&R.charge.wall===0&&R.charge.st.join('')==='11100'.slice(0,3)+'00',R.charge);
  ok('Roc Gardien : un allié près de lui prend '+R.gard.avec.toFixed(1)+' au lieu de '+R.gard.sans.toFixed(1)+' ; renvoi au contact : '+R.gard.renvoi,Math.abs(R.gard.avec/R.gard.sans-0.7)<0.02&&R.gard.renvoi>0,R.gard);
- ok('Sylve Colosse : '+R.col[0]+' → '+R.col[1]+' PV ; Plongeur : bond de '+R.plonge.d.toFixed(1)+' m, Ronces à '+R.plonge.zone.toFixed(1)+' m',R.col[1]-R.col[0]===110&&R.plonge.d>9.4&&R.plonge.d<10.6&&R.plonge.zone<0.5,R);
+ ok('Sylve Colosse : '+R.col[0]+' → '+R.col[1]+' PV ; Plongeur : bond de '+R.plonge.d.toFixed(1)+' m, Entraves à '+R.plonge.zone.toFixed(1)+' m',R.col[1]-R.col[0]===110&&R.plonge.d>9.4&&R.plonge.d<10.6&&R.plonge.zone<0.5,R);
  ok('Volt Lame : cible seule ×'+(R.lame.seule/R.lame.base).toFixed(2)+', achève sous 15 % ('+R.lame.acheve+') ; Escarmoucheur : recharge 10 → '+R.esc+' s',R.lame.seule/R.lame.base>1.25&&R.lame.acheve&&R.esc<7,R);
  ok('Braise Artilleur : portée '+R.arti[0]+' m contre '+R.arti[1]+' ; Mage de bataille : l\'aura brûle à 2 m ('+R.aura[0]+'), pas à 10 m ('+R.aura[1]+')',R.arti[0]>R.arti[1]*1.2&&R.aura[0]>0&&R.aura[1]===0,R);
  ok('Ondine Soigneuse : soin +'+R.soin.hp+', bouclier '+R.soin.shd+' (un coup de 10 : '+R.soin.apres+' PV) ; Entraveuse : immobilisé '+R.entr+' s',R.soin.hp>45&&R.soin.shd>0&&R.soin.apres===100&&R.entr>=2,R);
  ok('Zéphyr Sniper : +'+Math.round(R.snip.sf*100)+' % au loin, tir chargé ×'+R.snip.c1+' qui perce l\'armure ; Mitrailleur : cadence ×'+R.mit+' en courant',R.snip.sf===0.15&&Math.abs(R.snip.c1-1.5)<0.01&&R.snip.ap&&R.mit>1.15,R);
- ok('ultime teinté : Séisme + arme de Feu, ils brûlent ('+R.tint.brule.join('')+') ; arme de Terre, rien de plus ('+R.tint.terre+') ; Déluge + arme de Terre, ils sont étourdis ('+R.tint.deluge.join('')+')',R.tint.brule.join('')==='11'&&R.tint.ev&&!R.tint.terre&&R.tint.deluge.join('')==='11',R.tint);
+ ok('ultime teinté : Onde de choc + arme de Feu, ils brûlent ('+R.tint.brule.join('')+') ; arme de Terre, rien de plus ('+R.tint.terre+') ; Sanctuaire + arme de Terre, ils sont étourdis ('+R.tint.deluge.join('')+')',R.tint.brule.join('')==='11'&&R.tint.ev&&!R.tint.terre&&R.tint.deluge.join('')==='11',R.tint);
  ok('rôles : l\'Assassin fonce sur le héros ('+R.ass[0]+' → '+R.ass[1]+' m) ; le Tank attire le tir de l\'archer ('+R.tank+')',R.ass[1]<R.ass[0]-3&&R.tank==='tank',R);
  ok('campagne du Vent : le '+R.camp.nom+' ('+R.camp.role+') à la vague 2, tous les ennemis ont un rôle ; sa bourrasque pousse le voisin de '+R.gust[0]+' m vers le cœur, pas celui de loin ('+R.gust[1]+' m)',R.camp.tou&&R.camp.role==='Support'&&R.camp.roles&&R.gust[0]>2.5&&R.gust[1]<0.6&&R.gust[2],R);
  console.log('ratés',bad,'· erreurs',errs.length);for(const e of errs)console.log(e);await b.close();process.exit(bad||errs.length?1:0);})();

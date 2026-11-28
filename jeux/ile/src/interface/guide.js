@@ -125,7 +125,7 @@ const RULES = {
         ],
         [
           'Voie et ultime',
-          "La voie choisie au Hall des héros modifie le kit (par exemple, le Rempart de Roc devient une charge en Avant-garde). L'ultime gagne l'effet de l'élément de l'arme en main : le Séisme avec une arme de Feu brûle, avec une arme d'Eau ralentit."
+          "La voie choisie au Hall des héros modifie le kit (par exemple, le Rempart de Roc devient une charge en Avant-garde). L'ultime gagne l'effet de l'élément de l'arme en main : l'Onde de choc avec une arme de Feu brûle, avec une arme d'Eau ralentit."
         ],
         [
           'Le marteau',

@@ -30,13 +30,15 @@ function gfxEvent(ev, S) {
     // kind : 'M' missile, 'A' frappe aérienne (les grosses), 'm' obus de mortier, 's' éclat de fragmentation (petite), 'B' boule de feu de Braise
     const big = ev.kind === 'M' || ev.kind === 'A',
       r = ev.r;
-    flashAt(ev.x, ev.y + 0.4, ev.z, r * (big ? 1 : 0.8), ev.kind === 's' ? 0xffd070 : 0xffa040, big ? 0.5 : 0.35);
+    // V5.3 : la boule de Orbe et les météores d'un héros à l'élément choisi (ev.ec) : éclair et particules de cet élément
+    hxSk(ev.ec, 'feu');
+    flashAt(ev.x, ev.y + 0.4, ev.z, r * (big ? 1 : 0.8), ev.kind === 's' ? 0xffd070 : hxC(0xffa040, 'light'), big ? 0.5 : 0.35);
     const n = ev.kind === 's' ? 3 : big ? 26 : 14;
     for (let i = 0; i < n; i++) {
       const a = Math.random() * 6.28,
         v = Math.random() * r * 2;
       emit(
-        'fire',
+        hxK('fire'),
         ev.x,
         ev.y + 0.3,
         ev.z,
@@ -65,6 +67,7 @@ function gfxEvent(ev, S) {
     }
     if (ev.kind !== 's' && ev.y < 0.6)
       for (let i = 0; i < (big ? 5 : 2); i++) splatAt(ev.x + (Math.random() - 0.5) * r, 0, ev.z + (Math.random() - 0.5) * r, 1.2);
+    HXE = null;
     const dd = Math.hypot(ev.x - S.p.x, ev.z - S.p.z);
     G.shake = Math.max(G.shake, (big ? 0.5 : 0.25) * Math.max(0, 1 - dd / 60));
   } else if (k === 'land') {

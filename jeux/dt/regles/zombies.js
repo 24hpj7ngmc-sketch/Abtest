@@ -86,7 +86,7 @@ function zombiesStep(S, dt) {
     else if (st === 3) insideStep(S, i, dt, pace);
     else if (st === 7) stairStep(S, i, dt, pace);
   }
-  // les feux au sol (napalm des lance-flammes, flammes du Brasier) brûlent ceux qui marchent dedans
+  // les feux au sol (napalm des lance-flammes, flammes de l'Orbe) brûlent ceux qui marchent dedans
   for (const f of S.fires) {
     S.mOwn = f.own;
     f.t -= dt;
@@ -95,8 +95,11 @@ function zombiesStep(S, dt) {
         const dx = Z.x[j] - f.x,
           dz = Z.z[j] - f.z;
         if (dx * dx + dz * dz < f.r * f.r) {
-          Z.burn[j] = Math.max(Z.burn[j], 1);
+          // V5.3 : un feu au sol d'un autre élément (f.el : l'Orbe d'un héros à l'élément choisi) applique l'effet de cet élément au lieu de brûler
+          if (!f.el) Z.burn[j] = Math.max(Z.burn[j], 1);
+          S.sortEl = f.el;
           hurtZ(S, j, f.dps * dt, 't');
+          S.sortEl = null;
         }
       }
     });

@@ -99,6 +99,6 @@ const TKEYS = ['mg', 'la', 'mo', 'fl'];
 // mode fuite : ce qu'un fuyard de chaque type coûte à la ville (+10 % par jour au-delà du 10e)
 const ESC = [5, 4, 18, 60, 6, 10, 12, 6];
 // les « gros » : colosse, mastodonte, et (V4.0) le casseur ; avant la V4.0, le test « ty >= 2 » rangeait aussi sprinteur, porteur et hurleur parmi les gros
-// (le Séisme ne faisait que les ralentir au lieu de les entraver, les Météores et le mortier les visaient en priorité)
+// (l'Onde de choc ne faisait que les ralentir au lieu de les entraver, les Météores et le mortier les visaient en priorité)
 const BIG = [0, 0, 1, 1, 0, 1, 0, 0];
 const bigZ = ty => BIG[ty] === 1;

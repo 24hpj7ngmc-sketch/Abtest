@@ -48,19 +48,22 @@ function step(s, dt, inp) {
       const d = BAL.metDmg * (1 + 0.08 * (lvl(s, s.wave) - 1)),
         x = tg.x,
         z = tg.z;
-      const hit = [];
+      const hit = [],
+        RE = r.el || 'feu', // V2.6 : l'élément choisi du héros
+        cn = { n: 0 };
       for (const e of s.enemies)
         if (e.hp > 0 && !e.bur && Math.hypot(e.x - x, e.z - z) < (r.r || BAL.metR) + (e.boss ? 1.5 : 0)) {
-          hurtE(e, d * mult('feu', e.el, e.boss, BAL.strong + s.m.strong), false, true);
-          e.burn = Math.max(e.burn, 3);
+          hurtE(e, d * mult(RE, e.el, e.boss, BAL.strong + s.m.strong), false, true);
+          if (RE === 'feu') e.burn = Math.max(e.burn, 3);
+          else elState(s, e, RE, cn);
           hit.push(e);
         }
       if (r.tn) tintUlt(s, null, hit, x, z, -1, r.tn); // ultime teinté (V2.2)
       if (r.fz) {
-        zoneAdd(s, x, z, (r.r || BAL.metR) * 0.6, 'feu', r.fz); // Artilleur (spA2) : le météore laisse des flammes
-        for (const q of s.zones) if (q.el === 'feu' && Math.hypot(q.x - x, q.z - z) < 1.6) q.hero = 1;
+        zoneAdd(s, x, z, (r.r || BAL.metR) * 0.6, RE, r.fz); // Artilleur (spA2) : le météore laisse des flammes (ou la zone de l'élément choisi)
+        for (const q of s.zones) if (q.el === RE && Math.hypot(q.x - x, q.z - z) < 1.6) q.hero = 1;
       }
-      s.events.push({ k: 'meteor', x, z, r: r.r || BAL.metR, tn: r.tn || '' });
+      s.events.push({ k: 'meteor', x, z, r: r.r || BAL.metR, tn: r.tn || '', el: RE });
     }
     s.rain = s.rain.filter(r => r.n > 0);
   }
@@ -72,14 +75,16 @@ function step(s, dt, inp) {
       st.zap = 0.4;
       const c = s.enemies.filter(e => e.hp > 0 && !e.bur && Math.hypot(e.x - st.x, e.z - st.z) < (st.r || BAL.stormR));
       for (let i = 0; i < 3 && c.length; i++) {
-        const e = c.splice(Math.floor(s.rng() * c.length), 1)[0];
+        const e = c.splice(Math.floor(s.rng() * c.length), 1)[0],
+          SE = st.el || 'elec'; // V2.6 : l'élément choisi du héros
         hurtE(
           e,
-          BAL.stormDmg * (1 + 0.08 * (lvl(s, s.wave) - 1)) * mult('elec', e.el, e.boss, BAL.strong + s.m.strong),
+          BAL.stormDmg * (1 + 0.08 * (lvl(s, s.wave) - 1)) * mult(SE, e.el, e.boss, BAL.strong + s.m.strong),
           false,
           true
         );
-        s.events.push({ k: 'bolt2', x: e.x, z: e.z, tn: st.tn || '' });
+        if (SE !== 'elec') elState(s, e, SE, { n: 0 });
+        s.events.push({ k: 'bolt2', x: e.x, z: e.z, tn: st.tn || '', el: SE });
         if (st.tn) tintUlt(s, null, [e], 0, 0, -1, st.tn); // ultime teinté (V2.2)
       }
     }
@@ -196,9 +201,13 @@ function step(s, dt, inp) {
     if (e.mark > 0) e.mark -= dt;
     const hold = e.k === 'rng' && Math.hypot(e.x, e.z) <= 16; // le tireur s'arrête à portée du cœur et le bombarde
     if (s.flood > 0 && e.k !== 'air') {
+      const FE = s.floodEl || 'eau'; // V2.6 : l'élément choisi du héros (Sanctuaire)
       e.slow = Math.max(e.slow, 0.25);
-      if (!s.client) e.hp -= BAL.floodDps * (1 + 0.08 * (lvl(s, s.wave) - 1)) * mult('eau', e.el, e.boss) * dt;
-    } // Déluge
+      if (FE === 'feu') e.burn = Math.max(e.burn, 0.6);
+      else if (FE === 'bois') e.poi = Math.max(e.poi || 0, 0.6);
+      else if (FE === 'vent' && liftable(e)) lift(e, 0.6);
+      if (!s.client) e.hp -= BAL.floodDps * (1 + 0.08 * (lvl(s, s.wave) - 1)) * mult(FE, e.el, e.boss) * dt;
+    } // Sanctuaire
     let sg = null;
     if (SG.length && e.hp > 0 && !e.sea && !e.bur && e.k !== 'air' && e.k !== 'gra')
       for (const t of SG)

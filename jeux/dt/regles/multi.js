@@ -252,7 +252,7 @@ function mSecMurs(S) {
   for (let k = c * CH; k < Math.min(PANELS.length, (c + 1) * CH); k++) W.push(PANELS[k].dead ? 1 : 0);
   return W;
 }
-// ce que l'affichage dessine des héros : leurre, remparts, ronciers, gardiens, orages (le Déluge est dans l'en-tête)
+// ce que l'affichage dessine des héros : leurre, remparts, ronciers, gardiens, orages (le Sanctuaire est dans l'en-tête)
 function mSecEffets(S) {
   const W = [],
     P2 = (x, z) => {
@@ -890,16 +890,16 @@ function skillInvite(S, h, cd) {
     p.vx = fx * 7;
     p.vz = fz * 7;
     p.inv = 0.6;
-    S.ev.push({ k: 'eclair', x0, y: p.y + 1, z0, x1: p.x, z1: p.z });
+    S.ev.push({ k: 'eclair', x0, y: p.y + 1, z0, x1: p.x, z1: p.z, ec: elH(S) });
   } else if (h === 'vent') rafale(S, m, false);
-  else if (h === 'feu') S.ev.push({ k: 'brasier0' });
+  else if (h === 'feu') S.ev.push({ k: 'brasier0', ec: elH(S) });
   else if (h === 'eau') {
     if (m.kHeal) p.hp = Math.min(p.hpMax, p.hp + m.kHeal * soinK(S));
     // V4.9 : Soigneuse, le bouclier est sur l'invité : posé ici
     if (voieDe(S, 'eau', 'a') && m.spA2 > 0) bouclier(S);
-    S.ev.push({ k: 'maree', x: a[0], y: a[1], z: a[2], r: 8 });
+    S.ev.push({ k: 'maree', x: a[0], y: a[1], z: a[2], r: 8, ec: elH(S) });
   } else if (h === 'bois' && voieDe(S, 'bois', 'b')) plonge(S, a, m, hPow(S), true, false);
-  else if (h === 'bois') S.ev.push({ k: 'ronces', x: a[0], y: a[1], z: a[2], r: 5.2 + m.abRad });
+  else if (h === 'bois') S.ev.push({ k: 'ronces', x: a[0], y: a[1], z: a[2], r: 5.2 + m.abRad, ec: elH(S) });
   else if (h === 'terre') {
     const l = Math.hypot(a[0], a[2]) || 1;
     S.ev.push({
@@ -908,13 +908,14 @@ function skillInvite(S, h, cd) {
       z: a[2],
       nx: a[0] / l,
       nz: a[2] / l,
-      half: 4.5 + m.kWide + (voieDe(S, 'terre', 'a') ? 2 + m.spA1 : 0)
+      half: 4.5 + m.kWide + (voieDe(S, 'terre', 'a') ? 2 + m.spA1 : 0),
+      ec: elH(S)
     });
   }
   S.hab = cd;
   return true;
 }
-// l'ultime chez l'invité (appelé par useHeroUlt, après ses conditions) : l'action 'u' ; ici, le voile et le soin du Déluge
+// l'ultime chez l'invité (appelé par useHeroUlt, après ses conditions) : l'action 'u' ; ici, le voile et le soin du Sanctuaire
 function ultInvite(S, h) {
   S.ult = 0;
   actionInvite(S, ['u', 0].concat(mPose(S.p), [h, mR3(uPow(S)), MHMA.map(k => mR2(S.hm[k] || 0)), S.voie || '', S.elArme || '', S.elHeros || '']));
@@ -922,9 +923,9 @@ function ultInvite(S, h) {
   // V4.8 : le trait du Tir perçant, tout de suite (les dégâts sont chez l'hôte)
   else if (h === 'vent') {
     const l = lignePercant(S.p);
-    S.ev.push({ k: 'percant', x0: l[0], y0: l[1], z0: l[2], x1: l[3], y1: l[4], z1: l[5], w: 1.5 + (S.hm.uRad || 0) });
+    S.ev.push({ k: 'percant', x0: l[0], y0: l[1], z0: l[2], x1: l[3], y1: l[4], z1: l[5], w: 1.5 + (S.hm.uRad || 0), ec: elH(S) });
   }
-  S.ev.push({ k: 'hult', h, el: teinteDe(S, h) });
+  S.ev.push({ k: 'hult', h, el: teinteDe(S, h), ec: elH(S) });
   return true;
 }
 // le leurre et la frappe chez l'invité (après leurs conditions, la recharge est déjà comptée) : actions 'l' et 'r', avec ses chiffres

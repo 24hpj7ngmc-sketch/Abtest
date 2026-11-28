@@ -48,7 +48,7 @@ const fs = require('fs');
   await p.goto('file://' + hote);
   T(
     'le lobby charge le pont',
-    await p.evaluate(() => typeof DernierToit === 'object' && DernierToit.version === 'V4.9' && !DernierToit.ouvert)
+    await p.evaluate(() => typeof DernierToit === 'object' && DernierToit.version === 'V5.3' && !DernierToit.ouvert)
   );
 
   // une partie : Roc (terre, +50 vie), fusil à pompe, dégâts ×2, +20 vie, recharge ×0,5, encoche à gauche

@@ -44,11 +44,11 @@ const CAMPK = ileTab('CAMPK', [1, 1.35, 1.8, 2.4]),
   });
 // le style de chaque héros : sa compétence, son ultime, son étiquette
 const KIT = ileTab('KIT', {
-  terre: { skill: 'Rempart', ult: 'Séisme', tag: 'Tank · Rempart · Séisme' },
-  elec: { skill: 'Éclair', ult: 'Orage', tag: 'Assassin · Éclair · Orage' },
-  bois: { skill: 'Ronces', ult: 'Gardiens', tag: 'Combattant · Ronces · Gardiens' },
-  feu: { skill: 'Brasier', ult: 'Météores', tag: 'Mage · Brasier · Météores' },
-  eau: { skill: 'Marée', ult: 'Déluge', tag: 'Support · Marée · Déluge' }
+  terre: { skill: 'Rempart', ult: 'Onde de choc', tag: 'Tank · Rempart · Onde de choc' },
+  elec: { skill: 'Fulgurance', ult: 'Déchaînement', tag: 'Assassin · Fulgurance · Déchaînement' },
+  bois: { skill: 'Entraves', ult: 'Gardiens', tag: 'Combattant · Entraves · Gardiens' },
+  feu: { skill: 'Orbe', ult: 'Météores', tag: 'Mage · Orbe · Météores' },
+  eau: { skill: 'Répulsion', ult: 'Sanctuaire', tag: 'Support · Répulsion · Sanctuaire' }
 });
 // les réglages d'équilibre cités dans les textes du lobby (BAL : la base ; BALN : le mode normal)
 const BAL = ileTab('BAL', {

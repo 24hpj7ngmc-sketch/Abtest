@@ -15,13 +15,13 @@ const BAL={waves:10,core:20,             // nombre de vagues, vie du cœur
   heroHp:100,regen:6,regenWait:5,respawn:8,reviveT:3,hDmgG:.03, // héros : vie, soin par seconde après regenWait s sans coup, délai de retour, temps pour être relevé, hausse des dégâts ennemis par vague
   smashCd:6,smashR:7,smashT:2,         // tank : toutes les smashCd s, il met hors service smashT s la défense la plus proche à moins de smashR m
   objP:.6,zoneR:6,zoneNeed:15,zoneTime:50,relicTime:70,bombHp:5,bombLeak:5, // objectifs : chance par vague, zone (rayon, secondes à tenir, délai), délai de la relique, porteur de bombe (vie ×, dégâts au cœur)
-  rocHp:50,rocArmor:.7,rempartT:15,rempartCd:18,rempartH:2,quakeR:12,quakeDmg:60,quakeT:2.5, // Roc : vie en plus, part des dégâts au contact qu'il subit, durée, recharge et hauteur en blocs du Rempart, Séisme (rayon, dégâts, étourdissement)
+  rocHp:50,rocArmor:.7,rempartT:15,rempartCd:18,rempartH:2,quakeR:12,quakeDmg:60,quakeT:2.5, // Roc : vie en plus, part des dégâts au contact qu'il subit, durée, recharge et hauteur en blocs du Rempart, Onde de choc (rayon, dégâts, étourdissement)
   gun:3.6,markT:4,markK:.6,           // fusil : dégâts d'une balle, durée de la marque posée sur la cible, bonus de dégâts des défenses sur une cible marquée
   ultTick:.8,ultHit:.7,ultHurt:.8,     // charge de l'ultime sur 100 : par seconde de vague, par tir qui touche, par point de vie perdu
-  voltHp:-15,voltSprint:1.3,dashCd:8,dashLen:14,dashDmg:40,stormT:6,stormR:16,stormDmg:28, // Volt : vie en moins, sprint ×, Éclair (recharge, longueur, dégâts), Orage (durée, rayon, dégâts par éclair)
-  sylveSee:20,ronceCd:12,ronceR:5,ronceT:8,ronceDmg:14,guardT:15, // Sylve : distance à laquelle elle révèle les furtifs, Ronces (recharge, rayon, durée, dégâts par seconde), durée des Gardiens
-  fbCd:9,fbR:6,fbDmg:55,fbZoneT:4,metN:8,metR:5,metDmg:70,braiseSplash:.4, // Braise : Brasier (recharge, rayon, dégâts, durée des flammes au sol), Météores (nombre, rayon, dégâts), part des dégâts de tir qui éclabousse autour
-  ondWait:2.5,ondRegen:10,tideCd:11,tideR:10,tideHeal:35,tideDmg:25,tideKnock:5,floodT:8,floodDps:6,floodCore:3, // Ondine : soin naturel (délai, par seconde), Marée (recharge, rayon, soin, dégâts, recul), Déluge (durée, dégâts par seconde, points rendus au cœur)
+  voltHp:-15,voltSprint:1.3,dashCd:8,dashLen:14,dashDmg:40,stormT:6,stormR:16,stormDmg:28, // Volt : vie en moins, sprint ×, Fulgurance (recharge, longueur, dégâts), Déchaînement (durée, rayon, dégâts par éclair)
+  sylveSee:20,ronceCd:12,ronceR:5,ronceT:8,ronceDmg:14,guardT:15, // Sylve : distance à laquelle elle révèle les furtifs, Entraves (recharge, rayon, durée, dégâts par seconde), durée des Gardiens
+  fbCd:9,fbR:6,fbDmg:55,fbZoneT:4,metN:8,metR:5,metDmg:70,braiseSplash:.4, // Braise : Orbe (recharge, rayon, dégâts, durée des flammes au sol), Météores (nombre, rayon, dégâts), part des dégâts de tir qui éclabousse autour
+  ondWait:2.5,ondRegen:10,tideCd:11,tideR:10,tideHeal:35,tideDmg:25,tideKnock:5,floodT:8,floodDps:6,floodCore:3, // Ondine : soin naturel (délai, par seconde), Répulsion (recharge, rayon, soin, dégâts, recul), Sanctuaire (durée, dégâts par seconde, points rendus au cœur)
   grass:5,fmK:.88,                     // marcher hors route coûte 5 fois plus (les ennemis préfèrent la route) ; fmK compense les virages coupés
   cnt0:6,cntG:3,gap:.85,gapG:0,        // ennemis par vague (base + par vague), écart entre deux sorties et sa baisse par vague
   goldK:1,ptsW:2,                      // or par ennemi (multiplicateur), points de grille par vague
@@ -214,9 +214,9 @@ function impact(s,b){const T=TYPES[b.type],m=s.m,els=b.els,cnt={};els.forEach(e=
 function ability(s,h,a){h=h||s.hero;if(h.el==='terre')return rempart(s,h);if(h.el==='elec')return dash(s,h,a);if(h.el==='bois')return brambles(s,h,a);if(h.el==='feu')return fireball(s,h,a);return tide(s,h,a);}
 const offOf=id=>((id*7919)%240)/100-1.2;
 // le kit de chaque héros : compétence, ultime, rôle
-const KIT={terre:{skill:'Rempart',ult:'Séisme',tag:'Tank · Rempart · Séisme'},elec:{skill:'Éclair',ult:'Orage',tag:'Mobile · Éclair · Orage'},bois:{skill:'Ronces',ult:'Gardiens',tag:'Contrôle · Ronces · Gardiens'},feu:{skill:'Brasier',ult:'Météores',tag:'Dégâts · Brasier · Météores'},eau:{skill:'Marée',ult:'Déluge',tag:'Soutien · Marée · Déluge'}},HPB={terre:BAL.rocHp,elec:BAL.voltHp};
-// ---- Volt (Élec), le mobile. Passif : sprint plus rapide, tirs qui sautent sur un voisin, mais moins de vie. Compétence : Éclair. Ultime : Orage.
-// Éclair : il file tout droit sur BAL.dashLen m, s'arrête contre un obstacle, électrocute ce qu'il traverse et ne peut pas être touché un instant.
+const KIT={terre:{skill:'Rempart',ult:'Onde de choc',tag:'Tank · Rempart · Onde de choc'},elec:{skill:'Fulgurance',ult:'Déchaînement',tag:'Mobile · Fulgurance · Déchaînement'},bois:{skill:'Entraves',ult:'Gardiens',tag:'Contrôle · Entraves · Gardiens'},feu:{skill:'Orbe',ult:'Météores',tag:'Dégâts · Orbe · Météores'},eau:{skill:'Répulsion',ult:'Sanctuaire',tag:'Soutien · Répulsion · Sanctuaire'}},HPB={terre:BAL.rocHp,elec:BAL.voltHp};
+// ---- Volt (Élec), le mobile. Passif : sprint plus rapide, tirs qui sautent sur un voisin, mais moins de vie. Compétence : Fulgurance. Ultime : Déchaînement.
+// Fulgurance : il file tout droit sur BAL.dashLen m, s'arrête contre un obstacle, électrocute ce qu'il traverse et ne peut pas être touché un instant.
 // `a` porte la position de départ envoyée par un invité, pour que l'hôte frappe au bon endroit.
 function dash(s,h,a){if(h.ab>0||s.over)return false;h.ab=BAL.dashCd-h.m.abCd;let x=h.x,z=h.z,yaw=h.yaw;
   if(a&&[a[1],a[2],a[3]].every(Number.isFinite)&&Math.hypot(a[1]-h.x,a[2]-h.z)<40){x=a[1];z=a[2];yaw=a[3];}
@@ -227,10 +227,10 @@ function dash(s,h,a){if(h.ab>0||s.over)return false;h.ab=BAL.dashCd-h.m.abCd;let
     if(h.m.kTrail){for(let k=1;k<=3;k++)zoneAdd(s,x+(ex-x)*k/4,z+(ez-z)*k/4,3,'elec',3);for(const q of s.zones)if(q.el==='elec'&&distSeg(q.x,q.z,[x,z],[ex,ez])<1)q.hero=1;}}
   if(h===s.hero){h.x=ex;h.z=ez;h.inv=.5;}
   s.events.push({k:'dash',x,z,ex,ez});return true;}
-// Orage : un nuage reste BAL.stormT s là où il est lancé et foudroie 3 ennemis toutes les 0,4 s dans son rayon, aériens compris.
+// Déchaînement : un nuage reste BAL.stormT s là où il est lancé et foudroie 3 ennemis toutes les 0,4 s dans son rayon, aériens compris.
 function storm(s,h){if(s.over)return false;if(!s.client)s.storms.push({x:h.x,z:h.z,t:BAL.stormT+h.m.uDur,r:BAL.stormR+h.m.uRad,zap:0});s.events.push({k:'storm',x:h.x,z:h.z});return true;}
-// ---- Sylve (Bois), le contrôle. Passif : elle voit les furtifs de loin et ses tirs empoisonnent. Compétence : Ronces. Ultime : Gardiens.
-// Ronces : un grand roncier là où elle vise (a[4],a[5]), qui blesse, ralentit et entrave par à-coups tout ce qui le traverse au sol.
+// ---- Sylve (Bois), le contrôle. Passif : elle voit les furtifs de loin et ses tirs empoisonnent. Compétence : Entraves. Ultime : Gardiens.
+// Entraves : un grand roncier là où elle vise (a[4],a[5]), qui blesse, ralentit et entrave par à-coups tout ce qui le traverse au sol.
 function brambles(s,h,a){if(h.ab>0||s.over)return false;h.ab=BAL.ronceCd-h.m.abCd;let tx=h.x-Math.sin(h.yaw)*8,tz=h.z-Math.cos(h.yaw)*8;
   if(a&&Number.isFinite(a[4])&&Number.isFinite(a[5])&&Math.hypot(a[4]-h.x,a[5]-h.z)<26){tx=a[4];tz=a[5];}
   if(!s.client){zoneAdd(s,tx,tz,BAL.ronceR+h.m.abRad,'bois',BAL.ronceT+h.m.kDur);for(const q of s.zones)if(q.el==='bois'&&Math.hypot(q.x-tx,q.z-tz)<1.6){q.hero=1;q.pw=BAL.ronceDmg/3*(1+h.m.abDmg)*(1+.08*(s.wave-1));}}
@@ -239,8 +239,8 @@ function brambles(s,h,a){if(h.ab>0||s.over)return false;h.ab=BAL.ronceCd-h.m.abC
 function guardians(s,h){if(s.over)return false;if(!s.client){let n=0;for(const R of[5,8,11])for(let k=0;k<8&&n<3+h.m.uExtra;k++){const a=k*.785+R,x=h.x+Math.cos(a)*R,z=h.z+Math.sin(a)*R;
       if(canPlace(s,x,z)||s.wallSet[cellOf(x,z)])continue;s.towers.push({id:s.nid++,type:'archer',x,z,els:['bois','bois','bois'],cd:.3,aim:0,wy:0,tmpT:BAL.guardT+h.m.uDur});n++;}}
   s.events.push({k:'guard',x:h.x,z:h.z});return true;}
-// ---- Braise (Feu), les dégâts. Passif : ses tirs enflamment et éclaboussent autour de la cible. Compétence : Brasier. Ultime : Météores.
-// Brasier : une boule de feu explose là où il vise (a[4],a[5]) et laisse des flammes au sol.
+// ---- Braise (Feu), les dégâts. Passif : ses tirs enflamment et éclaboussent autour de la cible. Compétence : Orbe. Ultime : Météores.
+// Orbe : une boule de feu explose là où il vise (a[4],a[5]) et laisse des flammes au sol.
 function fireball(s,h,a){if(h.ab>0||s.over)return false;h.ab=BAL.fbCd-h.m.abCd;let tx=h.x-Math.sin(h.yaw)*10,tz=h.z-Math.cos(h.yaw)*10;
   if(a&&Number.isFinite(a[4])&&Number.isFinite(a[5])&&Math.hypot(a[4]-h.x,a[5]-h.z)<26){tx=a[4];tz=a[5];}
   if(!s.client){const d=BAL.fbDmg*(1+h.m.abDmg)*(1+.08*(s.wave-1)),FR=BAL.fbR+h.m.abRad;for(const e of s.enemies){if(e.hp<=0||e.bur||e.k==='air'||Math.hypot(e.x-tx,e.z-tz)>FR+(e.boss?1.5:0))continue;hurtE(e,d*mult('feu',e.el,e.boss,2+s.m.strong),false,true);e.burn=Math.max(e.burn,3);}
@@ -248,19 +248,19 @@ function fireball(s,h,a){if(h.ab>0||s.over)return false;h.ab=BAL.fbCd-h.m.abCd;l
   s.events.push({k:'fball',x:tx,z:tz});return true;}
 // Météores : BAL.metN météores tombent un par un, où qu'il soit, sur l'ennemi le plus avancé vers le cœur. Les aériens sont touchés aussi.
 function meteors(s,h){if(s.over)return false;if(!s.client)s.rain.push({n:BAL.metN+h.m.uExtra,t:.3,r:BAL.metR+h.m.uRad});s.events.push({k:'rain'});return true;}
-// ---- Ondine (Eau), le soutien. Passif : elle se soigne vite et ses tirs ralentissent. Compétence : Marée. Ultime : Déluge.
+// ---- Ondine (Eau), le soutien. Passif : elle se soigne vite et ses tirs ralentissent. Compétence : Répulsion. Ultime : Sanctuaire.
 // Les soins aux autres joueurs passent par le réseau : chacun gère la vie de son propre héros (`mine` signale au jeu qu'il faut prévenir les coéquipiers).
-// Marée : une vague autour d'elle soigne les héros, repousse, ralentit et blesse les ennemis au sol.
+// Répulsion : une vague autour d'elle soigne les héros, repousse, ralentit et blesse les ennemis au sol.
 function tide(s,h,a){if(h.ab>0||s.over)return false;h.ab=BAL.tideCd-h.m.abCd;const R=BAL.tideR+h.m.abRad;let x=h.x,z=h.z;
   if(a&&Number.isFinite(a[1])&&Number.isFinite(a[2])&&Math.hypot(a[1]-h.x,a[2]-h.z)<40){x=a[1];z=a[2];}
   if(!s.client){const d=BAL.tideDmg*(1+h.m.abDmg)*(1+.08*(s.wave-1));for(const e of s.enemies){if(e.hp<=0||e.k==='air'||Math.hypot(e.x-x,e.z-z)>R)continue;
     hurtE(e,d*mult('eau',e.el,e.boss,2+s.m.strong),false,true);e.slow=Math.max(e.slow,3);if(!e.boss&&!e.bur)knock(s,e,BAL.tideKnock+h.m.kLen);if(e.k==='ste')e.rev=4;}}
   if(h===s.hero)h.hp=Math.min(h.maxHp,h.hp+BAL.tideHeal+h.m.kHeal);
   s.events.push({k:'tide',x,z,r:R,heal:BAL.tideHeal+h.m.kHeal,mine:h===s.hero});return true;}
-// Déluge : pendant BAL.floodT s, tous les ennemis au sol de l'île sont ralentis et rongés par l'eau ; le cœur récupère des points ; tous les héros sont soignés et relevés.
+// Sanctuaire : pendant BAL.floodT s, tous les ennemis au sol de l'île sont ralentis et rongés par l'eau ; le cœur récupère des points ; tous les héros sont soignés et relevés.
 function deluge(s,h){if(s.over)return false;if(!s.client){s.flood=BAL.floodT+h.m.uDur;s.core=Math.min(s.coreMax,s.core+BAL.floodCore+h.m.uExtra);}if(h===s.hero)h.hp=h.maxHp;s.events.push({k:'deluge',mine:h===s.hero});return true;}
 const ULT={terre:quake,elec:storm,bois:guardians,feu:meteors,eau:deluge};
-// ---- Roc (Terre), le tank. Passif : plus de vie, coups au contact amortis. Compétence : Rempart. Ultime : Séisme.
+// ---- Roc (Terre), le tank. Passif : plus de vie, coups au contact amortis. Compétence : Rempart. Ultime : Onde de choc.
 // Rempart : un vrai mur de 5 blocs de large et 2 de haut dressé 5 m devant lui, qui disparaît tout seul. Il ne peut pas fermer le passage ; s'il ne tient pas à 5, on essaie à 3, puis à 1.
 function rempart(s,h){if(h.ab>0||s.over)return false;h.ab=BAL.rempartCd-h.m.abCd;if(s.client)return true; // chez un invité, c'est l'hôte qui pose les blocs
   const fx=-Math.sin(h.yaw),fz=-Math.cos(h.yaw),cx=h.x+fx*5,cz=h.z+fz*5,want=[...new Set((h.m.kWide?[0,-1,1,-2,2,-3,3]:[0,-1,1,-2,2]).map(k=>cellOf(cx-fz*k*CELL,cz+fx*k*CELL)))].filter(i=>!s.wallSet[i]&&!s.pit[i]&&!cellWhy(s,i));
@@ -269,7 +269,7 @@ function rempart(s,h){if(h.ab>0||s.over)return false;h.ab=BAL.rempartCd-h.m.abCd
       for(const i of set){s.walls.push(i);s.tmpSet[i]=1;s.tmp.push({i,t:BAL.rempartT+h.m.kDur});s.events.push({k:'wallup',x:cellX(i),z:cellZ(i)});}s.field=D;s.fv++;return true;}
     for(const i of set)s.wallSet[i]=0;}
   h.ab=1;s.events.push({k:'nowall'});return false;}
-// Séisme : blesse et étourdit tout ce qui marche autour de lui (les boss sont seulement ralentis), déterre les foreurs, révèle les furtifs. Les aériens y échappent.
+// Onde de choc : blesse et étourdit tout ce qui marche autour de lui (les boss sont seulement ralentis), déterre les foreurs, révèle les furtifs. Les aériens y échappent.
 function quake(s,h){if(s.over)return false;const d=BAL.quakeDmg*(1+.08*(s.wave-1)),QR=BAL.quakeR+h.m.uRad,QT=BAL.quakeT+h.m.uDur;
   for(const e of s.enemies){if(e.hp<=0||e.k==='air'||Math.hypot(e.x-h.x,e.z-h.z)>QR+(e.boss?2:0))continue;hurtE(e,d*mult('terre',e.el,e.boss,2+s.m.strong),true,true);
     if(e.boss)e.slow=Math.max(e.slow,QT);else{e.stun=Math.max(e.stun,QT);e.imm=e.stun+1;}if(e.k==='ste')e.rev=4;}
@@ -336,7 +336,7 @@ function step(s,dt,inp){if(s.over)return;s.t+=dt;const h0=s.hero;if(heroLife(s,h
   // ennemis
   for(const e of s.enemies){const p=PATHS[e.path];if(e.burn>0){e.burn-=dt;e.hp-=6*(e.bk||1)*dt;}else e.bk=1;if(e.poi>0){e.poi-=dt;e.hp-=4*dt;}if(e.rev>0)e.rev-=dt;if(e.mark>0)e.mark-=dt;
     const hold=e.k==='rng'&&Math.hypot(e.x,e.z)<=16; // le tireur s'arrête à portée du cœur et le bombarde
-    if(s.flood>0&&e.k!=='air'){e.slow=Math.max(e.slow,.25);if(!s.client)e.hp-=BAL.floodDps*(1+.08*(s.wave-1))*mult('eau',e.el,e.boss)*dt;} // Déluge
+    if(s.flood>0&&e.k!=='air'){e.slow=Math.max(e.slow,.25);if(!s.client)e.hp-=BAL.floodDps*(1+.08*(s.wave-1))*mult('eau',e.el,e.boss)*dt;} // Sanctuaire
     if(e.imm>0)e.imm-=dt;let mv=0;if(e.stun>0)e.stun-=dt;else if(!hold)mv=e.sp*(e.slow>0?.6:1)*dt;if(e.slow>0)e.slow-=dt;
     if(hold&&e.hp>0&&!(e.stun>0)){e.atk=(e.atk||0)+dt;if(e.atk>=5){e.atk=0;if(!s.god&&!s.client)s.core-=1;s.events.push({k:'bolt',x:e.x,z:e.z,el:e.el});}}
     if(e.fm){const pd=s.pit[cellOf(e.x,e.z)];e.gy=-pd*WALLH;if(mv>0)fieldMove(s,e,mv*BAL.fmK*(1-BAL.pitSlow*pd));const r=s.field[cellOf(e.x,e.z)];if(r<1e8)e.rem=r;}                       // au sol : suit le terrain, contourne les murs
@@ -488,21 +488,21 @@ function bot(s,st,style){const gs=s.next.filter(g=>!g.hidden).sort((a,b)=>b.coun
 const f=(v,d)=>v.toFixed(d).replace('.',',');
 const HSPEC={
   terre:{k:[['Recharge du Rempart',3,60,'abCd',1.5,L=>f(BAL.rempartCd-1.5*L,1)+' s'],['Durée du Rempart',2,80,'kDur',3,L=>(BAL.rempartT+3*L)+' s'],['Rempart élargi',1,250,'kWide',1,L=>(L?7:5)+' blocs de large',1]],
-    u:[['Rayon du Séisme',2,90,'uRad',2,L=>(BAL.quakeR+2*L)+' m'],['Étourdissement du Séisme',2,90,'uDur',.5,L=>f(BAL.quakeT+.5*L,1)+' s'],['Charge de l\'ultime',2,100,'uCharge',.15,L=>'+'+15*L+' %']],
+    u:[["Rayon de l'Onde de choc",2,90,'uRad',2,L=>(BAL.quakeR+2*L)+' m'],["Étourdissement de l'Onde de choc",2,90,'uDur',.5,L=>f(BAL.quakeT+.5*L,1)+' s'],['Charge de l\'ultime',2,100,'uCharge',.15,L=>'+'+15*L+' %']],
     p:[['Peau de pierre',3,80,'pA',.05,L=>'coups au contact −'+Math.round((1-BAL.rocArmor+.05*L)*100)+' %']]},
-  elec:{k:[['Recharge de l\'Éclair',3,60,'abCd',1,L=>(BAL.dashCd-L)+' s'],['Longueur de l\'Éclair',2,80,'kLen',3,L=>(BAL.dashLen+3*L)+' m'],['Sillage électrique',1,250,'kTrail',1,L=>L?'laisse un champ d\'orage 3 s':'aucun sillage',1]],
-    u:[['Durée de l\'Orage',2,90,'uDur',2,L=>(BAL.stormT+2*L)+' s'],['Rayon de l\'Orage',2,90,'uRad',3,L=>(BAL.stormR+3*L)+' m'],['Charge de l\'ultime',2,100,'uCharge',.15,L=>'+'+15*L+' %']],
+  elec:{k:[['Recharge de l\'Fulgurance',3,60,'abCd',1,L=>(BAL.dashCd-L)+' s'],['Longueur de l\'Fulgurance',2,80,'kLen',3,L=>(BAL.dashLen+3*L)+' m'],['Sillage électrique',1,250,'kTrail',1,L=>L?'laisse un champ d\'orage 3 s':'aucun sillage',1]],
+    u:[['Durée de l\'Déchaînement',2,90,'uDur',2,L=>(BAL.stormT+2*L)+' s'],['Rayon de l\'Déchaînement',2,90,'uRad',3,L=>(BAL.stormR+3*L)+' m'],['Charge de l\'ultime',2,100,'uCharge',.15,L=>'+'+15*L+' %']],
     p:[['Tirs en chaîne',2,120,'pA',1,L=>'saute sur '+(1+L)+' voisin'+(L?'s':'')]]},
-  bois:{k:[['Recharge des Ronces',3,60,'abCd',1.5,L=>f(BAL.ronceCd-1.5*L,1)+' s'],['Rayon des Ronces',2,80,'abRad',1.5,L=>f(BAL.ronceR+1.5*L,1)+' m'],['Durée des Ronces',2,90,'kDur',2,L=>(BAL.ronceT+2*L)+' s']],
+  bois:{k:[['Recharge des Entraves',3,60,'abCd',1.5,L=>f(BAL.ronceCd-1.5*L,1)+' s'],['Rayon des Entraves',2,80,'abRad',1.5,L=>f(BAL.ronceR+1.5*L,1)+' m'],['Durée des Entraves',2,90,'kDur',2,L=>(BAL.ronceT+2*L)+' s']],
     u:[['Durée des Gardiens',2,90,'uDur',5,L=>(BAL.guardT+5*L)+' s'],['Quatrième Gardien',1,250,'uExtra',1,L=>(3+L)+' Gardiens',1],['Charge de l\'ultime',2,100,'uCharge',.15,L=>'+'+15*L+' %']],
     p:[['Poison tenace',2,100,'pA',1.5,L=>f(2.5+1.5*L,1)+' s de poison par tir']]},
-  feu:{k:[['Recharge du Brasier',3,60,'abCd',1,L=>(BAL.fbCd-L)+' s'],['Rayon du Brasier',2,80,'abRad',1.5,L=>f(BAL.fbR+1.5*L,1)+' m'],['Puissance du Brasier',3,90,'abDmg',.25,L=>'+'+25*L+' %']],
+  feu:{k:[["Recharge de l'Orbe",3,60,'abCd',1,L=>(BAL.fbCd-L)+' s'],["Rayon de l'Orbe",2,80,'abRad',1.5,L=>f(BAL.fbR+1.5*L,1)+' m'],["Puissance de l'Orbe",3,90,'abDmg',.25,L=>'+'+25*L+' %']],
     u:[['Météores en plus',2,110,'uExtra',2,L=>(BAL.metN+2*L)+' météores'],['Rayon des Météores',2,90,'uRad',1,L=>(BAL.metR+L)+' m'],['Charge de l\'ultime',2,100,'uCharge',.15,L=>'+'+15*L+' %']],
     p:[['Éclaboussures',2,100,'pA',.15,L=>Math.round((BAL.braiseSplash+.15*L)*100)+' % des dégâts autour de la cible']]},
-  eau:{k:[['Recharge de la Marée',3,60,'abCd',1.5,L=>f(BAL.tideCd-1.5*L,1)+' s'],['Soin de la Marée',3,80,'kHeal',10,L=>(BAL.tideHeal+10*L)+' PV'],['Recul de la Marée',2,80,'kLen',2,L=>(BAL.tideKnock+2*L)+' m']],
-    u:[['Durée du Déluge',2,90,'uDur',2,L=>(BAL.floodT+2*L)+' s'],['Cœur soigné',2,120,'uExtra',1,L=>'+'+(BAL.floodCore+L)+' au cœur'],['Charge de l\'ultime',2,100,'uCharge',.15,L=>'+'+15*L+' %']],
+  eau:{k:[['Recharge de la Répulsion',3,60,'abCd',1.5,L=>f(BAL.tideCd-1.5*L,1)+' s'],['Soin de la Répulsion',3,80,'kHeal',10,L=>(BAL.tideHeal+10*L)+' PV'],['Recul de la Répulsion',2,80,'kLen',2,L=>(BAL.tideKnock+2*L)+' m']],
+    u:[['Durée du Sanctuaire',2,90,'uDur',2,L=>(BAL.floodT+2*L)+' s'],['Cœur soigné',2,120,'uExtra',1,L=>'+'+(BAL.floodCore+L)+' au cœur'],['Charge de l\'ultime',2,100,'uCharge',.15,L=>'+'+15*L+' %']],
     p:[['Source vive',2,100,'pA',3,L=>(BAL.ondRegen+3*L)+' PV par seconde']]},
-  vent:{k:[['Recharge de la Rafale',3,60,'abCd',1,L=>(BAL.zephCd-L)+' s'],['Longueur du bond',2,80,'kLen',2,L=>(BAL.zephLen+2*L)+' m'],['Rafale qui repousse',1,250,'kPush',1,L=>L?'repousse les ennemis proches':'ne repousse pas',1]],
+  vent:{k:[['Recharge du Bond',3,60,'abCd',1,L=>(BAL.zephCd-L)+' s'],['Longueur du bond',2,80,'kLen',2,L=>(BAL.zephLen+2*L)+' m'],['Bond qui repousse',1,250,'kPush',1,L=>L?'repousse les ennemis proches':'ne repousse pas',1]],
     u:[['Puissance du Tir perçant',2,110,'uDmg',.25,L=>'+'+25*L+' %'],['Largeur du Tir perçant',2,90,'uRad',.5,L=>f(BAL.perceR+.5*L,1)+' m'],['Charge de l\'ultime',2,100,'uCharge',.15,L=>'+'+15*L+' %']],
     p:[['Œil de faucon',2,100,'pA',.05,L=>'+'+Math.round((BAL.zephK+.05*L)*100)+' % au-delà de '+BAL.zephFar+' m']]}};
 
@@ -516,9 +516,9 @@ const full=el=>{const m={};for(const b of['k','u','p'])for(const d of HSPEC[el][
 // Sylve
 {const go=m=>{const s=newSim('bois',mk(3),m,'hard');s.wave=1;s.phase='wave';s.queue.push({t:99,path:0,el:'feu',boss:false,k:'b'});const h=s.hero;h.x=-60;h.z=70;brambles(s,h,null);guardians(s,h);const z=s.zones[0];return 'ronces '+z.r+' m / '+z.t+' s, '+s.towers.length+' gardiens pour '+s.towers[0].tmpT+' s';};console.log('Sylve: de base',go({}),'· arbre complet',go(full('bois')));}
 // Braise
-{const go=m=>{const s=newSim('feu',mk(3),m,'hard');s.wave=1;s.phase='wave';s.queue.push({t:99,path:0,el:'feu',boss:false,k:'b'});meteors(s,s.hero);return s.rain[0].n+' météores de '+s.rain[0].r+' m, recharge Brasier '+(BAL.fbCd-(m.abCd||0))+' s';};console.log('Braise: de base',go({}),'· arbre complet',go(full('feu')));}
+{const go=m=>{const s=newSim('feu',mk(3),m,'hard');s.wave=1;s.phase='wave';s.queue.push({t:99,path:0,el:'feu',boss:false,k:'b'});meteors(s,s.hero);return s.rain[0].n+' météores de '+s.rain[0].r+' m, recharge Orbe '+(BAL.fbCd-(m.abCd||0))+' s';};console.log('Braise: de base',go({}),'· arbre complet',go(full('feu')));}
 // Ondine
-{const go=m=>{const s=newSim('eau',mk(3),m,'hard');s.wave=1;s.phase='wave';s.queue.push({t:99,path:0,el:'feu',boss:false,k:'b'});const h=s.hero;h.hp=10;s.core=10;tide(s,h,null);const hp=h.hp;deluge(s,h);return 'Marée +'+(hp-10)+' PV, Déluge '+s.flood+' s et cœur +'+(s.core-10);};console.log('Ondine: de base',go({}),'· arbre complet',go(full('eau')));}
+{const go=m=>{const s=newSim('eau',mk(3),m,'hard');s.wave=1;s.phase='wave';s.queue.push({t:99,path:0,el:'feu',boss:false,k:'b'});const h=s.hero;h.hp=10;s.core=10;tide(s,h,null);const hp=h.hp;deluge(s,h);return 'Répulsion +'+(hp-10)+' PV, Sanctuaire '+s.flood+' s et cœur +'+(s.core-10);};console.log('Ondine: de base',go({}),'· arbre complet',go(full('eau')));}
 // Zéphyr
 {const go=m=>{const s=newSim('vent',mk(3),m,'hard');s.wave=1;s.phase='wave';s.queue.push({t:99,path:0,el:'feu',boss:false,k:'b'});const h=s.hero;h.x=-60;h.z=70;h.yaw=Math.PI/2;const x0=h.x,z0=h.z;ability(s,h);const d=Math.hypot(h.x-x0,h.z-z0);perce(s,h);const ev=s.events.find(e=>e.k==='perce');return 'bond '+d.toFixed(0)+' m, recharge '+h.ab+' s, tir perçant '+(ev?ev.w.toFixed(1):'?')+' m de large';};console.log('Zéphyr: de base',go({}),'· arbre complet',go(full('vent')));}
 

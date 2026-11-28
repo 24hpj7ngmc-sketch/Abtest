@@ -189,6 +189,8 @@ function upFx(t, up) {
   if (up && (pure || !t.auto))
     toast(pure ? FXN[t.type][pure] + ' débloqués' : TYPES[t.type].s + ' · ' + EL[el].n + ' niveau ' + L);
 }
+// la couleur claire d'un élément pour les colonnes de lumière (V2.6 : météores et éclairs de l'élément choisi)
+const boltCol = el => (K.EL[el] || K.EL.elec).light;
 function bolt(x, z, col) {
   const m = new THREE.Mesh(
     pillarG,
@@ -211,10 +213,18 @@ const stormG = new THREE.CylinderGeometry(1, 1, 0.8, 24),
   stormM = new THREE.MeshBasicMaterial({ color: 0x2a2f45, transparent: true, opacity: 0.75, depthWrite: false }),
   stormR = new THREE.TorusGeometry(1, 0.02, 6, 48),
   stormRM = new THREE.MeshBasicMaterial({ color: 0xffe45c });
-function stormView() {
+// V2.6 : le nuage et son cercle prennent la palette de l'élément choisi (dark pour le nuage, main pour le cercle) ; Élec : les couleurs d'avant
+const stormMs = {};
+function stormView(o) {
   const g = new THREE.Group(),
-    c = new THREE.Mesh(stormG, stormM),
-    r = new THREE.Mesh(stormR, stormRM);
+    el = o && o.el && o.el !== 'elec' && K.EL[o.el] ? o.el : '';
+  if (el && !stormMs[el])
+    stormMs[el] = [
+      new THREE.MeshBasicMaterial({ color: K.EL[el].dark, transparent: true, opacity: 0.75, depthWrite: false }),
+      new THREE.MeshBasicMaterial({ color: K.EL[el].light })
+    ];
+  const c = new THREE.Mesh(stormG, el ? stormMs[el][0] : stormM),
+    r = new THREE.Mesh(stormR, el ? stormMs[el][1] : stormRM);
   c.scale.set(BAL.stormR * 0.8, 1, BAL.stormR * 0.8);
   c.position.y = 17;
   r.rotation.x = Math.PI / 2;

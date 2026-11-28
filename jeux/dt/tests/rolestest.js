@@ -1,6 +1,6 @@
 // V4.8 : les rôles et les éléments depuis le lobby (claude/demande-dernier-toit-roles-elements.md), dans une page hôte comme le vrai lobby
 // (dt-pour-lobby.js) : DernierToit.HEROS (Zéphyr) et accepte (elementArme) ; Zéphyr avec une arme d'Eau (S.elArme, « pret », « fin ») ;
-// la Rafale, le Tir perçant et une balle de Vent dessinés sans erreur ; le Guide et l'écran de fin présentent le héros par son rôle ;
+// le Bond, le Tir perçant et une balle de Vent dessinés sans erreur ; le Guide et l'écran de fin présentent le héros par son rôle ;
 // l'étiquette d'un autre joueur porte son rôle. V4.9 : une voie (Roc en Avant-garde : la charge, l'ultime teinté, le Guide, la fin) ;
 // le réticule du tir chargé, l'aura du Mage de bataille, la barre du bouclier.                       node tests/rolestest.js
 const { chromium } = require('playwright');
@@ -50,7 +50,7 @@ const fs = require('fs');
         DernierToit.HEROS.join() === 'feu,eau,bois,terre,elec,vent' &&
         DernierToit.accepte.includes('elementArme') &&
         DernierToit.accepte.includes('voie') &&
-        DernierToit.version === 'V5.2'
+        DernierToit.version === 'V5.3'
     )
   );
 
@@ -75,13 +75,13 @@ const fs = require('fs');
     ul: document.querySelector('#bUlt').textContent
   }));
   T(
-    "Zéphyr avec une arme d'Eau : S.elArme, cases du lobby, boutons Rafale et Tir perçant",
+    "Zéphyr avec une arme d'Eau : S.elArme, cases du lobby, boutons Bond et Tir perçant",
     e1.hero === 'vent' &&
       e1.el === 'eau' &&
       e1.hm.kPush === 1 &&
       e1.hm.uDmg === 0.25 &&
       e1.hm.eSlow === 0.5 &&
-      /^Rafale/.test(e1.ab) &&
+      /^Bond/.test(e1.ab) &&
       /^Tir perçant/.test(e1.ul),
     JSON.stringify([e1.hero, e1.el, e1.ab, e1.ul])
   );
@@ -92,7 +92,7 @@ const fs = require('fs');
     JSON.stringify(recu[0])
   );
 
-  // la Rafale (entre deux jours), puis le jour : le Tir perçant et une balle de Vent (soulève) ; l'image tourne sans erreur
+  // le Bond (entre deux jours), puis le jour : le Tir perçant et une balle de Vent (soulève) ; l'image tourne sans erreur
   const fx = await f.evaluate(() => {
     const z0 = S.p.z;
     S.p.yaw = Math.PI; // dos au centre du toit : on recule vers le centre
@@ -121,7 +121,7 @@ const fs = require('fs');
     events();
     return { raf, dz, ult, nPercant, leve, beam: HX.beamD[6] < HX.beamD[7], lev: HX.lev1[i] > HX.lev0[i] };
   });
-  T('Rafale : on recule, sans erreur', fx.raf && fx.dz > 3, fx.dz.toFixed(1) + ' m');
+  T('Bond : on recule, sans erreur', fx.raf && fx.dz > 3, fx.dz.toFixed(1) + ' m');
   T('Tir perçant : le trait part (HX.beamD)', fx.ult && fx.nPercant === 1 && fx.beam, JSON.stringify(fx));
   T('balle de Vent : le zombie décolle (HX.lev0 / lev1)', fx.leve > 0.5 && fx.lev);
   await p.screenshot({ path: 'shots/v48-tir-percant.png' });
@@ -227,7 +227,7 @@ const fs = require('fs');
     return out;
   });
   T(
-    'Roc en Avant-garde : S.voie b, seules ses cases ; le Rempart part en charge (7 m) ; Séisme teinté de Feu',
+    'Roc en Avant-garde : S.voie b, seules ses cases ; le Rempart part en charge (7 m) ; Onde de choc teinté de Feu',
     v.voie === 'b' &&
       v.spB1 === 1 &&
       v.spA1 === 0 &&

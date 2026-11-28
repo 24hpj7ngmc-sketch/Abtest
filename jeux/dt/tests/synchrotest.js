@@ -57,7 +57,7 @@ const fs = require('fs');
   let recu = await p.evaluate(() => recu);
   T('pret (partie 1, bourse 150)', recu.length === 1 && recu[0].dt === 'pret' && recu[0].partie === 1 && recu[0].argent === 150 && recu[0].rang === 3, JSON.stringify(recu));
 
-  // un zombie qui sort : sa vie × 1,8 ; l'ultime se charge 30 % plus vite ; les Ronces plus grandes et plus longues
+  // un zombie qui sort : sa vie × 1,8 ; l'ultime se charge 30 % plus vite ; les Entraves plus grandes et plus longues
   const z = await f.evaluate(() => {
     const n0 = S.nAct;
     devSpawn(1);
@@ -76,7 +76,7 @@ const fs = require('fs');
   });
   T('vie du zombie ×1,8', Math.abs(z.hm - z.attendu) < 1e-3, z.hm + ' / ' + z.attendu);
   T('ultime : +30 % par zombie', Math.abs(z.du - 1.3 / z.need) < 1e-9, z.du + ' / ' + 1.3 / z.need);
-  T('Ronces : rayon +1,5 m, durée +2 s', z.ok && Math.abs(z.r - 6.7) < 1e-9 && z.t === 8, JSON.stringify(z));
+  T('Entraves : rayon +1,5 m, durée +2 s', z.ok && Math.abs(z.r - 6.7) < 1e-9 && z.t === 8, JSON.stringify(z));
 
   // la chute : la partie continue, aucun « fin », relevé sur le toit au bout de RELEVE s
   const c = await f.evaluate(() => {

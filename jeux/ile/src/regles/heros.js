@@ -9,19 +9,44 @@ function ability(s, h, a) {
   if (h.el === 'vent') return rafale(s, h, a);
   return tide(s, h, a);
 }
+// V2.6 : les sorts suivent l'élément choisi du héros (elOf). elState : l'effet d'état de cet élément sur un ennemi touché (le Feu brûle, l'Eau ralentit,
+// la Nature empoisonne, la Terre étourdit, l'Élec rebondit, le Vent soulève les petits). `c` compte les rebonds (6 au plus par sort). Les sorts l'appellent
+// à la place de l'effet de leur élément d'origine ; avec l'élément d'origine, ils gardent leur code d'avant, à l'identique.
+function elState(s, e, el, c) {
+  if (e.hp <= 0 || s.client) return;
+  if (el === 'feu') e.burn = Math.max(e.burn, 3);
+  else if (el === 'eau') e.slow = Math.max(e.slow, 3);
+  else if (el === 'bois') e.poi = Math.max(e.poi || 0, 4);
+  else if (el === 'terre') {
+    if (e.boss) e.slow = Math.max(e.slow, 2);
+    else if (!(e.imm > 0)) {
+      e.stun = Math.max(e.stun, 1);
+      e.imm = e.stun + 1;
+    }
+  } else if (el === 'elec') {
+    if (c && c.n++ >= 6) return;
+    hurtE(e, 18 * (1 + 0.08 * (lvl(s, s.wave) - 1)) * mult('elec', e.el, e.boss, BAL.strong + s.m.strong), false, true);
+    s.events.push({ k: 'arc', x: e.x, z: e.z });
+  } else if (el === 'vent' && liftable(e)) lift(e, 1.2);
+}
+// la zone au sol d'un sort : même durée et même rayon dans l'élément choisi ; seuls le Feu (8 par s) et la Nature (3 par s) blessent, on garde le même débit
+function zonePw(E, orig, pw) {
+  const D = { feu: 8, bois: 3 };
+  return E === orig || !D[E] ? pw : (D[orig] * pw) / D[E];
+}
 const offOf = id => ((id * 7919) % 240) / 100 - 1.2;
 // le kit de chaque héros : compétence, ultime, et son rôle en tête de `tag` (V2.1 : les rôles du lobby, façon LoL)
 const KIT = {
-    terre: { skill: 'Rempart', ult: 'Séisme', tag: 'Tank · Rempart · Séisme' },
-    elec: { skill: 'Éclair', ult: 'Orage', tag: 'Assassin · Éclair · Orage' },
-    bois: { skill: 'Ronces', ult: 'Gardiens', tag: 'Combattant · Ronces · Gardiens' },
-    feu: { skill: 'Brasier', ult: 'Météores', tag: 'Mage · Brasier · Météores' },
-    eau: { skill: 'Marée', ult: 'Déluge', tag: 'Support · Marée · Déluge' },
-    vent: { skill: 'Rafale', ult: 'Tir perçant', tag: 'Tireur · Rafale · Tir perçant' }
+    terre: { skill: 'Rempart', ult: 'Onde de choc', tag: 'Tank · Rempart · Onde de choc' },
+    elec: { skill: 'Fulgurance', ult: 'Déchaînement', tag: 'Assassin · Fulgurance · Déchaînement' },
+    bois: { skill: 'Entraves', ult: 'Gardiens', tag: 'Combattant · Entraves · Gardiens' },
+    feu: { skill: 'Orbe', ult: 'Météores', tag: 'Mage · Orbe · Météores' },
+    eau: { skill: 'Répulsion', ult: 'Sanctuaire', tag: 'Support · Répulsion · Sanctuaire' },
+    vent: { skill: 'Bond', ult: 'Tir perçant', tag: 'Tireur · Bond · Tir perçant' }
   },
   HPB = { terre: BAL.rocHp, elec: BAL.voltHp };
-// ---- Volt (Élec), le mobile. Passif : sprint plus rapide, tirs qui sautent sur un voisin, mais moins de vie. Compétence : Éclair. Ultime : Orage.
-// Éclair : il file tout droit sur BAL.dashLen m, s'arrête contre un obstacle, électrocute ce qu'il traverse et ne peut pas être touché un instant.
+// ---- Volt (Élec), le mobile. Passif : sprint plus rapide, tirs qui sautent sur un voisin, mais moins de vie. Compétence : Fulgurance. Ultime : Déchaînement.
+// Fulgurance : il file tout droit sur BAL.dashLen m, s'arrête contre un obstacle, électrocute ce qu'il traverse et ne peut pas être touché un instant.
 // `a` porte la position de départ envoyée par un invité, pour que l'hôte frappe au bon endroit.
 function dash(s, h, a) {
   if (h.ab > 0 || s.over) return false;
@@ -34,7 +59,9 @@ function dash(s, h, a) {
     z = a[2];
     yaw = a[3];
   }
-  const fx = -Math.sin(yaw),
+  const E = elOf(h),
+    cn = { n: 0 },
+    fx = -Math.sin(yaw),
     fz = -Math.cos(yaw),
     y = h.y || 0;
   let d = 0;
@@ -46,20 +73,21 @@ function dash(s, h, a) {
   const ex = x + fx * d,
     ez = z + fz * d;
   {
-    // V2.2 : Lame (spA2) achève sous 15 % de vie ; Escarmoucheur : chaque élimination rend une part de la recharge, et avec spB2 une élimination relance l'Éclair.
+    // V2.2 : Lame (spA2) achève sous 15 % de vie ; Escarmoucheur : chaque élimination rend une part de la recharge, et avec spB2 une élimination relance la Fulgurance.
     // Chez un invité, l'hôte frappe ; l'invité ne fait qu'estimer les éliminations pour sa propre recharge.
     const dmg = BAL.dashDmg * (1 + h.m.abDmg) * (1 + 0.08 * (lvl(s, s.wave) - 1));
     let kills = 0;
     for (const e of s.enemies) {
       if (e.hp <= 0 || e.bur || e.k === 'air') continue;
       if (distSeg(e.x, e.z, [x, z], [ex, ez]) < 2.6 + (e.boss ? 2 : 0)) {
-        const dd = dmg * mult('elec', e.el, e.boss, BAL.strong + s.m.strong);
+        const dd = dmg * mult(E, e.el, e.boss, BAL.strong + s.m.strong);
         if (s.client) {
           if (e.hp - dd <= 0) kills++;
           continue;
         }
         hurtE(e, dd, false, true);
-        e.slow = Math.max(e.slow, 1);
+        if (E === 'elec') e.slow = Math.max(e.slow, 1);
+        else elState(s, e, E, cn);
         if (h.m.voA && h.m.spA2 && !e.boss && e.hp > 0 && e.hp < e.max * BAL.lameExe) e.hp = 0;
         if (e.hp <= 0) kills++;
       }
@@ -69,8 +97,8 @@ function dash(s, h, a) {
   }
   if (!s.client) {
     if (h.m.kTrail) {
-      for (let k = 1; k <= 3; k++) zoneAdd(s, x + ((ex - x) * k) / 4, z + ((ez - z) * k) / 4, 3, 'elec', 3);
-      for (const q of s.zones) if (q.el === 'elec' && distSeg(q.x, q.z, [x, z], [ex, ez]) < 1) q.hero = 1;
+      for (let k = 1; k <= 3; k++) zoneAdd(s, x + ((ex - x) * k) / 4, z + ((ez - z) * k) / 4, 3, E, 3);
+      for (const q of s.zones) if (q.el === E && distSeg(q.x, q.z, [x, z], [ex, ez]) < 1) q.hero = 1;
     }
   }
   if (h === s.hero) {
@@ -78,19 +106,27 @@ function dash(s, h, a) {
     h.z = ez;
     h.inv = 0.5;
   }
-  s.events.push({ k: 'dash', x, z, ex, ez });
+  s.events.push({ k: 'dash', x, z, ex, ez, el: E });
   return true;
 }
-// Orage : un nuage reste BAL.stormT s là où il est lancé et foudroie 3 ennemis toutes les 0,4 s dans son rayon, aériens compris.
+// Déchaînement : un nuage reste BAL.stormT s là où il est lancé et foudroie 3 ennemis toutes les 0,4 s dans son rayon, aériens compris.
 function storm(s, h) {
   if (s.over) return false;
   if (!s.client)
-    s.storms.push({ x: h.x, z: h.z, t: BAL.stormT + h.m.uDur, r: BAL.stormR + h.m.uRad, zap: 0, tn: tintEl(h) });
-  s.events.push({ k: 'storm', x: h.x, z: h.z });
+    s.storms.push({
+      x: h.x,
+      z: h.z,
+      t: BAL.stormT + h.m.uDur,
+      r: BAL.stormR + h.m.uRad,
+      zap: 0,
+      tn: tintEl(h),
+      el: elOf(h)
+    });
+  s.events.push({ k: 'storm', x: h.x, z: h.z, el: elOf(h) });
   return true;
 }
-// ---- Sylve (Bois), le contrôle. Passif : elle voit les furtifs de loin et ses tirs empoisonnent. Compétence : Ronces. Ultime : Gardiens.
-// Ronces : un grand roncier là où elle vise (a[4],a[5]), qui blesse, ralentit et entrave par à-coups tout ce qui le traverse au sol.
+// ---- Sylve (Bois), le contrôle. Passif : elle voit les furtifs de loin et ses tirs empoisonnent. Compétence : Entraves. Ultime : Gardiens.
+// Entraves : un grand roncier là où elle vise (a[4],a[5]), qui blesse, ralentit et entrave par à-coups tout ce qui le traverse au sol.
 function brambles(s, h, a) {
   if (h.ab > 0 || s.over) return false;
   h.ab = BAL.ronceCd - h.m.abCd;
@@ -101,7 +137,7 @@ function brambles(s, h, a) {
     tz = a[5];
   }
   if (h.m.voB) {
-    // V2.2, Plongeur : elle bondit vers le point visé (BAL.plongeLen m au plus, +spB1), s'arrête contre un obstacle, et les Ronces poussent là où elle retombe
+    // V2.2, Plongeur : elle bondit vers le point visé (BAL.plongeLen m au plus, +spB1), s'arrête contre un obstacle, et les Entraves poussent là où elle retombe
     const x0 = a && Number.isFinite(a[1]) && Math.hypot(a[1] - h.x, a[2] - h.z) < 40 ? a[1] : h.x,
       z0 = a && Number.isFinite(a[2]) && Math.hypot(a[1] - h.x, a[2] - h.z) < 40 ? a[2] : h.z,
       L = Math.hypot(tx - x0, tz - z0) || 1,
@@ -121,17 +157,18 @@ function brambles(s, h, a) {
       h.z = tz;
       h.inv = 0.4;
     }
-    s.events.push({ k: 'plonge', x: x0, z: z0, ex: tx, ez: tz });
+    s.events.push({ k: 'plonge', x: x0, z: z0, ex: tx, ez: tz, el: elOf(h) });
   }
   if (!s.client) {
-    zoneAdd(s, tx, tz, BAL.ronceR + h.m.abRad, 'bois', BAL.ronceT + h.m.kDur);
+    const E = elOf(h);
+    zoneAdd(s, tx, tz, BAL.ronceR + h.m.abRad, E, BAL.ronceT + h.m.kDur);
     for (const q of s.zones)
-      if (q.el === 'bois' && Math.hypot(q.x - tx, q.z - tz) < 1.6) {
+      if (q.el === E && Math.hypot(q.x - tx, q.z - tz) < 1.6) {
         q.hero = 1;
-        q.pw = (BAL.ronceDmg / 3) * (1 + h.m.abDmg) * (1 + 0.08 * (lvl(s, s.wave) - 1));
+        q.pw = zonePw(E, 'bois', (BAL.ronceDmg / 3) * (1 + h.m.abDmg) * (1 + 0.08 * (lvl(s, s.wave) - 1)));
       }
   }
-  s.events.push({ k: 'ronce', x: tx, z: tz });
+  s.events.push({ k: 'ronce', x: tx, z: tz, el: elOf(h) });
   return true;
 }
 // Gardiens : trois tours d'archer Bois de niveau 3 (flèches empoisonnées) poussent autour d'elle et disparaissent au bout de BAL.guardT s. Elles sont gratuites et ne s'améliorent pas.
@@ -150,7 +187,7 @@ function guardians(s, h) {
           type: 'archer',
           x,
           z,
-          els: tintEl(h) ? ['bois', tintEl(h), tintEl(h)] : ['bois', 'bois', 'bois'], // ultime teinté (V2.2) : les flèches gagnent l'élément de l'arme
+          els: tintEl(h) ? [elOf(h), tintEl(h), tintEl(h)] : [elOf(h), elOf(h), elOf(h)], // ultime teinté (V2.2) : les flèches gagnent l'élément de l'arme
           cd: 0.3,
           aim: 0,
           wy: 0,
@@ -159,15 +196,15 @@ function guardians(s, h) {
         n++;
       }
   }
-  s.events.push({ k: 'guard', x: h.x, z: h.z });
+  s.events.push({ k: 'guard', x: h.x, z: h.z, el: elOf(h) });
   return true;
 }
-// ---- Braise (Feu), les dégâts. Passif : ses tirs enflamment et éclaboussent autour de la cible. Compétence : Brasier. Ultime : Météores.
-// Brasier : une boule de feu explose là où il vise (a[4],a[5]) et laisse des flammes au sol.
+// ---- Braise (Feu), les dégâts. Passif : ses tirs enflamment et éclaboussent autour de la cible. Compétence : Orbe. Ultime : Météores.
+// Orbe : une boule de feu explose là où il vise (a[4],a[5]) et laisse des flammes au sol.
 function fireball(s, h, a) {
   if (h.ab > 0 || s.over) return false;
   h.ab = BAL.fbCd - h.m.abCd;
-  const art = h.m.voA ? BAL.artiFb + h.m.spA1 : 0; // V2.2, Artilleur : le Brasier part plus loin
+  const art = h.m.voA ? BAL.artiFb + h.m.spA1 : 0; // V2.2, Artilleur : l'Orbe part plus loin
   let tx = h.x - Math.sin(h.yaw) * (10 + art),
     tz = h.z - Math.cos(h.yaw) * (10 + art);
   if (a && Number.isFinite(a[4]) && Number.isFinite(a[5]) && Math.hypot(a[4] - h.x, a[5] - h.z) < 26 + art) {
@@ -176,20 +213,23 @@ function fireball(s, h, a) {
   }
   if (!s.client) {
     const d = BAL.fbDmg * (1 + h.m.abDmg) * (1 + 0.08 * (lvl(s, s.wave) - 1)),
-      FR = BAL.fbR + h.m.abRad;
+      FR = BAL.fbR + h.m.abRad,
+      E = elOf(h),
+      cn = { n: 0 };
     for (const e of s.enemies) {
       if (e.hp <= 0 || e.bur || e.k === 'air' || Math.hypot(e.x - tx, e.z - tz) > FR + (e.boss ? 1.5 : 0)) continue;
-      hurtE(e, d * mult('feu', e.el, e.boss, BAL.strong + s.m.strong), false, true);
-      e.burn = Math.max(e.burn, 3);
+      hurtE(e, d * mult(E, e.el, e.boss, BAL.strong + s.m.strong), false, true);
+      if (E === 'feu') e.burn = Math.max(e.burn, 3);
+      else elState(s, e, E, cn);
     }
-    zoneAdd(s, tx, tz, FR * 0.7, 'feu', BAL.fbZoneT + (h.m.voA && h.m.spA2 ? BAL.fireStay : 0)); // Artilleur (spA2) : les flammes restent plus longtemps
+    zoneAdd(s, tx, tz, FR * 0.7, E, BAL.fbZoneT + (h.m.voA && h.m.spA2 ? BAL.fireStay : 0)); // Artilleur (spA2) : les flammes restent plus longtemps
     for (const q of s.zones)
-      if (q.el === 'feu' && Math.hypot(q.x - tx, q.z - tz) < 1.6) {
+      if (q.el === E && Math.hypot(q.x - tx, q.z - tz) < 1.6) {
         q.hero = 1;
-        q.pw = 1 + 0.08 * (lvl(s, s.wave) - 1);
+        q.pw = zonePw(E, 'feu', 1 + 0.08 * (lvl(s, s.wave) - 1));
       }
   }
-  s.events.push({ k: 'fball', x: tx, z: tz });
+  s.events.push({ k: 'fball', x: tx, z: tz, el: elOf(h) });
   return true;
 }
 // Météores : BAL.metN météores tombent un par un, où qu'il soit, sur l'ennemi le plus avancé vers le cœur. Les aériens sont touchés aussi.
@@ -201,18 +241,21 @@ function meteors(s, h) {
       t: 0.3,
       r: BAL.metR + h.m.uRad,
       fz: h.m.voA && h.m.spA2 ? BAL.fireStay : 0, // Artilleur : chaque météore laisse des flammes au sol
-      tn: tintEl(h)
+      tn: tintEl(h),
+      el: elOf(h)
     });
-  s.events.push({ k: 'rain' });
+  s.events.push({ k: 'rain', el: elOf(h) });
   return true;
 }
-// ---- Ondine (Eau), le soutien. Passif : elle se soigne vite et ses tirs ralentissent. Compétence : Marée. Ultime : Déluge.
+// ---- Ondine (Eau), le soutien. Passif : elle se soigne vite et ses tirs ralentissent. Compétence : Répulsion. Ultime : Sanctuaire.
 // Les soins aux autres joueurs passent par le réseau : chacun gère la vie de son propre héros (`mine` signale au jeu qu'il faut prévenir les coéquipiers).
-// Marée : une vague autour d'elle soigne les héros, repousse, ralentit et blesse les ennemis au sol.
+// Répulsion : une vague autour d'elle soigne les héros, repousse, ralentit et blesse les ennemis au sol.
 function tide(s, h, a) {
   if (h.ab > 0 || s.over) return false;
   h.ab = BAL.tideCd - h.m.abCd;
-  const R = BAL.tideR + h.m.abRad;
+  const R = BAL.tideR + h.m.abRad,
+    E = elOf(h),
+    cn = { n: 0 };
   let x = h.x,
     z = h.z;
   if (a && Number.isFinite(a[1]) && Number.isFinite(a[2]) && Math.hypot(a[1] - h.x, a[2] - h.z) < 40) {
@@ -223,10 +266,11 @@ function tide(s, h, a) {
     const d = BAL.tideDmg * (1 + h.m.abDmg) * (1 + 0.08 * (lvl(s, s.wave) - 1));
     for (const e of s.enemies) {
       if (e.hp <= 0 || e.k === 'air' || Math.hypot(e.x - x, e.z - z) > R) continue;
-      hurtE(e, d * mult('eau', e.el, e.boss, BAL.strong + s.m.strong), false, true);
-      e.slow = Math.max(e.slow, 3);
+      hurtE(e, d * mult(E, e.el, e.boss, BAL.strong + s.m.strong), false, true);
+      if (E === 'eau') e.slow = Math.max(e.slow, 3);
+      else elState(s, e, E, cn);
       if (h.m.voB) {
-        // V2.2, Entraveuse : la Marée immobilise au lieu de repousser (les boss sont seulement ralentis)
+        // V2.2, Entraveuse : la Répulsion immobilise au lieu de repousser (les boss sont seulement ralentis)
         if (!e.boss && !e.bur) {
           e.stun = Math.max(e.stun, BAL.rootT + h.m.spB1);
           e.imm = e.stun + 1;
@@ -244,30 +288,31 @@ function tide(s, h, a) {
       h.shT = BAL.shieldT;
     }
   }
-  s.events.push({ k: 'tide', x, z, r: R, heal, sh, mine: h === s.hero });
+  s.events.push({ k: 'tide', x, z, r: R, heal, sh, mine: h === s.hero, el: E });
   return true;
 }
-// Déluge : pendant BAL.floodT s, tous les ennemis au sol de l'île sont ralentis et rongés par l'eau ; le cœur récupère des points ; tous les héros sont soignés et relevés.
+// Sanctuaire : pendant BAL.floodT s, tous les ennemis au sol de l'île sont ralentis et rongés par l'eau ; le cœur récupère des points ; tous les héros sont soignés et relevés.
 function deluge(s, h) {
   if (s.over) return false;
   if (!s.client) {
     s.flood = BAL.floodT + h.m.uDur;
+    s.floodEl = elOf(h);
     s.core = Math.min(s.coreMax, s.core + BAL.floodCore + h.m.uExtra);
     const gr = s.enemies.filter(e => e.hp > 0 && e.k !== 'air' && !e.sea);
     if (h.m.voB && h.m.spB2)
       for (const e of gr)
         if (!e.boss && !e.bur) {
-          e.stun = Math.max(e.stun, BAL.delugeRoot); // V2.2, Entraveuse : le Déluge immobilise à son arrivée
+          e.stun = Math.max(e.stun, BAL.delugeRoot); // V2.2, Entraveuse : le Sanctuaire immobilise à son arrivée
           e.imm = e.stun + 1;
         }
     tintUlt(s, h, gr, 0, 0, 0);
   }
   if (h === s.hero) h.hp = h.maxHp;
-  s.events.push({ k: 'deluge', mine: h === s.hero });
+  s.events.push({ k: 'deluge', mine: h === s.hero, el: elOf(h) });
   return true;
 }
-// ---- Zéphyr (Vent), le Tireur (V2.1). Passif : ses balles font plus mal au-delà de BAL.zephFar m (+20 %, +5 points par niveau). Compétence : Rafale. Ultime : Tir perçant.
-// Rafale : une rafale le porte en arrière sur BAL.zephLen m (+kLen), s'arrête contre un obstacle ; avec kPush, elle repousse aussi les ennemis proches au départ.
+// ---- Zéphyr (Vent), le Tireur (V2.1). Passif : ses balles font plus mal au-delà de BAL.zephFar m (+20 %, +5 points par niveau). Compétence : Bond. Ultime : Tir perçant.
+// Bond : une rafale le porte en arrière sur BAL.zephLen m (+kLen), s'arrête contre un obstacle ; avec kPush, elle repousse aussi les ennemis proches au départ.
 function rafale(s, h, a) {
   if (h.ab > 0 || s.over) return false;
   h.ab = BAL.zephCd - h.m.abCd;
@@ -300,7 +345,7 @@ function rafale(s, h, a) {
     h.z = ez;
     h.inv = 0.4;
   }
-  s.events.push({ k: 'rafale', x, z, ex, ez });
+  s.events.push({ k: 'rafale', x, z, ex, ez, el: elOf(h) });
   return true;
 }
 // Tir perçant : un trait de vent qui part de lui dans la direction visée, sur BAL.perceLen m, et traverse tout ce qui est sur sa ligne (aériens compris).
@@ -312,7 +357,7 @@ function perce(s, h) {
     ex = h.x + fx * L,
     ez = h.z + fz * L,
     W = BAL.perceR + (h.m.uRad || 0),
-    el = h.wEl || elOf(h);
+    el = ELS.includes(h.ce) ? h.ce : h.wEl || elOf(h); // V2.6 : l'élément choisi ; sans choix, comme avant (l'élément de l'arme)
   if (!s.client) {
     const d = BAL.perceDmg * (1 + (h.m.uDmg || 0)) * (1 + 0.08 * (lvl(s, s.wave) - 1));
     for (const e of s.enemies) {
@@ -328,7 +373,7 @@ function perce(s, h) {
   return true;
 }
 const ULT = { terre: quake, elec: storm, bois: guardians, feu: meteors, eau: deluge, vent: perce };
-// L'ULTIME TEINTÉ (V2.2) : l'ultime garde son effet et gagne celui de l'élément de l'arme en main (le Séisme de Roc avec une arme de feu devient un séisme de lave).
+// L'ULTIME TEINTÉ (V2.2) : l'ultime garde son effet et gagne celui de l'élément de l'arme en main (l'Onde de choc de Roc avec une arme de feu devient un séisme de lave).
 // tintEl : l'élément qui teinte (rien si l'arme est de l'élément du héros) ; tintUlt l'applique aux ennemis touchés. r > 0 : un cercle à montrer ; r = 0 : toute l'île ; r < 0 : rien à montrer.
 const tintEl = h => (h.wEl && ELS.includes(h.wEl) && h.wEl !== elOf(h) ? h.wEl : '');
 function tintUlt(s, h, es, x, z, r, el) {
@@ -364,7 +409,7 @@ function tintUlt(s, h, es, x, z, r, el) {
   }
   if (r >= 0) s.events.push({ k: 'tint', x, z, r, el });
 }
-// ---- Roc (Terre), le tank. Passif : plus de vie, coups au contact amortis. Compétence : Rempart. Ultime : Séisme.
+// ---- Roc (Terre), le tank. Passif : plus de vie, coups au contact amortis. Compétence : Rempart. Ultime : Onde de choc.
 // Rempart : un vrai mur de 5 blocs de large et 2 de haut dressé 5 m devant lui, qui disparaît tout seul. Il ne peut pas fermer le passage ; s'il ne tient pas à 5, on essaie à 3, puis à 1.
 function rempart(s, h) {
   if (h.ab > 0 || s.over) return false;
@@ -405,17 +450,20 @@ function rempart(s, h) {
   s.events.push({ k: 'nowall' });
   return false;
 }
-// Séisme : blesse et étourdit tout ce qui marche autour de lui (les boss sont seulement ralentis), déterre les foreurs, révèle les furtifs. Les aériens y échappent.
+// Onde de choc : blesse et étourdit tout ce qui marche autour de lui (les boss sont seulement ralentis), déterre les foreurs, révèle les furtifs. Les aériens y échappent.
 function quake(s, h) {
   if (s.over) return false;
   const d = BAL.quakeDmg * (1 + 0.08 * (lvl(s, s.wave) - 1)),
     QR = BAL.quakeR + h.m.uRad,
     QT = BAL.quakeT + h.m.uDur,
+    E = elOf(h),
+    cn = { n: 0 },
     hit = [];
   for (const e of s.enemies) {
     if (e.hp <= 0 || e.k === 'air' || Math.hypot(e.x - h.x, e.z - h.z) > QR + (e.boss ? 2 : 0)) continue;
-    hurtE(e, d * mult('terre', e.el, e.boss, BAL.strong + s.m.strong), true, true);
-    if (e.boss) e.slow = Math.max(e.slow, QT);
+    hurtE(e, d * mult(E, e.el, e.boss, BAL.strong + s.m.strong), true, true);
+    if (E !== 'terre') elState(s, e, E, cn);
+    else if (e.boss) e.slow = Math.max(e.slow, QT);
     else {
       e.stun = Math.max(e.stun, QT);
       e.imm = e.stun + 1;
@@ -424,7 +472,7 @@ function quake(s, h) {
     hit.push(e);
   }
   tintUlt(s, h, hit, h.x, h.z, QR);
-  s.events.push({ k: 'quake', x: h.x, z: h.z, r: QR });
+  s.events.push({ k: 'quake', x: h.x, z: h.z, r: QR, el: E });
   return true;
 }
 // ---- Roc, voie Avant-garde (V2.2) : le Rempart devient une charge. Il fonce sur BAL.chargeLen m (+spB1), s'arrête contre un obstacle,
@@ -440,7 +488,9 @@ function charge(s, h, a) {
     z = a[2];
     yaw = a[3];
   }
-  const fx = -Math.sin(yaw),
+  const E = elOf(h),
+    cn = { n: 0 },
+    fx = -Math.sin(yaw),
     fz = -Math.cos(yaw),
     y = h.y || 0;
   let d = 0;
@@ -458,8 +508,11 @@ function charge(s, h, a) {
       const on = distSeg(e.x, e.z, [x, z], [ex, ez]) < 2.4 + (e.boss ? 2 : 0),
         end = h.m.spB2 && Math.hypot(e.x - ex, e.z - ez) < BAL.chargeR + (e.boss ? 2 : 0);
       if (!on && !end) continue;
-      hurtE(e, dmg * mult('terre', e.el, e.boss, BAL.strong + s.m.strong), false, true);
-      if (e.boss) e.slow = Math.max(e.slow, 2);
+      hurtE(e, dmg * mult(E, e.el, e.boss, BAL.strong + s.m.strong), false, true);
+      if (E !== 'terre') {
+        if (!e.boss) knock(s, e, 4);
+        elState(s, e, E, cn);
+      } else if (e.boss) e.slow = Math.max(e.slow, 2);
       else {
         knock(s, e, 4);
         e.stun = Math.max(e.stun, BAL.chargeStun);
@@ -472,6 +525,6 @@ function charge(s, h, a) {
     h.z = ez;
     h.inv = 0.5;
   }
-  s.events.push({ k: 'charge', x, z, ex, ez, r: h.m.spB2 ? BAL.chargeR : 0 });
+  s.events.push({ k: 'charge', x, z, ex, ez, r: h.m.spB2 ? BAL.chargeR : 0, el: E });
   return true;
 }

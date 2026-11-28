@@ -428,7 +428,7 @@ let LOURD = null;
     H.ult === avant[2] &&
     H.P === avant[3] &&
     H.hm === avant[4];
-  T('hôte : la Marée de l’invité frappe depuis sa pose', n === 1 && t1 > t0, t1 - t0 + ' zombies tués ou ralentis');
+  T('hôte : la Répulsion de l’invité frappe depuis sa pose', n === 1 && t1 > t0, t1 - t0 + ' zombies tués ou ralentis');
   T('hôte : pose, héros, recharge, ultime remis', remis());
   // une erreur au milieu : tout est remis quand même
   const vrai = HA.ctx.useHeroSkill;
@@ -440,7 +440,7 @@ let LOURD = null;
   const n2 = HA.appliqueActions(H, J, GA.actionsInvite(G, 2000));
   HA.ctx.useHeroSkill = vrai;
   T('erreur pendant la compétence : tout est remis', n2 === 0 && remis());
-  // l'ultime (Déluge : la ville soignée chez l'hôte)
+  // l'ultime (Sanctuaire : la ville soignée chez l'hôte)
   G.ult = 1;
   const okU = GA.useHeroUlt(G);
   H.city = 40;
@@ -448,7 +448,7 @@ let LOURD = null;
   T(
     'ultime d’un invité exécuté chez l’hôte',
     okU && G.ult === 0 && H.flood > 0 && H.city > 40 && remis(),
-    'Déluge ' + H.flood.toFixed(1) + ' s, ville 40 → ' + H.city.toFixed(0)
+    'Sanctuaire ' + H.flood.toFixed(1) + ' s, ville 40 → ' + H.city.toFixed(0)
   );
   // leurre et frappe (l'arbre de l'invité les a, pas celui de l'hôte)
   G.leuCd = G.airCd = 0;

@@ -71,11 +71,11 @@ const perte = (S, i) => 1e5 - S.z.hp[i];
 
 // ---- les tableaux
 T(
-  'six héros, Zéphyr en sixième (Tireur, Rafale, Tir perçant, #8fe6dc)',
+  'six héros, Zéphyr en sixième (Tireur, Bond, Tir perçant, #8fe6dc)',
   A.HKEYS.join() === 'feu,eau,bois,terre,elec,vent' &&
     A.HEROS.vent.n === 'Zéphyr' &&
     A.HEROS.vent.role === 'Tireur' &&
-    A.HEROS.vent.sk === 'Rafale' &&
+    A.HEROS.vent.sk === 'Bond' &&
     A.HEROS.vent.ul === 'Tir perçant' &&
     A.HEROS.vent.c === '#8fe6dc' &&
     A.HEROS.vent.cd === 14
@@ -182,7 +182,7 @@ T(
   T('Roc avec une arme de Vent : soulevé, pas de recul en plus', r.S.z.root[r.ids[0]] > 0 && Math.abs(r.S.z.z[r.ids[0]] + 30) < 1e-6);
 }
 
-// ---- la Rafale
+// ---- le Bond
 {
   const { S, ids } = file('vent', [-21, -40]);
   S.p.yaw = 0;
@@ -190,11 +190,11 @@ T(
   const z0 = S.p.z;
   const parti = A.useHeroSkill(S);
   T(
-    'Rafale : un bond en arrière de 8 m, recharge 14 s, petit saut',
+    'Bond : un bond en arrière de 8 m, recharge 14 s, petit saut',
     parti && Math.abs(S.p.z - z0 - 8) < 0.01 && Math.abs(S.hab - 14) < 0.01 && S.p.vy > 0 && S.ev.some(e => e.k === 'rafale'),
     'Δz ' + (S.p.z - z0).toFixed(2) + ' · ' + S.hab.toFixed(1) + ' s'
   );
-  T('Rafale sans kPush : personne repoussé', Math.abs(S.z.z[ids[0]] + 21) < 1e-6);
+  T('Bond sans kPush : personne repoussé', Math.abs(S.z.z[ids[0]] + 21) < 1e-6);
 }
 {
   A.setLobby(null, { heros: { kPush: 1, kLen: 4 } });
@@ -205,7 +205,7 @@ T(
   const z0 = S.p.z;
   A.useHeroSkill(S);
   T(
-    'Rafale avec kPush et kLen 4 : 12 m, le zombie à 3 m repoussé de 5 m, pas celui de 22 m',
+    'Bond avec kPush et kLen 4 : 12 m, le zombie à 3 m repoussé de 5 m, pas celui de 22 m',
     Math.abs(S.p.z - z0 - 12) < 0.01 && Math.abs(S.z.z[ids[0]] + 26) < 0.01 && Math.abs(S.z.z[ids[1]] + 40) < 1e-6,
     (S.p.z - z0).toFixed(2) + ' · ' + S.z.z[ids[0]].toFixed(2)
   );
@@ -216,7 +216,7 @@ T(
   const a = A.useHeroSkill(S);
   const S2 = partie('feu');
   S2.phase = 'prep';
-  T("Rafale aussi entre deux jours (comme l'Éclair), pas le Brasier", a && !A.useHeroSkill(S2));
+  T("Bond aussi entre deux jours (comme la Fulgurance), pas l'Orbe", a && !A.useHeroSkill(S2));
 }
 
 // ---- le Tir perçant

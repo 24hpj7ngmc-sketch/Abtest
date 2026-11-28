@@ -100,13 +100,13 @@ function newRun(save, startDay, seed) {
     runCash: 0,
     // les événements du pas (voir LISEZMOI.md), lus et vidés par l'interface
     ev: [],
-    // cadavres ; obus de mortier, missiles, bombes ; feux au sol (napalm, Brasier)
+    // cadavres ; obus de mortier, missiles, bombes ; feux au sol (napalm, Orbe)
     corpses: [],
     shells: [],
     missiles: [],
     bombs: [],
     fires: [],
-    // ce qui dure pour les héros (heroStep) ; flood : temps de Déluge restant ; hab : recharge de la compétence du héros
+    // ce qui dure pour les héros (heroStep) ; flood : temps de Sanctuaire restant ; hab : recharge de la compétence du héros
     fballs: [],
     thorns: [],
     ramparts: [],
@@ -173,6 +173,9 @@ function newRun(save, startDay, seed) {
     voie: save.mode === 'out' && HEROS[save.hero] && (voieLobby === 'a' || voieLobby === 'b') ? voieLobby : null,
     teintT: new Float32Array(MAXZ),
     ultEl: null,
+    // V5.3 : sortT : quand le sort à l'élément choisi pourra de nouveau marquer chaque zombie (heros.js) ; sortEl : l'élément qui marque ce qui frappe en ce moment
+    sortT: new Float32Array(MAXZ),
+    sortEl: null,
     // où est le joueur : niveau, balcon (façade, −1 sinon), volée d'escalier (−1 sinon) et position le long de celle-ci
     plv: NLV,
     pbal: -1,
@@ -200,7 +203,7 @@ function newRun(save, startDay, seed) {
       vz: 0,
       surge: 0,
       spr: false,
-      // regard (yaw : 0 = vers le nord, −Z ; pitch > 0 vers le haut) ; vie ; inv : invincible encore inv secondes (Éclair de Volt)
+      // regard (yaw : 0 = vers le nord, −Z ; pitch > 0 vers le haut) ; vie ; inv : invincible encore inv secondes (Fulgurance de Volt)
       yaw: 0,
       pitch: -0.12,
       hp: P.hp,

@@ -75,7 +75,7 @@ const BAL = {
   zephK: 0.2,
   perceDmg: 90,
   perceR: 1.5,
-  perceLen: 110, // Zéphyr : Rafale (recharge, longueur du bond, rayon du souffle avec kPush), passif (au-delà de zephFar m, +zephK de dégâts, +5 points par niveau pA), Tir perçant (dégâts, demi-largeur, longueur)
+  perceLen: 110, // Zéphyr : Bond (recharge, longueur du bond, rayon du souffle avec kPush), passif (au-delà de zephFar m, +zephK de dégâts, +5 points par niveau pA), Tir perçant (dégâts, demi-largeur, longueur)
   // LES VOIES (V2.2) : le kit de base ne change pas, la voie le modifie (claude/refonte-roles-contrat.md, point 6). Les cases spA1… arrivent du lobby, en valeurs brutes.
   gardR: 2,
   gardK: 0.3,
@@ -88,22 +88,22 @@ const BAL = {
   colHp: 60,
   colHeal: 2,
   colR: 7, // Sylve Colosse : +60 PV (+spA1) ; spA2 : chaque balle qui touche à moins de 7 m la soigne de 2 PV
-  plongeLen: 8, // Sylve Plongeur : les Ronces la font bondir jusqu'à leur point de chute, 8 m au plus (+spB1) ; spB2 : le poison passe aux voisins quand la cible meurt
+  plongeLen: 8, // Sylve Plongeur : les Entraves la font bondir jusqu'à leur point de chute, 8 m au plus (+spB1) ; spB2 : le poison passe aux voisins quand la cible meurt
   lameK: 0.3,
   lameR: 5,
   lameExe: 0.15, // Volt Lame : +30 % (+spA1) sur une cible seule (personne à 5 m) ; spA2 : achève sous 15 % de vie
-  escK: 0.25, // Volt Escarmoucheur : chaque élimination rend 25 % (+spB1) de la recharge de l'Éclair ; spB2 : une élimination par l'Éclair le relance
+  escK: 0.25, // Volt Escarmoucheur : chaque élimination rend 25 % (+spB1) de la recharge de la Fulgurance ; spB2 : une élimination par la Fulgurance le relance
   artiK: 0.25,
   artiFb: 8,
-  fireStay: 4, // Braise Artilleur : portée des balles +25 % (+spA1 m), Brasier lancé 8 m plus loin ; spA2 : les flammes du Brasier et des Météores durent 4 s de plus
+  fireStay: 4, // Braise Artilleur : portée des balles +25 % (+spA1 m), Orbe lancé 8 m plus loin ; spA2 : les flammes de l'Orbe et des Météores durent 4 s de plus
   auraR: 3,
   auraDps: 10,
   auraK: 0.25, // Braise Mage de bataille : une aura brûle à 3 m (+spB1) autour de lui ; spB2 : −25 % de dégâts reçus
   soinK: 0.3,
   shield: 30,
-  shieldT: 8, // Ondine Soigneuse : la Marée soigne +30 % (+spA1) ; spA2 : elle pose un bouclier de 30 PV pour 8 s
+  shieldT: 8, // Ondine Soigneuse : la Répulsion soigne +30 % (+spA1) ; spA2 : elle pose un bouclier de 30 PV pour 8 s
   rootT: 1.5,
-  delugeRoot: 1.5, // Ondine Entraveuse : la Marée immobilise 1,5 s (+spB1) au lieu de repousser ; spB2 : le Déluge immobilise tout ce qui marche à son arrivée
+  delugeRoot: 1.5, // Ondine Entraveuse : la Répulsion immobilise 1,5 s (+spB1) au lieu de repousser ; spB2 : le Sanctuaire immobilise tout ce qui marche à son arrivée
   snipFar: 40,
   snipK: 0.15,
   chargeT: 1.2,
@@ -128,7 +128,7 @@ const BAL = {
   rempartH: 2,
   quakeR: 12,
   quakeDmg: 60,
-  quakeT: 2.5, // Roc : vie en plus, part des dégâts au contact qu'il subit, durée, recharge et hauteur en blocs du Rempart, Séisme (rayon, dégâts, étourdissement)
+  quakeT: 2.5, // Roc : vie en plus, part des dégâts au contact qu'il subit, durée, recharge et hauteur en blocs du Rempart, Onde de choc (rayon, dégâts, étourdissement)
   gun: 3.2,
   crit: 0.12,
   critK: 2,
@@ -144,13 +144,13 @@ const BAL = {
   dashDmg: 40,
   stormT: 6,
   stormR: 16,
-  stormDmg: 28, // Volt : vie en moins, sprint ×, Éclair (recharge, longueur, dégâts), Orage (durée, rayon, dégâts par éclair)
+  stormDmg: 28, // Volt : vie en moins, sprint ×, Fulgurance (recharge, longueur, dégâts), Déchaînement (durée, rayon, dégâts par éclair)
   sylveSee: 20,
   ronceCd: 24,
   ronceR: 5,
   ronceT: 8,
   ronceDmg: 14,
-  guardT: 15, // Sylve : distance à laquelle elle révèle les furtifs, Ronces (recharge, rayon, durée, dégâts par seconde), durée des Gardiens
+  guardT: 15, // Sylve : distance à laquelle elle révèle les furtifs, Entraves (recharge, rayon, durée, dégâts par seconde), durée des Gardiens
   fbCd: 18,
   fbR: 6,
   fbDmg: 55,
@@ -158,7 +158,7 @@ const BAL = {
   metN: 8,
   metR: 5,
   metDmg: 70,
-  braiseSplash: 0.4, // Braise : Brasier (recharge, rayon, dégâts, durée des flammes au sol), Météores (nombre, rayon, dégâts), part des dégâts de tir qui éclabousse autour
+  braiseSplash: 0.4, // Braise : Orbe (recharge, rayon, dégâts, durée des flammes au sol), Météores (nombre, rayon, dégâts), part des dégâts de tir qui éclabousse autour
   ondWait: 2.5,
   ondRegen: 10,
   tideCd: 22,
@@ -168,7 +168,7 @@ const BAL = {
   tideKnock: 5,
   floodT: 8,
   floodDps: 6,
-  floodCore: 3, // Ondine : soin naturel (délai, par seconde), Marée (recharge, rayon, soin, dégâts, recul), Déluge (durée, dégâts par seconde, points rendus au cœur)
+  floodCore: 3, // Ondine : soin naturel (délai, par seconde), Répulsion (recharge, rayon, soin, dégâts, recul), Sanctuaire (durée, dégâts par seconde, points rendus au cœur)
   boatR: 147,
   seaK: 1.7,
   raidW: 5,
@@ -516,7 +516,7 @@ const M0 = {
   spA2: 0,
   spB1: 0,
   spB2: 0, // V2.2 : la voie du héros (voA, voB : 1 si elle est choisie) et ses deux cases
-  uDmg: 0 // V2.1 : Zéphyr (la Rafale repousse au départ ; Tir perçant plus fort)
+  uDmg: 0 // V2.1 : Zéphyr (le Bond repousse au départ ; Tir perçant plus fort)
 }; // arme, arbre du mini-jeu (boss, prime) et arbre d'élément des balles (V9.0) : tout à zéro = les règles d'avant
 // une défense porte jusqu'à 3 éléments, chacun jusqu'au niveau 3 (9 améliorations). La portée ne grandit que sur les 3 premières.
 const MAXEL = 3,

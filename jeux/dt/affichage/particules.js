@@ -237,12 +237,14 @@ function flashFrame(dt) {
     }
   }
 }
-// les feux au sol (napalm du mortier, Brasier de Braise…) : des flammes de temps en temps ; le Brasier a en plus son dessin (hxFeuFrame)
+// les feux au sol (napalm du mortier, Orbe de Braise…) : des flammes de temps en temps ; l'Orbe a en plus son dessin (hxFeuFrame)
 function feuxFrame(S) {
   for (const f of S.fires)
-    if (Math.random() < 0.5)
+    if (Math.random() < 0.5) {
+      // V5.3 : un feu au sol d'un autre élément (f.el) : les particules de cet élément
+      hxSk(f.el, 'feu');
       emit(
-        'fire',
+        hxK('fire'),
         f.x + (Math.random() - 0.5) * f.r * 1.6,
         0.1,
         f.z + (Math.random() - 0.5) * f.r * 1.6,
@@ -253,4 +255,6 @@ function feuxFrame(S) {
         0.25,
         0.05
       );
+      HXE = null;
+    }
 }

@@ -14,7 +14,7 @@ const {chromium}=require('playwright');const path=require('path');
  ok('toucher Sniper : arme changée, son profil et son arbre entrent dans les réglages (cadence '+ms.hCd.toFixed(2)+', dégâts +'+ms.hDmg.toFixed(2)+'), la barre l\'affiche',ms.w==='sniper'&&Math.abs(ms.hCd-(-2.2))<.01&&ms.hDmg>3.4&&ms.lab==='Sniper'&&ms.same);
  await p.locator('#sub .tchip[data-w=pistolet]').evaluate(el=>el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true})));await p.waitForTimeout(150);
  const back=await G(m0=>{const a=JSON.parse(m0),b=__g().sim.m;return Object.keys(a).every(k=>Math.abs((a[k]||0)-(b[k]||0))<1e-9);},m0);ok('revenir au Pistolet remet exactement les réglages de départ',back&&await G(()=>__g().getWeap()==='pistolet'));
- await G(()=>{const g=__g();g.send(['ab']);});await p.waitForTimeout(120);const ab=await G(()=>__g().sim.hero.ab);ok('recharge de la compétence doublée (Brasier : '+ab.toFixed(1)+' s, 9 s avant)',ab>17&&ab<=18.01);
+ await G(()=>{const g=__g();g.send(['ab']);});await p.waitForTimeout(120);const ab=await G(()=>__g().sim.hero.ab);ok('recharge de la compétence doublée (Orbe : '+ab.toFixed(1)+' s, 9 s avant)',ab>17&&ab<=18.01);
   // ---------- le Guide en partie : le même personnage qu'au lobby, « Règles »
  const r0=await G(()=>{const g=__g();return{near:g.getRulesNear(),btn:!document.getElementById('bRules').hidden,d:Math.hypot(g.RULEP[0],g.RULEP[1]),dS:Math.hypot(g.RULEP[0]-g.SHOP[0],g.RULEP[1]-g.SHOP[1]),dH:Math.hypot(g.RULEP[0]-g.HIREP[0],g.RULEP[1]-g.HIREP[1])};});
  ok('le Guide se tient à 10 m du cœur, à l\'écart du marchand et du marchand d\'esclaves ; loin de lui, pas de bouton',Math.abs(r0.d-10)<.1&&r0.dS>4&&r0.dH>4&&!r0.btn,r0);

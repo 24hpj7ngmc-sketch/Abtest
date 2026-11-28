@@ -1,12 +1,14 @@
 // ===================== DERNIER TOIT — l'affichage : effets des héros, ce qui dure (à chaque image) =====================
 // Redessiné à chaque image depuis l'état des règles : S.fballs (boules de feu), S.fires (flammes au sol), S.meteors, S.thorns (ronciers),
-// S.guards (gardiens), S.ramparts, S.storms, S.flood (Déluge), et les zombies (Z.burn en feu, Z.psn empoisonnés, Z.slow ralentis).
+// S.guards (gardiens), S.ramparts, S.storms, S.flood (Sanctuaire), et les zombies (Z.burn en feu, Z.psn empoisonnés, Z.slow ralentis).
 // hfxFrame est appelé par gfxFrame (avant partStep), et lu par tests/herofx.js. Les sous-fonctions passent dans l'ordre d'avant le découpage
 // (elles tirent au hasard et émettent des particules : l'ordre compte).
 // Fournit : hfxFrame. Attend : HX (heros.js), ZT, S.hero, camera, scene, hemi, sun.
 function hfxFrame(S, dt) {
   if (!HX) hfxInit();
   hxSync(S);
+  // V5.3 : les modèles des autres éléments (hxPool) sont vidés ici et dessinés à la fin
+  hxAltBegin();
   const meteores = hxFeuFrame(S, dt);
   hxBoisFrame(S, dt);
   hxTerreFrame(S, dt);
@@ -18,8 +20,10 @@ function hfxFrame(S, dt) {
   hxZombiesFrame(S);
   const deluge = hxDelugeFrame(S, dt);
   hxCielFrame(S, dt, meteores, orage, deluge);
+  hxAltEnd();
+  HXE = null;
 }
-// Braise : boules de feu, flammes au sol du Brasier, météores ; renvoie 1 si un météore est en vol
+// Braise : boules de feu, flammes au sol de l'Orbe, météores ; renvoie 1 si un météore est en vol
 function hxFeuFrame(S, dt) {
   const R = Math.random,
     T = G.time;
@@ -28,6 +32,11 @@ function hxFeuFrame(S, dt) {
   HX.fbG.begin();
   HX.fbT.begin();
   for (const f of S.fballs) {
+    // V5.3 : l'élément choisi qui remplace le feu (f.ec) : la couleur de la boule, de sa lueur et de sa traînée
+    hxSk(f.ec, 'feu');
+    hxTeinte(HX.fbC, 0xfff1b8, 'glow');
+    hxTeinte(HX.fbG, 0xff6a3d, 'main');
+    hxTeinte(HX.fbT, 0xff8a3a, 'light');
     const u = Math.min(1, f.t / f.T),
       dx = f.x1 - f.x0,
       dy = f.y1 - f.y0,
@@ -47,7 +56,7 @@ function hxFeuFrame(S, dt) {
     HX.fbT.add(x, y, z, Math.atan2(-dx, -dz), -Math.atan2(-dy, h), s * 0.8, s * 0.8, Math.min(6, l * u + 0.2));
     for (let i = 0; i < 3; i++)
       emit(
-        'fire',
+        hxK('fire'),
         x + (R() - 0.5) * 0.5 * s,
         y + (R() - 0.5) * 0.5 * s,
         z + (R() - 0.5) * 0.5 * s,
@@ -63,10 +72,13 @@ function hxFeuFrame(S, dt) {
   HX.fbC.end();
   HX.fbG.end();
   HX.fbT.end();
-  // flammes au sol du Brasier (les feux de rayon ≥ 4 m ; ceux du lance-flammes gardent leur dessin) : lueur au sol, flammes, fumée
+  // flammes au sol de l'Orbe (les feux de rayon ≥ 4 m ; ceux du lance-flammes gardent leur dessin) : lueur au sol, flammes, fumée
   HX.glow.begin();
   for (const f of S.fires) {
     if (f.r < 4) continue;
+    // V5.3 : un feu au sol d'un autre élément (f.el) : sa lueur et ses flammes à la couleur de cet élément
+    hxSk(f.el, 'feu');
+    hxTeinte(HX.glow, 0xff5a1e, 'main');
     const a = Math.min(1, f.t / 1.2),
       q = f.r * (0.92 + 0.08 * Math.sin(T * 11 + f.x)) * a;
     HX.glow.add(f.x, 0.07, f.z, 0, 0, q, 1, q);
@@ -75,7 +87,7 @@ function hxFeuFrame(S, dt) {
       const b = R() * 6.283,
         rr = Math.sqrt(R()) * f.r * 0.9;
       emit(
-        'fire',
+        hxK('fire'),
         f.x + Math.cos(b) * rr,
         0.12,
         f.z + Math.sin(b) * rr,
@@ -91,6 +103,7 @@ function hxFeuFrame(S, dt) {
       emit('smoke', f.x + (R() - 0.5) * f.r, 1.4, f.z + (R() - 0.5) * f.r, (R() - 0.5) * 0.5, 1.3 + R(), (R() - 0.5) * 0.5, 1.8, 0.4, 1.3);
   }
   HX.glow.end();
+  HXE = null;
   // Météores : la roche tombe du ciel (de derrière l'immeuble vers la rue), traînée, cible au sol qui se resserre
   HX.metR.begin();
   HX.metG.begin();
@@ -99,9 +112,14 @@ function hxFeuFrame(S, dt) {
   const M = HX.metD;
   let meteore = 0;
   for (let j = 0; j < HXN.met; j++) {
-    const o = j * 6;
+    const o = j * 7;
     if (M[o + 2] <= 0) continue;
     M[o + 2] -= dt;
+    // V5.3 : l'élément qui remplace le feu pour ce météore (M[o + 6] : son rang)
+    HXE = hxE(M[o + 6]);
+    hxTeinte(HX.metG, 0xff7a2e, 'main');
+    hxTeinte(HX.metT, 0xffa040, 'light');
+    hxTeinte(HX.mark, 0xff4a2a, 'main');
     if (M[o + 2] <= 0) {
       hxMeteorHit(M[o], M[o + 1]);
       continue;
@@ -117,13 +135,13 @@ function hxFeuFrame(S, dt) {
       y = 0.6 + ey * (1 - u),
       z = M[o + 1] + ez * (1 - u),
       mk = 1.8 + 4.6 * (1 - u);
-    HX.metR.add(x, y, z, T * 4 + j, T * 3 + j, 1.25);
+    hxPool('metR', HXE).add(x, y, z, T * 4 + j, T * 3 + j, 1.25);
     HX.metG.add(x, y, z, 0, 0, 2.4 + 0.35 * Math.sin(T * 41 + j));
     HX.metT.add(x, y, z, Math.atan2(ex, ez), -Math.atan2(ey, h), 1.7, 1.7, Math.min(18, l * u + 0.5));
     HX.mark.add(M[o], 0.15, M[o + 1], T * 2, 0, mk, 1, mk);
     for (let i = 0; i < 2; i++)
       emit(
-        'fire',
+        hxK('fire'),
         x + (R() - 0.5) * 1.2,
         y + (R() - 0.5) * 1.2,
         z + (R() - 0.5) * 1.2,
@@ -140,16 +158,22 @@ function hxFeuFrame(S, dt) {
   HX.metG.end();
   HX.metT.end();
   HX.mark.end();
+  HXE = null;
   return meteore;
 }
 // Sylve : ronciers, gardiens, flèches
 function hxBoisFrame(S, dt) {
   const R = Math.random;
-  // Ronces : les touffes poussent l'une après l'autre (du centre vers le bord), sursautent à chaque entrave, puis se fanent
+  // Entraves : les touffes poussent l'une après l'autre (du centre vers le bord), sursautent à chaque entrave, puis se fanent
   HX.bush.begin();
   HX.bushD.begin();
   HX.tring.begin();
   for (const Th of S.thorns) {
+    // V5.3 : l'élément choisi qui remplace la Nature (Th.ec) : touffes, disque et anneau à sa palette
+    hxSk(Th.ec, 'bois');
+    hxTeinte(HX.bushD, 0x34502a, 'dark');
+    hxTeinte(HX.tring, 0x7dff6a, 'light');
+    const bush = hxPool('bush', HXE);
     let a = HX.age.get(Th) || 0;
     a += dt;
     HX.age.set(Th, a);
@@ -167,7 +191,7 @@ function hxBoisFrame(S, dt) {
         hv = ((k * 37 + 11) % 23) / 23,
         s = (0.8 + 0.55 * hv) * (g > 0 ? easeB(g) : 0) * fd * (1 + 0.2 * pul);
       if (s <= 0.01) continue;
-      HX.bush.add(
+      bush.add(
         Th.x + Math.cos(an) * rr,
         Th.y - (1 - fd) * 0.6,
         Th.z + Math.sin(an) * rr,
@@ -183,7 +207,7 @@ function hxBoisFrame(S, dt) {
         const b = R() * 6.283,
           d = R() * Th.r;
         emit(
-          'leaf',
+          hxK('leaf'),
           Th.x + Math.cos(b) * d,
           Th.y + 1,
           Th.z + Math.sin(b) * d,
@@ -197,15 +221,19 @@ function hxBoisFrame(S, dt) {
         );
       }
     if (R() < 0.12)
-      emit('leaf', Th.x + (R() - 0.5) * Th.r, Th.y + 1.2, Th.z + (R() - 0.5) * Th.r, R() - 0.5, 0.4, R() - 0.5, 1.5, 0.1, 0.08, Th.y);
+      emit(hxK('leaf'), Th.x + (R() - 0.5) * Th.r, Th.y + 1.2, Th.z + (R() - 0.5) * Th.r, R() - 0.5, 0.4, R() - 0.5, 1.5, 0.1, 0.08, Th.y);
   }
   HX.bush.end();
   HX.bushD.end();
   HX.tring.end();
+  HXE = null;
   // Gardiens : l'arbre jaillit du sol (rebond), perd des feuilles, puis rentre sous terre à la fin
   HX.treeM.begin();
   HX.treeG.begin();
   for (const Gd of S.guards) {
+    hxSk(Gd.ec, 'bois');
+    const treeM = hxPool('treeM', HXE),
+      treeG = hxPool('treeG', HXE);
     let a = HX.age.get(Gd) || 0;
     a += dt;
     HX.age.set(Gd, a);
@@ -215,13 +243,13 @@ function hxBoisFrame(S, dt) {
       sx = (0.3 + 0.7 * easeO(Math.min(1, a / 0.8))) * fd,
       yw = Gd.x * 0.13 + Gd.z * 0.07;
     if (sy <= 0.01) continue;
-    HX.treeM.add(Gd.x, 0, Gd.z, yw, 0, sx, sy, sx);
-    HX.treeG.add(Gd.x, 0, Gd.z, yw, 0, sx, sy, sx);
+    treeM.add(Gd.x, 0, Gd.z, yw, 0, sx, sy, sx);
+    treeG.add(Gd.x, 0, Gd.z, yw, 0, sx, sy, sx);
     if (a < 1.2) {
       for (let i = 0; i < 2; i++) {
         const b = R() * 6.283;
         emit(
-          'leaf',
+          hxK('leaf'),
           Gd.x + Math.cos(b) * 2,
           1 + R() * 6 * sy,
           Gd.z + Math.sin(b) * 2,
@@ -236,18 +264,22 @@ function hxBoisFrame(S, dt) {
       if (R() < 0.5)
         emit('dust', Gd.x + (R() - 0.5) * 2, 0.1, Gd.z + (R() - 0.5) * 2, (R() - 0.5) * 3, 1 + R() * 2, (R() - 0.5) * 3, 0.8, 0.2, 0.05);
     } else if (R() < 0.05)
-      emit('leaf', Gd.x + (R() - 0.5) * 3, 4 + R() * 3, Gd.z + (R() - 0.5) * 3, R() - 0.5, 0.2, R() - 0.5, 2.4, 0.13, 0.1);
+      emit(hxK('leaf'), Gd.x + (R() - 0.5) * 3, 4 + R() * 3, Gd.z + (R() - 0.5) * 3, R() - 0.5, 0.2, R() - 0.5, 2.4, 0.13, 0.1);
   }
   HX.treeM.end();
   HX.treeG.end();
+  HXE = null;
   // flèches des gardiens : vol tendu et rapide, traînée verte, petit nuage de poison à l'arrivée
   HX.arw.begin();
   HX.arwT.begin();
   const W = HX.arwD;
   for (let j = 0; j < HXN.arw; j++) {
-    const o = j * 8;
+    const o = j * 9;
     if (W[o + 6] >= W[o + 7]) continue;
     W[o + 6] += dt;
+    // V5.3 : l'élément qui remplace la Nature pour cette flèche (W[o + 8] : son rang)
+    HXE = hxE(W[o + 8]);
+    hxTeinte(HX.arwT, 0x8dff86, 'light');
     const dx = W[o + 3] - W[o],
       dy = W[o + 4] - W[o + 1],
       dz = W[o + 5] - W[o + 2],
@@ -255,8 +287,8 @@ function hxBoisFrame(S, dt) {
       l = Math.hypot(h, dy);
     if (W[o + 6] >= W[o + 7]) {
       for (let i = 0; i < 5; i++)
-        emit('mist', W[o + 3], W[o + 4], W[o + 5], (R() - 0.5) * 1.5, 0.3 + R(), (R() - 0.5) * 1.5, 0.9, 0.2, 0.5);
-      emit('leaf', W[o + 3], W[o + 4], W[o + 5], (R() - 0.5) * 2, 1 + R() * 2, (R() - 0.5) * 2, 1, 0.1, 0.06);
+        emit(hxK('mist'), W[o + 3], W[o + 4], W[o + 5], (R() - 0.5) * 1.5, 0.3 + R(), (R() - 0.5) * 1.5, 0.9, 0.2, 0.5);
+      emit(hxK('leaf'), W[o + 3], W[o + 4], W[o + 5], (R() - 0.5) * 2, 1 + R() * 2, (R() - 0.5) * 2, 1, 0.1, 0.06);
       continue;
     }
     const u = W[o + 6] / W[o + 7],
@@ -265,13 +297,14 @@ function hxBoisFrame(S, dt) {
       z = W[o + 2] + dz * u,
       yw = Math.atan2(dx, dz),
       pt = -Math.atan2(dy, h);
-    HX.arw.add(x, y, z, yw, pt, 1.3);
+    hxPool('arw', HXE).add(x, y, z, yw, pt, 1.3);
     HX.arwT.add(x, y, z, yw + Math.PI, -pt, 0.16, 0.16, Math.min(5, l * u + 0.1));
   }
   HX.arw.end();
   HX.arwT.end();
+  HXE = null;
 }
-// Roc : remparts, pics du Séisme
+// Roc : remparts, pics de l'Onde de choc
 function hxTerreFrame(S, dt) {
   const R = Math.random;
   // Rempart : un enregistrement par mur (par id), qui survit à sa fin le temps de s'enfoncer ; il sort du sol en rebondissant
@@ -300,6 +333,8 @@ function hxTerreFrame(S, dt) {
       w.fin = -1;
       w.broke = 0;
       w.hp1 = 1;
+      // V5.3 : l'élément choisi qui remplace la Terre (Wl.ec)
+      w.ec = Wl.ec || null;
     }
     w.hp = Wl.hp / Wl.hp0;
     w.seen = 1;
@@ -319,6 +354,7 @@ function hxTerreFrame(S, dt) {
   HX.wallB.begin();
   for (const w of HX.walls) {
     if (!w.on) continue;
+    hxSk(w.ec, 'terre');
     if (!w.seen && w.fin < 0) w.fin = 0;
     w.seen = 0;
     w.age += dt;
@@ -343,7 +379,7 @@ function hxTerreFrame(S, dt) {
           const u = (R() * 2 - 1) * w.half,
             s = R() < 0.5 ? -1 : 1;
           emit(
-            'rock',
+            hxK('rock'),
             w.x + tx * u + w.nx * s * 0.7,
             0.2,
             w.z + tz * u + w.nz * s * 0.7,
@@ -359,48 +395,54 @@ function hxTerreFrame(S, dt) {
       // les zombies qui tapent dessus en font sauter des éclats ; à mi-vie il se fissure (modèle abîmé) dans un nuage de pierres
       if (w.hp < w.hp1 - 0.002 && R() < 0.35) {
         const u = (R() * 2 - 1) * w.half;
-        emit('rock', w.x + tx * u, 0.4 + R() * 1.6, w.z + tz * u, (R() - 0.5) * 3, 1 + R() * 2, (R() - 0.5) * 3, 1, 0.09, 0.06);
+        emit(hxK('rock'), w.x + tx * u, 0.4 + R() * 1.6, w.z + tz * u, (R() - 0.5) * 3, 1 + R() * 2, (R() - 0.5) * 3, 1, 0.09, 0.06);
       }
       if (w.hp < 0.5 && w.hp1 >= 0.5)
         for (let i = 0; i < 14; i++) {
           const u = (R() * 2 - 1) * w.half;
-          emit('rock', w.x + tx * u, 1 + R() * 1.6, w.z + tz * u, (R() - 0.5) * 4, 2 + R() * 3, (R() - 0.5) * 4, 1.4, 0.13, 0.08);
+          emit(hxK('rock'), w.x + tx * u, 1 + R() * 1.6, w.z + tz * u, (R() - 0.5) * 4, 2 + R() * 3, (R() - 0.5) * 4, 1.4, 0.13, 0.08);
           emit('pdust', w.x + tx * u, 1.5, w.z + tz * u, R() - 0.5, 0.4, R() - 0.5, 1.2, 0.4, 1.2);
         }
       w.hp1 = w.hp;
     }
-    (w.hp < 0.5 ? HX.wallB : HX.wallA).add(w.x, y, w.z, Math.atan2(-w.nx, -w.nz), 0, w.half / 4.5, 1, 1);
+    hxPool(w.hp < 0.5 ? 'wallB' : 'wallA', HXE).add(w.x, y, w.z, Math.atan2(-w.nx, -w.nz), 0, w.half / 4.5, 1, 1);
   }
   HX.wallA.end();
   HX.wallB.end();
-  // pics de terre du Séisme : ils jaillissent en vague (retard selon la distance), tiennent, puis rentrent
+  HXE = null;
+  // pics de terre de l'Onde de choc : ils jaillissent en vague (retard selon la distance), tiennent, puis rentrent
   HX.spk.begin();
   const D = HX.spkD;
   for (let j = 0; j < HXN.spk; j++) {
-    const o = j * 5;
+    const o = j * 6;
     if (D[o + 2] >= 1.5) continue;
+    HXE = hxE(D[o + 5]);
     const t0 = D[o + 2];
     D[o + 2] += dt;
     const t = D[o + 2];
     if (t < 0) continue;
     if (t0 <= 0 && t > 0)
-      for (let i = 0; i < 3; i++) emit('rock', D[o], 0.3, D[o + 1], (R() - 0.5) * 4, 3 + R() * 4, (R() - 0.5) * 4, 1.2, 0.12, 0.08);
+      for (let i = 0; i < 3; i++) emit(hxK('rock'), D[o], 0.3, D[o + 1], (R() - 0.5) * 4, 3 + R() * 4, (R() - 0.5) * 4, 1.2, 0.12, 0.08);
     const e = t < 0.16 ? easeB(t / 0.16) : t < 0.85 ? 1 : Math.max(0, 1 - (t - 0.85) / 0.6),
       s = D[o + 3];
     if (e <= 0.01) continue;
-    HX.spk.add(D[o], 0, D[o + 1], D[o + 4], 0, s * (0.6 + 0.4 * Math.min(1, e)), s * e, s * (0.6 + 0.4 * Math.min(1, e)));
+    hxPool('spk', HXE).add(D[o], 0, D[o + 1], D[o + 4], 0, s * (0.6 + 0.4 * Math.min(1, e)), s * e, s * (0.6 + 0.4 * Math.min(1, e)));
   }
   HX.spk.end();
+  HXE = null;
 }
 // Volt : orages (renvoie leur force, 0 à 1, pour assombrir le ciel), arcs électriques, traînée du bond
 function hxElecFrame(S, dt) {
   const R = Math.random,
     T = G.time;
-  // Orage : nuage sombre qui tourne lentement, cercle de la zone au sol, lueurs dans le nuage
+  // Déchaînement : nuage sombre qui tourne lentement, cercle de la zone au sol, lueurs dans le nuage
   HX.cloud.begin();
   HX.sring.begin();
   let orage = 0;
   for (const O of S.storms) {
+    // V5.3 : l'élément choisi qui remplace l'Élec (O.ec) : cercle au sol et lueurs du nuage
+    hxSk(O.ec, 'elec');
+    hxTeinte(HX.sring, 0xffd93b, 'main');
     let a = HX.age.get(O) || 0;
     a += dt;
     HX.age.set(O, a);
@@ -409,19 +451,26 @@ function hxElecFrame(S, dt) {
     HX.cloud.add(O.x, O.y + 27 + Math.sin(T * 0.8) * 0.4, O.z, a * 0.12, 0, 1.5 * e, 1.1 * e, 1.5 * e);
     const rr = O.r * (0.6 + 0.4 * e);
     HX.sring.add(O.x, O.y + 0.14, O.z, 0, 0, rr, 1, rr);
-    if (R() < 0.06 * e) flashAt(O.x + (R() - 0.5) * 14, O.y + 26, O.z + (R() - 0.5) * 14, 6, 0xfff2a0, 0.16);
+    if (R() < 0.06 * e) flashAt(O.x + (R() - 0.5) * 14, O.y + 26, O.z + (R() - 0.5) * 14, 6, hxC(0xfff2a0, 'glow'), 0.16);
   }
   HX.cloud.end();
   HX.sring.end();
+  HXE = null;
   // arcs électriques en zigzag, retirés au hasard à chaque image (ça scintille) ; 0 : saut de balle, 1 : foudre de l'orage, 2 : bond de Volt
   HX.boltY.begin();
   HX.boltW.begin();
+  // V5.3 : les arcs d'un sort à l'élément choisi (HX.arcEl, posé par l'événement) prennent sa couleur ; sans arc de sort vivant, les jaunes d'origine
+  HXE = HX.arcEl || null;
+  hxTeinte(HX.boltY, 0xffe36a, 'light');
+  HXE = null;
   const A = HX.arcD;
+  let vivants = 0;
   for (let j = 0; j < HXN.arc; j++) {
     const o = j * 9;
     if (A[o + 6] >= A[o + 7]) continue;
     A[o + 6] += dt;
     if (A[o + 6] >= A[o + 7]) continue;
+    vivants++;
     const kd = A[o + 8],
       n = kd === 1 ? 10 : kd === 2 ? 7 : 5,
       fade = 1 - A[o + 6] / A[o + 7],
@@ -451,12 +500,18 @@ function hxElecFrame(S, dt) {
   }
   HX.boltY.end();
   HX.boltW.end();
+  if (!vivants) HX.arcEl = null;
   // traînée lumineuse du bond de Volt : un cône couché, large là où le bond a commencé, pointu sur le joueur (rien d'éblouissant sous la caméra)
   HX.dash.begin();
+  HXE = HX.dashEl || null;
+  hxTeinte(HX.dash, 0xffd93b, 'main');
+  HXE = null;
   const DS = HX.dashD;
+  let vd = 0;
   for (let j = 0; j < HXN.dash; j++) {
     const o = j * 7;
     if (DS[o + 5] >= DS[o + 6]) continue;
+    vd++;
     DS[o + 5] += dt;
     const u = Math.min(1, DS[o + 5] / DS[o + 6]),
       w = 0.55 * (1 - u),
@@ -467,6 +522,7 @@ function hxElecFrame(S, dt) {
     HX.dash.add(DS[o], DS[o + 1], DS[o + 2], Math.atan2(ex, ez), 0, w, w * 0.45, l);
   }
   HX.dash.end();
+  if (!vd) HX.dashEl = null;
   return orage;
 }
 // V4.9 : Mage de bataille (voie b de Braise) : des flammes courent sur le cercle de l'aura, autour des pieds
@@ -478,8 +534,10 @@ function hxAuraFrame(S, dt) {
     sol = floorY(p.x, p.y + 0.3, p.z);
   for (; HX.auraA >= 1; HX.auraA--) {
     const a = Math.random() * 6.283;
-    emit('fire', p.x + Math.cos(a) * R, sol + 0.1, p.z + Math.sin(a) * R, 0, 1 + Math.random(), 0, 0.35, 0.12, 0.02, sol);
+    hxSk(elH(S), 'feu');
+    emit(hxK('fire'), p.x + Math.cos(a) * R, sol + 0.1, p.z + Math.sin(a) * R, 0, 1 + Math.random(), 0, 0.35, 0.12, 0.02, sol);
   }
+  HXE = null;
 }
 // V4.8 : Zéphyr : les traits du Tir perçant (s'amincissent en 0,6 s ; le cœur blanc s'éteint plus vite)
 function hxVentFrame(dt) {
@@ -509,10 +567,10 @@ function hxVentFrame(dt) {
   HX.beam.end();
   HX.beamW.end();
 }
-// les anneaux au sol (tous les héros) et les vagues de la Marée d'Ondine
+// les anneaux au sol (tous les héros) et les vagues de la Répulsion d'Ondine
 function hxAnneauxFrame(dt) {
   const R = Math.random;
-  // anneaux au sol (ondes), vagues de la Marée
+  // anneaux au sol (ondes), vagues de la Répulsion
   for (const q of HX.rings) {
     if (q.t >= q.T) continue;
     q.t += dt;
@@ -533,6 +591,8 @@ function hxAnneauxFrame(dt) {
     const r = 1.5 + (w.r * 1.05 - 1.5) * easeO(u),
       h = 0.3 + 2.6 * Math.pow(Math.sin(Math.min(1, u * 1.25) * Math.PI), 0.8),
       op = 1 - u * u;
+    // V5.3 : les gouttes de la vague suivent l'élément qui remplace l'Eau (w.el)
+    HXE = w.el || null;
     w.c.visible = w.f.visible = w.d.visible = true;
     w.c.position.set(w.x, w.y, w.z);
     w.c.scale.set(r, h, r);
@@ -546,7 +606,7 @@ function hxAnneauxFrame(dt) {
     for (let i = 0; i < 4; i++) {
       const b = R() * 6.283;
       emit(
-        'water',
+        hxK('water'),
         w.x + Math.cos(b) * r,
         w.y + h * (0.6 + R() * 0.5),
         w.z + Math.sin(b) * r,
@@ -559,6 +619,7 @@ function hxAnneauxFrame(dt) {
         w.y
       );
     }
+    HXE = null;
   }
 }
 // les taches de sol brûlé
@@ -633,11 +694,15 @@ function hxZombiesFrame(S) {
   }
   HX.wet.end();
 }
-// Ondine : le Déluge (renvoie sa force lissée, 0 à 1)
+// Ondine : le Sanctuaire (renvoie sa force lissée, 0 à 1)
 function hxDelugeFrame(S, dt) {
   const R = Math.random;
-  // Déluge : pluie autour de la caméra, flaques sur la place et les avenues, ciel bleu-gris
+  // Sanctuaire : pluie autour de la caméra, flaques sur la place et les avenues, ciel bleu-gris
   const fl = S.flood > 0 ? 1 : 0;
+  // V5.3 : l'élément choisi qui remplace l'Eau (S.floodEc) : pluie, flaques, gouttes
+  hxSk(S.floodEc, 'eau');
+  hxTeinte(HX.rain, 0xd6ecff, 'light');
+  hxTeinte(HX.pud, 0x2f6f9f, 'dark');
   HX.fw += (fl - HX.fw) * Math.min(1, dt * (fl ? 1.5 : 0.8));
   const fw = HX.fw;
   HX.rain.begin();
@@ -662,7 +727,7 @@ function hxDelugeFrame(S, dt) {
       if (R() > fw) continue;
       const o = Math.floor(R() * HXN.pud) * 3;
       emit(
-        'water',
+        hxK('water'),
         PD[o] + (R() - 0.5) * PD[o + 2],
         0.1,
         PD[o + 1] + (R() - 0.5) * PD[o + 2],
@@ -677,20 +742,35 @@ function hxDelugeFrame(S, dt) {
   }
   HX.rain.end();
   HX.pud.end();
+  HXE = null;
   return fw;
 }
-// le ciel et le voile coloré, d'après le Déluge, les météores et l'orage (après le ciel du jour : cielFrame)
+// le ciel et le voile coloré, d'après le Sanctuaire, les météores et l'orage (après le ciel du jour : cielFrame)
 function hxCielFrame(S, dt, meteores, orage, deluge) {
-  // teintes du ciel (après skyMix) : bleu-gris sous le Déluge, rougeoyant pendant les Météores, sombre sous l'Orage
+  // teintes du ciel (après skyMix) : bleu-gris sous le Sanctuaire, rougeoyant pendant les Météores, sombre sous le Déchaînement
   HX.mw += ((meteores || S.meteors.length ? 1 : 0) - HX.mw) * Math.min(1, dt * 2);
   HX.sw += (orage - HX.sw) * Math.min(1, dt * 2);
   if (deluge > 0.005) {
+    // V5.3 : sous le Sanctuaire d'un autre élément, le ciel prend sa palette
+    hxSk(S.floodEc, 'eau');
+    HX.cB.setHex(0x56738c);
+    HX.cF.setHex(0x6a8399);
+    if (HXE) {
+      HX.cB.lerp(HX.cT.setHex(K.EL[HXE].dark), 0.6);
+      HX.cF.lerp(HX.cT.setHex(K.EL[HXE].main), 0.4);
+    }
+    HXE = null;
     scene.background.lerp(HX.cB, deluge * 0.5);
     scene.fog.color.lerp(HX.cF, deluge * 0.55);
     hemi.intensity *= 1 - 0.2 * deluge;
     sun.intensity *= 1 - 0.45 * deluge;
   }
   if (HX.mw > 0.005) {
+    // V5.3 : sous les Météores d'un autre élément, le ciel prend sa palette
+    if (S.meteors.length) HX.mEc = S.meteors[0].ec;
+    hxSk(HX.mEc, 'feu');
+    HX.cM.setHex(hxC(0xd8794a, 'main'));
+    HXE = null;
     scene.background.lerp(HX.cM, HX.mw * 0.25);
     scene.fog.color.lerp(HX.cM, HX.mw * 0.18);
   }
@@ -699,7 +779,7 @@ function hxCielFrame(S, dt, meteores, orage, deluge) {
     scene.fog.color.lerp(HX.cS, HX.sw * 0.22);
     sun.intensity *= 1 - 0.25 * HX.sw;
   }
-  // voile coloré : éclair d'ultime / bond (monte vite, s'efface), sinon léger voile bleu pendant le Déluge
+  // voile coloré : éclair d'ultime / bond (monte vite, s'efface), sinon léger voile bleu pendant le Sanctuaire
   let voile = 0,
     couleur = HX.vC;
   if (HX.vT < HX.vD) {
@@ -709,7 +789,7 @@ function hxCielFrame(S, dt, meteores, orage, deluge) {
   }
   if (deluge * 0.22 > voile) {
     voile = deluge * 0.22;
-    couleur = HXC.eau;
+    couleur = S.floodEc && K.EL[S.floodEc] ? K.EL[S.floodEc].main : HXC.eau;
   }
   HX.vig.visible = voile > 0.01;
   if (HX.vig.visible) {

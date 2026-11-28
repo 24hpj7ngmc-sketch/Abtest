@@ -133,7 +133,7 @@ $('bAb').addEventListener('pointerdown', e => {
   if (!dbl(e) || !running) return;
   const hh = sim.hero,
     sy = Math.sin(hh.pitch),
-    far = hh.el === 'feu' && hh.m.voA ? BAL.artiFb + hh.m.spA1 : 0, // V2.2, Artilleur : le Brasier part plus loin
+    far = hh.el === 'feu' && hh.m.voA ? BAL.artiFb + hh.m.spA1 : 0, // V2.2, Artilleur : l'Orbe part plus loin
     dd = Math.max(4, Math.min(22 + far, sy < -0.05 ? ((hh.y + hh.eye) / -sy) * Math.cos(hh.pitch) : 22 + far)); // point visé au sol, pour les compétences qui se lancent à distance
   send([
     'ab',

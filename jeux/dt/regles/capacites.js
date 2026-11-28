@@ -173,9 +173,12 @@ function projStep(S, dt) {
       b.done = 1;
       // V4.9 : météore d'un ultime teinté (b.el : voies.js) ; Artilleur, Sol en feu (b.feu : 4 s de feu au sol)
       S.ultEl = b.el || null;
+      // V5.3 : le météore d'un héros à l'élément choisi (b.ec : sortEffet) ; son sol en feu prend aussi cet élément
+      S.sortEl = b.ec || null;
       boom(S, b.x, 0.3, b.z, b.r || 5, b.dmg || P.air.dmg, 'p', b.small ? 'm' : 'A');
+      S.sortEl = null;
       S.ultEl = null;
-      if (b.feu) S.fires.push({ x: b.x, z: b.z, r: 3.5, t: 4, dps: 24 * uPow(S), own: b.own });
+      if (b.feu) S.fires.push({ x: b.x, z: b.z, r: 3.5, t: 4, dps: 24 * uPow(S), own: b.own, el: b.ec });
     }
   }
   S.bombs = S.bombs.filter(b => !b.done);

@@ -1,5 +1,16 @@
 # Dernier Toit — notes de fabrication (V1.0, 19/11/2026)
 
+## V5.3 (28/11/2026) : les sorts suivent l'élément choisi du héros
+Décision de Frédéric (28/11) : « Seul le type de dégâts et les animations changent. » Les noms des sorts ne changent PAS (renommage global plus tard). Règles : `elS(S)`
+(heros.js : l'élément choisi s'il n'est pas la clé du héros, sinon null = comme avant) ; `S.sortEl` posé autour des coups d'un sort, `hurtZ` appelle `sortEffet` (heros.js :
+`effetBalle` aux chiffres de base, une fois par seconde et par zombie, `S.sortT`). L'effet d'origine (ralentir de la Marée / du Déluge / des Ronces, poison des Gardiens et de
+Plonge, étourdir du Séisme, brûler des feux au sol) est remplacé quand `elS` n'est pas null ; Brasier, Météores, Éclair, Orage, Rafale, Tir perçant l'ajoutent. Le feu au sol
+(`S.fires[].el`) prend l'élément choisi (zombies.js). Les entités gardent `ec` (boule, ronces, rempart, gardiens, orage, météores, Déluge `S.floodEc`) et les événements
+`ec` (= elH). Affichage : `HXE` / `hxSk` / `hxK` / `hxC` / `hxTeinte` / `hxPool` (heros.js) : particules, anneaux, vagues, voile, ciel, pools additifs recolorés, modèles
+(`ctx.el` de hx.rempart, ronce, arbre, flèche, météore, pic ; réserves des autres éléments créées au premier besoin). Tableaux de données : metD ×7, arwD ×9, spkD ×6.
+Test : tests/elsorts.js. Empreinte inchangée. Non fait : en multi, les effets des autres joueurs vus par un invité gardent les couleurs d'origine (instantané sans élément).
+Non vérifié : le vrai three.js r128, le téléphone, l'équilibre des effets Élec / Feu rebondissants des sorts (leurs dégâts d'éclaboussure s'ajoutent comme sur les balles).
+
 ## V5.2 (28/11/2026) : l'élément du héros se choisit
 Décision de Frédéric : « Braise est mage, mais pas de feu. On peut choisir son élément. » Pour les six héros : la clé reste l'identité (kit, voies, rôle, modèle), l'élément
 choisi (opts.elHeros, S.elHeros, helper elH dans regles/heros.js) fait les couleurs, la prédilection +10 %, l'élément d'arme par défaut, l'effet du héros sur les balles,

@@ -147,20 +147,24 @@ function frame(now) {
                 : OBJN[ev.o] + ' : raté'
           );
         } else if (ev.k === 'quake') {
-          ringFx(ev.x, ev.z, ev.r || BAL.quakeR, 'terre', 0.7);
-          ringFx(ev.x, ev.z, (ev.r || BAL.quakeR) * 0.6, 'terre', 0.5);
-          burst(ev.x, 0.4, ev.z, 'terre', 26, 1.8);
+          // V2.6 : les sorts prennent la couleur de l'élément choisi du héros (ev.el ; sans lui, l'élément d'origine du sort)
+          const qe = ELS.includes(ev.el) ? ev.el : 'terre';
+          ringFx(ev.x, ev.z, ev.r || BAL.quakeR, qe, 0.7);
+          ringFx(ev.x, ev.z, (ev.r || BAL.quakeR) * 0.6, qe, 0.5);
+          burst(ev.x, 0.4, ev.z, qe, 26, 1.8);
           shake = 0.6;
         } else if (ev.k === 'dash') {
+          const de = ELS.includes(ev.el) ? ev.el : 'elec';
           for (let i = 0; i <= 6; i++)
-            burst(ev.x + ((ev.ex - ev.x) * i) / 6, 1, ev.z + ((ev.ez - ev.z) * i) / 6, 'elec', 3, 0.6);
-          ringFx(ev.x, ev.z, 2.5, 'elec', 0.3);
-          ringFx(ev.ex, ev.ez, 3.5, 'elec', 0.4);
+            burst(ev.x + ((ev.ex - ev.x) * i) / 6, 1, ev.z + ((ev.ez - ev.z) * i) / 6, de, 3, 0.6);
+          ringFx(ev.x, ev.z, 2.5, de, 0.3);
+          ringFx(ev.ex, ev.ez, 3.5, de, 0.4);
         } else if (ev.k === 'rafale') {
-          // Zéphyr : la Rafale (un souffle le long du bond) et le Tir perçant (un trait de vent sur toute sa ligne)
+          // Zéphyr : le Bond (un souffle le long du bond) et le Tir perçant (un trait de vent sur toute sa ligne)
+          const re = ELS.includes(ev.el) ? ev.el : 'vent';
           for (let i = 0; i <= 6; i++)
-            burst(ev.x + ((ev.ex - ev.x) * i) / 6, 1, ev.z + ((ev.ez - ev.z) * i) / 6, 'vent', 3, 0.7);
-          ringFx(ev.x, ev.z, 3, 'vent', 0.35);
+            burst(ev.x + ((ev.ex - ev.x) * i) / 6, 1, ev.z + ((ev.ez - ev.z) * i) / 6, re, 3, 0.7);
+          ringFx(ev.x, ev.z, 3, re, 0.35);
         } else if (ev.k === 'perce') {
           const n = 28,
             pe = ELS.includes(ev.el) ? ev.el : 'vent';
@@ -171,7 +175,7 @@ function frame(now) {
           toast('Tir perçant');
         } else if (ev.k === 'charge' || ev.k === 'plonge') {
           // V2.2 : la charge de l'Avant-garde (Roc) et le bond du Plongeur (Sylve)
-          const ce = ev.k === 'charge' ? 'terre' : 'bois';
+          const ce = ELS.includes(ev.el) ? ev.el : ev.k === 'charge' ? 'terre' : 'bois';
           for (let i = 0; i <= 6; i++)
             burst(ev.x + ((ev.ex - ev.x) * i) / 6, 0.8, ev.z + ((ev.ez - ev.z) * i) / 6, ce, 3, 0.7);
           ringFx(ev.ex, ev.ez, ev.r || 3, ce, 0.4);
@@ -197,36 +201,43 @@ function frame(now) {
             burst(ev.x, 1, ev.z, 'vent', 10, 1.2);
           }
         } else if (ev.k === 'storm') {
-          ringFx(ev.x, ev.z, BAL.stormR, 'elec', 0.8);
-          toast('Orage');
+          ringFx(ev.x, ev.z, BAL.stormR, ELS.includes(ev.el) ? ev.el : 'elec', 0.8);
+          toast('Déchaînement');
         } else if (ev.k === 'bolt2') {
-          bolt(ev.x, ev.z);
-          ringFx(ev.x, ev.z, 1.6, ELS.includes(ev.tn) ? ev.tn : 'elec', 0.25);
+          // V2.6 : l'éclair prend la couleur de l'élément choisi (les yeux de l'Élec gardent le blanc-jaune d'avant)
+          const be = ELS.includes(ev.el) ? ev.el : 'elec';
+          bolt(ev.x, ev.z, be === 'elec' ? 0 : boltCol(be));
+          ringFx(ev.x, ev.z, 1.6, ELS.includes(ev.tn) ? ev.tn : be, 0.25);
         } else if (ev.k === 'ronce') {
-          ringFx(ev.x, ev.z, BAL.ronceR, 'bois', 0.6);
-          burst(ev.x, 0.5, ev.z, 'bois', 16, 1.2);
+          const ne = ELS.includes(ev.el) ? ev.el : 'bois';
+          ringFx(ev.x, ev.z, BAL.ronceR, ne, 0.6);
+          burst(ev.x, 0.5, ev.z, ne, 16, 1.2);
         } else if (ev.k === 'guard') {
-          ringFx(ev.x, ev.z, 11, 'bois', 0.8);
+          ringFx(ev.x, ev.z, 11, ELS.includes(ev.el) ? ev.el : 'bois', 0.8);
           toast('Les Gardiens sortent de terre');
         } else if (ev.k === 'fball') {
-          ringFx(ev.x, ev.z, BAL.fbR, 'feu', 0.5);
-          burst(ev.x, 1, ev.z, 'feu', 22, 1.6);
+          const fe = ELS.includes(ev.el) ? ev.el : 'feu';
+          ringFx(ev.x, ev.z, BAL.fbR, fe, 0.5);
+          burst(ev.x, 1, ev.z, fe, 22, 1.6);
           shake = Math.max(shake, 0.25);
         } else if (ev.k === 'rain') toast('Pluie de météores');
         else if (ev.k === 'meteor') {
-          bolt(ev.x, ev.z, 0xff7a2e);
-          ringFx(ev.x, ev.z, ev.r || BAL.metR, 'feu', 0.45);
-          burst(ev.x, 1, ev.z, ELS.includes(ev.tn) ? ev.tn : 'feu', 14, 1.5);
+          const me = ELS.includes(ev.el) ? ev.el : 'feu';
+          bolt(ev.x, ev.z, me === 'feu' ? 0xff7a2e : boltCol(me));
+          ringFx(ev.x, ev.z, ev.r || BAL.metR, me, 0.45);
+          burst(ev.x, 1, ev.z, ELS.includes(ev.tn) ? ev.tn : me, 14, 1.5);
           shake = Math.max(shake, 0.2);
         } else if (ev.k === 'tide') {
-          ringFx(ev.x, ev.z, ev.r, 'eau', 0.6);
-          ringFx(ev.x, ev.z, ev.r * 0.55, 'eau', 0.45);
-          burst(ev.x, 0.6, ev.z, 'eau', 18, 1.3);
+          const te = ELS.includes(ev.el) ? ev.el : 'eau';
+          ringFx(ev.x, ev.z, ev.r, te, 0.6);
+          ringFx(ev.x, ev.z, ev.r * 0.55, te, 0.45);
+          burst(ev.x, 0.6, ev.z, te, 18, 1.3);
           if (ev.mine) net.hl = [Date.now() % 1e9, r1(ev.x), r1(ev.z), ev.heal || BAL.tideHeal, ev.r, 0, ev.sh || 0]; // V2.2 : le bouclier de la Soigneuse
         } else if (ev.k === 'deluge') {
-          toast('Déluge');
-          ringFx(0, 0, 70, 'eau', 1.4);
-          ringFx(0, 0, 40, 'eau', 1);
+          toast('Sanctuaire');
+          const le = ELS.includes(ev.el) ? ev.el : 'eau';
+          ringFx(0, 0, 70, le, 1.4);
+          ringFx(0, 0, 40, le, 1);
           if (ev.mine) net.hl = [Date.now() % 1e9, 0, 0, 999, 999, 1];
         } else if (ev.k === 'wallup') {
           ringFx(ev.x, ev.z, 3.5, 'terre', 0.4);
