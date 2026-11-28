@@ -44,6 +44,8 @@ function lobbyPret() {
   if (WEAP[LOBBY.arme]) save.weap = LOBBY.arme;
   // V4.8 : l'élément de l'arme emportée (sinon celui du héros : newRun)
   elementArmeLobby = ELKEYS.includes(LOBBY.elementArme) ? LOBBY.elementArme : null;
+  // V5.2 : l'élément choisi du héros (sinon sa clé)
+  elHerosLobby = ELKEYS.includes(LOBBY.elHeros) ? LOBBY.elHeros : null;
   // V4.9 : la voie du héros (opts.voie = { id: 'a' | 'b', nom } ou null)
   voieLobby = LOBBY.voie && (LOBBY.voie.id === 'a' || LOBBY.voie.id === 'b') ? LOBBY.voie.id : null;
   bonusLobby = LOBBY.bonus && typeof LOBBY.bonus === 'object' ? LOBBY.bonus : null;
@@ -79,6 +81,7 @@ function lobbyPartie() {
     heros: save.hero,
     arme: save.weap,
     elementArme: S.elArme || null,
+    elHeros: S.elHeros || null,
     voie: S.voie || null,
     jour: S.day,
     partie: lobbyN,

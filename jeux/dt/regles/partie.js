@@ -117,6 +117,9 @@ function newRun(save, startDay, seed) {
     hab: 0,
     // héros (mode fuite seulement) ; decoy : le leurre posé ; ult : charge de l'ultime (0 à 1) ; recharges du missile, du leurre, de la frappe
     hero: save.mode === 'out' ? (HEROS[save.hero] ? save.hero : 'feu') : null,
+    // V5.2 : l'élément choisi du héros (lobby), sinon sa clé
+    elHeros:
+      save.mode !== 'out' ? null : ELKEYS.includes(elHerosLobby) ? elHerosLobby : HEROS[save.hero] ? save.hero : 'feu',
     decoy: null,
     ult: 0,
     misCd: 0,
@@ -152,7 +155,7 @@ function newRun(save, startDay, seed) {
     mSeq: 0,
     invN: 0,
     weap: WEAP[save.weap] ? save.weap : 'fusil',
-    // V4.8 : l'élément de l'arme (ses balles) : celui du lobby, sinon celui choisi au menu (save.elArme), sinon celui du héros
+    // V4.8 : l'élément de l'arme (ses balles) : celui du lobby, sinon celui choisi au menu (save.elArme), sinon l'élément choisi du héros (V5.2 ; sa clé hors lobby)
     elArme:
       save.mode !== 'out'
         ? null
@@ -160,9 +163,11 @@ function newRun(save, startDay, seed) {
           ? elementArmeLobby
           : ELKEYS.includes(save.elArme)
             ? save.elArme
-            : HEROS[save.hero]
-              ? save.hero
-              : 'feu',
+            : ELKEYS.includes(elHerosLobby)
+              ? elHerosLobby
+              : HEROS[save.hero]
+                ? save.hero
+                : 'feu',
     // V4.9 : la voie du héros (lobby) ; teintT : quand l'ultime teinté pourra de nouveau marquer chaque zombie (voies.js) ; ultEl : l'élément
     // qui teinte ce qui frappe en ce moment
     voie: save.mode === 'out' && HEROS[save.hero] && (voieLobby === 'a' || voieLobby === 'b') ? voieLobby : null,

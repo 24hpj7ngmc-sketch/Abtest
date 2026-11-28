@@ -51,8 +51,10 @@ const JR = { l: [], n: 0 };
 // sans les flammes des mains) ; sa recette dit combien de premières pièces sont les jambes (jambes, moitié droite puis moitié gauche)
 // et combien de pièces du bras droit garder (mainD). Sans ces champs (le gardien) : 8 et 4, comme avant. Les pivots sont ceux de la recette.
 MODELS['joueur.corps'] = ctx => {
+  // V5.2 : el = l'élément choisi du héros (ses couleurs), hero = sa clé (son modèle : Braise a le sien)
   const el = JOUEUR_HEROS.indexOf(ctx.el) >= 0 ? ctx.el : 'feu',
-    r = MODELS['hero.avatar']({ P: K.EL[el], el, arme: 1 }),
+    hero = JOUEUR_HEROS.indexOf(ctx.hero) >= 0 ? ctx.hero : el,
+    r = MODELS['hero.avatar']({ P: K.EL[el], el, hero, arme: 1 }),
     corps = r.parts[0].b,
     brasD = r.parts[2].b,
     jG = K.make(1311),
@@ -122,7 +124,7 @@ function joueurGants(h) {
 function joueurTexte(r) {
   const c = r.lab.userData.c,
     g = c.getContext('2d'),
-    E = K.EL[r.heros],
+    E = K.EL[r.elH] || K.EL[r.heros],
     rr = 20,
     hexa = v => '#' + ('00000' + v.toString(16)).slice(-6);
   g.clearRect(0, 0, 384, 96);
@@ -156,7 +158,7 @@ function joueurTexte(r) {
     g.fillText(role, 192, 74, 340);
   }
   r.lab.userData.t.needsUpdate = true;
-  r.labH = r.heros;
+  r.labH = r.heros + r.elH;
 }
 
 // ---------------------------------------------------------------- arrivée, changements, départ
@@ -179,6 +181,7 @@ function joueurAjoute(e) {
     id: e.id,
     nom: null,
     heros: null,
+    elH: null,
     labH: null,
     arme: null,
     root: null,
@@ -203,10 +206,12 @@ function joueurAjoute(e) {
 }
 // son corps (au premier passage et quand son héros change) : le gardien à la couleur de l'élément, et le pivot de visée
 // (à l'épaule droite, tourné selon pitch) qui porte l'arme ; l'arme est refaite ensuite (ses gants suivent le héros)
-function joueurCorps(r, h) {
+// V5.2 : eh = l'élément choisi de son héros (ses couleurs) ; h reste sa clé (son modèle)
+function joueurCorps(r, h, eh) {
   if (r.root) scene.remove(r.root);
   r.heros = h;
-  r.root = instM('joueur.corps', { el: h });
+  r.elH = eh;
+  r.root = instM('joueur.corps', { el: eh, hero: h });
   r.root.rotation.order = 'YXZ';
   r.nodes = r.root.userData.nodes;
   r.nodes.armL.rotation.order = r.nodes.armR.rotation.order = 'YXZ';
@@ -220,7 +225,7 @@ function joueurCorps(r, h) {
 // V5.0 : el = l'élément de son arme (sa couleur) ; vide ou inconnu : celui de son héros
 function joueurArme(r, a, el) {
   if (r.gun) r.visee.remove(r.gun);
-  const pr = prepM('vm.' + a, { H: joueurGants(r.heros), el }),
+  const pr = prepM('vm.' + a, { H: joueurGants(r.elH), el }),
     A = JOUEUR_ARMES[a];
   r.arme = a;
   r.elArme = el;
@@ -273,12 +278,15 @@ function joueursFrame(S, dt) {
 function joueurPose(r, e, dt) {
   const h = JOUEUR_HEROS.indexOf(e.heros) >= 0 ? e.heros : 'feu',
     a = Object.prototype.hasOwnProperty.call(JOUEUR_ARMES, e.arme) ? e.arme : 'fusil';
-  if (h !== r.heros) joueurCorps(r, h);
-  // V5.0 : l'élément de son arme vient du réseau : une clé connue de JOUEUR_HEROS, sinon celui de son héros
-  const el = typeof e.el === 'string' && JOUEUR_HEROS.indexOf(e.el) >= 0 ? e.el : h;
+  // V5.2 : l'élément choisi de son héros vient du réseau : une clé connue de JOUEUR_HEROS, sinon sa clé de héros (le corps est refait s'il change)
+  const eh = typeof e.elHeros === 'string' && JOUEUR_HEROS.indexOf(e.elHeros) >= 0 ? e.elHeros : h;
+  // (joueurCorps remet r.arme à null : l'arme est refaite avec ses gants à la couleur de cet élément)
+  if (h !== r.heros || eh !== r.elH) joueurCorps(r, h, eh);
+  // V5.0 : l'élément de son arme vient du réseau : une clé connue de JOUEUR_HEROS, sinon l'élément choisi de son héros
+  const el = typeof e.el === 'string' && JOUEUR_HEROS.indexOf(e.el) >= 0 ? e.el : eh;
   if (a !== r.arme || el !== r.elArme) joueurArme(r, a, el);
   const nom = joueurNom(e.nom);
-  if (nom !== r.nom || r.labH !== r.heros) {
+  if (nom !== r.nom || r.labH !== r.heros + r.elH) {
     r.nom = nom;
     joueurTexte(r);
   }

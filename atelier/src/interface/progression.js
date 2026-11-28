@@ -211,6 +211,7 @@ try {
       toit: r.toit,
       guide: r.guide,
       wel: r.wel,
+      hel: r.hel,
       voie: r.voie
     };
 } catch (_) {}

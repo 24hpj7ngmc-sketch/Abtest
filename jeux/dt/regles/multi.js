@@ -878,7 +878,7 @@ function skillInvite(S, h, cd) {
     S.ev.push({ k: 'refus', why: 'Vise la rue' });
     return false;
   }
-  actionInvite(S, ['c', 0].concat(mPose(p), [h, mR3(hPow(S)), MHMA.map(k => mR2(m[k] || 0)), S.voie || '', S.elArme || '']));
+  actionInvite(S, ['c', 0].concat(mPose(p), [h, mR3(hPow(S)), MHMA.map(k => mR2(m[k] || 0)), S.voie || '', S.elArme || '', S.elHeros || '']));
   if (h === 'elec') {
     const fx = -Math.sin(p.yaw),
       fz = -Math.cos(p.yaw),
@@ -917,7 +917,7 @@ function skillInvite(S, h, cd) {
 // l'ultime chez l'invité (appelé par useHeroUlt, après ses conditions) : l'action 'u' ; ici, le voile et le soin du Déluge
 function ultInvite(S, h) {
   S.ult = 0;
-  actionInvite(S, ['u', 0].concat(mPose(S.p), [h, mR3(uPow(S)), MHMA.map(k => mR2(S.hm[k] || 0)), S.voie || '', S.elArme || '']));
+  actionInvite(S, ['u', 0].concat(mPose(S.p), [h, mR3(uPow(S)), MHMA.map(k => mR2(S.hm[k] || 0)), S.voie || '', S.elArme || '', S.elHeros || '']));
   if (h === 'eau') S.p.hp = S.p.hpMax;
   // V4.8 : le trait du Tir perçant, tout de suite (les dégâts sont chez l'hôte)
   else if (h === 'vent') {
@@ -1022,7 +1022,8 @@ function mAction(S, joueur, a) {
     pw = 1,
     hm = HM0,
     voie = null,
-    elA = null;
+    elA = null,
+    elHh = null;
   if (ty === 'c' || ty === 'u') {
     hero = HEROS[a[7]] ? a[7] : HEROS[joueur.heros] ? joueur.heros : null;
     if (!hero) return false;
@@ -1041,12 +1042,15 @@ function mAction(S, joueur, a) {
     // V4.9 : sa voie et l'élément de son arme
     if (a[10] === 'a' || a[10] === 'b') voie = a[10];
     if (ELKEYS.includes(a[11])) elA = a[11];
+    // V5.2 : l'élément choisi de son héros (a[12] ; absent d'un vieux téléphone : sa clé)
+    if (ELKEYS.includes(a[12])) elHh = a[12];
   } else if (ty !== 'h' && ty !== 'l' && ty !== 'r') return false;
   const p0 = S.p,
     h0 = S.hero,
     hm0 = S.hm,
     voie0 = S.voie,
     elA0 = S.elArme,
+    elH0 = S.elHeros,
     P0 = S.P,
     hab0 = S.hab,
     ult0 = S.ult,
@@ -1066,7 +1070,8 @@ function mAction(S, joueur, a) {
       S.hero = hero;
       S.hm = hm;
       S.voie = voie;
-      S.elArme = elA || hero;
+      S.elHeros = elHh || hero;
+      S.elArme = elA || S.elHeros;
       S.P = Object.assign({}, P0, {
         mis: Object.assign({}, P0.mis, ty === 'c' ? { dmg: pw * 160 } : {}),
         onde: Object.assign({}, P0.onde, ty === 'u' ? { pw } : {})
@@ -1127,6 +1132,7 @@ function mAction(S, joueur, a) {
     S.hm = hm0;
     S.voie = voie0;
     S.elArme = elA0;
+    S.elHeros = elH0;
     S.P = P0;
     S.hab = hab0;
     S.ult = ult0;

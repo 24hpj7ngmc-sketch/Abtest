@@ -20,7 +20,7 @@ function ileMods(el, w) {
     for (const e of HEROS) elMods(e, m);
     return m;
   }
-  return elMods(el, m);
+  return elMods(elH(el), m);
 }
 function ileOpts(el, x) {
   const mods = {};
@@ -42,6 +42,8 @@ function ileOpts(el, x) {
   return Object.assign(
     {
       heros: el,
+      // V12.9 : l'élément choisi du héros (sa clé tant qu'il n'a rien choisi) ; un jeu qui le lit l'annonce par 'elHeros' dans accepte
+      elHeros: elH(el),
       arme: A.includes(tWeap) ? tWeap : A[0],
       // V12.1 : le rôle du héros et l'élément choisi pour chaque arme, pour les jeux qui sauront les lire
       role: ROLE[el],

@@ -97,7 +97,7 @@ MODELS['vm.marteau']=ctx=>{const b=K.make(61),HY=.252;
   return{parts:[{name:'body',b}],bake:{ground:0,jit:.04},hold:{p:[.7,-.29,-.56],r:[-.12,-.1,-.12]}};};
 // ---------------------------------------------------------------- hero.avatar : le gardien vu par ses coéquipiers (≈ 1,8 m, regarde vers −Z)
 MODELS['hero.avatar']=ctx=>{
-  if(ctx.el==='feu'&&MODELS['hero.braise'])return MODELS['hero.braise'](ctx);
+  if((ctx.hero||ctx.el)==='feu'&&MODELS['hero.braise'])return MODELS['hero.braise'](ctx);
   const P=ctx.P||K.EL.feu,b=K.make(71),aL=K.make(72),aR=K.make(73),TUN=P.main;
   // --- bottes à revers et jambes
   b.sym(sd=>{b.add(K.box(.13,.1,.27,.85,.75),{p:[sd*.11,.05,-.035],c:CUIR_D});

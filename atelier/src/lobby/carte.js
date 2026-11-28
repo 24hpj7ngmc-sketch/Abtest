@@ -127,7 +127,7 @@ function lobMini(g, px, big) {
   }
   for (const k in LN.av) {
     const o = LN.av[k];
-    g.fillStyle = elc(o.el);
+    g.fillStyle = elc(o.ee || o.el);
     g.strokeStyle = '#fff';
     g.lineWidth = big ? 1 : 2;
     g.beginPath();

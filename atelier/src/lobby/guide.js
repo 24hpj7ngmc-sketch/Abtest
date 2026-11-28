@@ -318,7 +318,7 @@ function guideTopics() {
         [
           'Six héros, six rôles',
           HEROS.map(e => EL[e].hero + ' (' + ROLE[e] + ')').join(', ') +
-            ". Le rôle, c'est qui tu es : le kit d'un héros est le même dans tous les jeux. L'élément, c'est comment tu frappes : il se choisit sur chaque arme. Tu changes de héros au Hall ou au portail."
+            ". Le rôle, c'est qui tu es : le kit d'un héros est le même dans tous les jeux. L'élément, c'est comment tu frappes : chaque héros a le sien, que tu choisis au Hall (Braise est mage, mais pas forcément de feu), et chaque arme garde aussi le sien. Quand les deux sont pareils, l'arme frappe 10 % plus fort. Tu changes de héros au Hall ou au portail."
         ],
         [
           'Son arbre',
@@ -343,7 +343,7 @@ function guideTopics() {
         ],
         [
           'Quatre arbres chacune',
-          "Général (partout), L'Île des Cinq, Dernier Toit, et Élément : tes balles prennent l'élément de ton héros. Tout se paie en or céleste."
+          "Général (partout), L'Île des Cinq, Dernier Toit, et Élément : tes balles prennent l'élément de ton arme (par défaut, celui de ton héros). Tout se paie en or céleste."
         ],
         ["Changer d'arme", "À la salle d'armes, au panneau d'un portail, ou en partie dans la barre d'outils."],
         [

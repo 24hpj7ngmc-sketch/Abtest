@@ -65,7 +65,7 @@ function skyTick() {
 }
 const SHOTM = { mortier: 'shot.bomb', canon: 'shot.ball', archer: 'shot.arrow' };
 function viewsTick(dt, now, h) {
-  if (ghost.visible) ghostSet(placeType, h.el);
+  if (ghost.visible) ghostSet(placeType, elOf(h));
   sync(views.ru, sim.ruins || [], ruinView, () => {});
   sync(views.t, sim.towers, towerGroup, (t, v) => {
     const u = v.userData;

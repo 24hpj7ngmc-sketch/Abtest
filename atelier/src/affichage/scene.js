@@ -57,3 +57,6 @@ function prepOf(name, ctx, key) {
   return p;
 }
 const elCtx = el => ({ el, P: K.EL[el] || K.EL.feu });
+// le contexte d'un avatar de héros (V12.9) : sa clé (identité : modèle) et son élément choisi (palette) ; la clé de cache doit porter les deux
+const avCtx = (h, el) => ({ el, P: K.EL[el] || K.EL.feu, hero: h }),
+  avKey = (h, el) => h + '|' + el;

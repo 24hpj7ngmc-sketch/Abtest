@@ -101,6 +101,9 @@ const ELKEYS = ['feu', 'eau', 'bois', 'terre', 'elec', 'vent'],
     vent: 'traversent un zombie de plus et soulèvent les petits'
   };
 // V4.8 : un héros présenté par son rôle (« Braise, Mage »)
+// V5.2 : l'élément choisi du héros (S.elHeros, venu du lobby : opts.elHeros) ; absent ou inconnu : la clé du héros. La clé reste son identité
+// (kit, voies, rôle, nom) ; l'élément choisi est celui de ses couleurs, de sa prédilection et de l'effet qu'il ajoute aux balles
+const elH = S => (S && ELKEYS.includes(S.elHeros) ? S.elHeros : S && S.hero);
 const heroRole = h => (HEROS[h] ? HEROS[h].n + ', ' + HEROS[h].role : '');
 // la vie du joueur avec son héros
 // (V4.9 : Colosse, la voie a de Sylve : +25, + spA1)
@@ -121,7 +124,8 @@ const outside = (Z, i) => {
 const HM_ZERO = {};
 function heroOnHit(S, i, dmg, x, y, z) {
   const Z = S.z,
-    hk = S.hero;
+    // V5.2 : l'effet propre du héros est celui de son élément choisi
+    hk = elH(S);
   if (!hk || Z.st[i] === 0) return;
   const ea = S.elArme || hk,
     m = S.hm;
@@ -207,7 +211,8 @@ function effetBalle(S, el, i, dmg, x, y, z, b, pA) {
   }
 }
 // V4.8 : prédilection : une arme de l'élément du héros fait 10 % de dégâts en plus (balles et lance-flammes)
-const predilK = S => (S.hero && S.elArme === S.hero ? 1.1 : 1);
+// V5.2 : l'élément choisi du héros (elH)
+const predilK = S => (S.hero && S.elArme === elH(S) ? 1.1 : 1);
 // Rafale (Zéphyr) : un bond en arrière de 8 m (+ kLen), arrêté par les murs, avec un petit saut ; kPush (et pousse : faux chez un invité
 // du multi, l'hôte s'en charge) : au départ, les zombies à moins de 5 m sont repoussés de 5 m (dehors, pas les gros ; ceux d'un mur
 // d'avenue en tombent ; dedans, ralentis 1,5 s)

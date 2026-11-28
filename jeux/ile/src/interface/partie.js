@@ -42,6 +42,8 @@ function begin(el, mode) {
   {
     const cp = mode ? null : campOf();
     sim = newSim(el, null, hm0, mode || (cp ? 'normal' : gameMode()));
+    // V2.5 : l'élément choisi du héros joué (opts.elHeros, une des six clés) ; absent ou inconnu : sa clé
+    if (el === LOBBY.heros && ELS.includes(LOBBY.elHeros)) sim.hero.ce = LOBBY.elHeros;
     if (cp) setCamp(sim, cp.el, cp.l);
     sim.cNoT = !!tuto; // le tutoriel n'a pas de chrono entre les vagues (regles/ciel.js)
   }
@@ -87,13 +89,14 @@ function begin(el, mode) {
   $('bAb').firstChild.textContent = el === 'terre' && sim.m.voB ? 'Charge' : KIT[el].skill; // V2.2 : l'Avant-garde charge au lieu de dresser le Rempart
   $('bUlt').firstChild.textContent = KIT[el].ult;
   barT = performance.now();
-  $('bFire').style.setProperty('--hero', elc(el));
-  armBegin(el); // V2.0 : le choix des 3 armes et de leurs éléments (pas au tutoriel), puis l'élément de l'arme en main
+  $('bFire').style.setProperty('--hero', elc(elOf(sim.hero)));
+  armBegin(elOf(sim.hero)); // V2.0 : le choix des 3 armes et de leurs éléments (pas au tutoriel), puis l'élément de l'arme en main
   {
     const ent =
       (sim.camp ? campN(sim.camp) + ' · ' : '') +
       EL[el].hero +
       (EL[el].role ? ' · ' + EL[el].role : '') +
+      (elOf(sim.hero) !== el ? ' · ' + EL[elOf(sim.hero)].n : '') +
       (voieNom(el) ? ' · ' + voieNom(el) : '') +
       ' entre en jeu' +
       (bst ? ' · bourse +' + bst + ' or' : '') +

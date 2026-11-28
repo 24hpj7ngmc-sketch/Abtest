@@ -442,10 +442,10 @@ function cielTick(dt, now) {
   if (!sim || !running) ciel.k = 0;
   const h = sim && sim.hero;
   // le héros vu d'en haut (en vue normale on ne se voit pas)
-  if (h && (!ciel.self || ciel.self.userData.el !== h.el)) {
+  if (h && (!ciel.self || ciel.self.userData.el !== h.el + '|' + elOf(h))) {
     if (ciel.self) scene.remove(ciel.self);
-    ciel.self = mateView({ el: h.el, x: h.x, z: h.z });
-    ciel.self.userData.el = h.el;
+    ciel.self = mateView({ el: h.el, ce: h.ce, x: h.x, z: h.z });
+    ciel.self.userData.el = h.el + '|' + elOf(h);
   }
   if (ciel.self && h) {
     ciel.self.visible = ciel.k > 0.25;
@@ -503,7 +503,7 @@ function cielHud(now) {
     gRing.scale.setScalar((rangeOf(ciel.type, 1, sim.m) + BAL.wallRange * Math.round(gy / WALLH)) / 17);
     ghostMat.color.setHex(gWhy ? 0xff6b5a : 0x7cf07a);
     ghost.visible = true;
-    ghostSet(ciel.type, sim.hero.el);
+    ghostSet(ciel.type, elOf(sim.hero));
     // l'endroit choisi se voit de haut : l'anneau, vert ou rouge selon que la pose est permise (audit écran n° 19)
     cielSel.visible = true;
     cielSel.position.set(x, gy + 0.25, z);

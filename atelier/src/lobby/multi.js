@@ -191,9 +191,10 @@ function islHome(why) {
   }
 }
 // aw : l'arme qu'il tient (armeNet) ou rien. Avec une arme : le gardien sans son pistolet à cristal, l'arme de son élément devant l'épaule droite, les bras qui la tiennent (V12.7)
-function avMake(el, aw) {
+// el = la clé du héros (le modèle), ee = son élément choisi (la palette, V12.9)
+function avMake(el, ee, aw) {
   const g = new THREE.Group(),
-    m = mdlOf(aw ? 'hero.avatar.arme' : 'hero.avatar', elCtx(el), el, { cast: false }),
+    m = mdlOf(aw ? 'hero.avatar.arme' : 'hero.avatar', avCtx(el, ee), avKey(el, ee), { cast: false }),
     pr = m.userData.prep,
     l = lobLabel(3.3, 1.1);
   let vis = null,
@@ -203,7 +204,7 @@ function avMake(el, aw) {
     N.armL.rotation.order = N.armR.rotation.order = 'YXZ';
     vis = new THREE.Group();
     vis.position.set(0.12, 1.4, 0);
-    gun = armeInst(aw.a, aw.el, el).g;
+    gun = armeInst(aw.a, aw.el, ee).g;
     gun.scale.setScalar(0.9);
     gun.position.set(0.07, -0.06, -0.42);
     vis.add(gun);
@@ -218,6 +219,7 @@ function avMake(el, aw) {
     m,
     l,
     el,
+    ee,
     aw: aw ? aw.k : '',
     vis,
     gun,
@@ -288,7 +290,7 @@ function netDraw() {
       : LN.list
           .map(
             o =>
-              `<div class="srow"><span><b style="color:${elc(o.el)}">${o.nm ? o.nm + ' · ' : ''}${EL[o.el].hero}${o.me ? ' · toi' : ''}</b><small>${(o.host ? 'hôte · ' : '') + (o.st === 'play' ? "en partie sur L'Île des Cinq" : o.st === 'toit' ? 'sur le toit, dans Dernier Toit' : o.here ? "sur l'île" : 'arrive…')}</small></span></div>`
+              `<div class="srow"><span><b style="color:${elc(o.ee || o.el)}">${o.nm ? o.nm + ' · ' : ''}${EL[o.el].hero}${o.me ? ' · toi' : ''}</b><small>${(o.host ? 'hôte · ' : '') + (o.st === 'play' ? "en partie sur L'Île des Cinq" : o.st === 'toit' ? 'sur le toit, dans Dernier Toit' : o.here ? "sur l'île" : 'arrive…')}</small></span></div>`
           )
           .join('');
 }
@@ -464,7 +466,7 @@ function lobNet(dt) {
         lp = [r1(LB.x), r1(LB.y), r1(LB.z), Math.round(LB.yaw * 100) / 100],
         aw = armePub(),
         ix = aw && LA.ins >= 0 ? 1 : 0,
-        s = lp.join() + tHero + io + LN.ls + LN.nm + aw + ix;
+        s = lp.join() + tHero + elH(tHero) + io + LN.ls + LN.nm + aw + ix;
       if (s !== LN.pubS || LN.pubF > 1) {
         LN.pubS = s;
         LN.pubF = 0;
@@ -473,6 +475,8 @@ function lobNet(dt) {
           ls: LN.ls,
           la: LN.ls ? Math.round((now - LN.lsT) / 1000) : 0,
           el: tHero,
+          // l'élément choisi du héros (V12.9) : un champ court, vérifié à la réception
+          ee: elH(tHero),
           lp,
           io,
           nm: LN.nm,
@@ -488,10 +492,11 @@ function lobNet(dt) {
   const here = {},
     isle = VISIT.on ? VISIT.peer : LN.me,
     t = now / 1000;
-  LN.list = [{ me: 1, nm: LN.nm, el: tHero, st: IR ? 'play' : 'lob', here: 1, host: mineFirst }];
+  LN.list = [{ me: 1, nm: LN.nm, el: tHero, ee: elH(tHero), st: IR ? 'play' : 'lob', here: 1, host: mineFirst }];
   for (const p of oth) {
     const pr = p.presence,
       el = HEROS.includes(pr.el) ? pr.el : 'feu',
+      ee = HEROS.includes(pr.ee) ? pr.ee : el,
       q = pr.lp,
       on =
         pr.st === 'lob' &&
@@ -501,20 +506,20 @@ function lobNet(dt) {
         q.length >= 4 &&
         q.slice(0, 4).every(Number.isFinite);
     const nm = nmClean(pr.nm);
-    LN.list.push({ nm, el, st: pr.st, here: on, host: !mineFirst && p === host });
+    LN.list.push({ nm, el, ee, st: pr.st, here: on, host: !mineFirst && p === host });
     if (!on || !LB.on) continue;
     here[p.peer] = 1;
     let o = LN.av[p.peer];
     // l'arme qu'il tient (absente chez un téléphone plus ancien : rien)
     const aw = armeNet(pr.aw);
-    if (!o || o.el !== el || o.aw !== (aw ? aw.k : '')) {
+    if (!o || o.el !== el || o.ee !== ee || o.aw !== (aw ? aw.k : '')) {
       const old = o;
       if (o) lob.remove(o.g);
       else if (now - LN.t0 > 4000) {
         toast((nm || EL[el].hero) + " arrive sur l'île");
         toastT = 3;
       }
-      o = LN.av[p.peer] = avMake(el, aw);
+      o = LN.av[p.peer] = avMake(el, ee, aw);
       o.x = old ? old.x : q[0];
       o.y = old ? old.y : q[1];
       o.z = old ? old.z : q[2];
@@ -525,7 +530,7 @@ function lobNet(dt) {
       o.l,
       (nm || EL[el].hero).toUpperCase(),
       (nm ? EL[el].hero + ' · ' : '') + (p.peer === LN.host ? 'hôte' : 'en visite'),
-      elc(el)
+      elc(ee)
     );
     const k = Math.min(1, dt * 10),
       px = o.x,

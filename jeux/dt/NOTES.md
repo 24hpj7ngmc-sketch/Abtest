@@ -1,5 +1,11 @@
 # Dernier Toit — notes de fabrication (V1.0, 19/11/2026)
 
+## V5.2 (28/11/2026) : l'élément du héros se choisit
+Décision de Frédéric : « Braise est mage, mais pas de feu. On peut choisir son élément. » Pour les six héros : la clé reste l'identité (kit, voies, rôle, modèle), l'élément
+choisi (opts.elHeros, S.elHeros, helper elH dans regles/heros.js) fait les couleurs, la prédilection +10 %, l'élément d'arme par défaut, l'effet du héros sur les balles,
+l'ultime teinté et les textes. Multi : champ `eh` à côté de `e`. gfx/models/mains.js : `(ctx.hero || ctx.el) === 'feu'` pour le modèle de Braise (palette de ctx.el).
+Test : tests/elheros.js. Empreinte inchangée. Non vérifié : le vrai three.js r128, le téléphone, le vrai lobby (l'envoi de opts.elHeros).
+
 ## V5.1 (28/11/2026) : Braise, le Mage de feu, a son propre modèle 3D
 Demande de Frédéric : « Modélise-le vraiment en 3D. » `gfx/models/braise.js` (MODELS['hero.braise'], fichier commun aux trois jeux, collé par build.py après mains.js) ;
 `hero.avatar` le rend quand `el = 'feu'` (une ligne en tête). `joueur.corps` (affichage/joueurs.js) demande la variante `arme: 1` (bras tendus, sans flammes) et lit

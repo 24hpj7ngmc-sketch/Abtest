@@ -50,6 +50,15 @@ DernierToit.fermer(); // retirer le jeu sans attendre le joueur (aucun « fin »
 - `sansFin` : partie sans fin (après une victoire, « Continuer sans fin » lance une nouvelle partie, qui enverra son propre `fin`) ;
 - « Rejouer » à l'écran de fin relance une partie dans l'iframe : un `fin` par partie, à récompenser chacun.
 
+## V5.2 : l'élément du héros se choisit (contrat V12.9)
+
+`opts.elHeros` (facultatif : `'feu'|'eau'|'bois'|'terre'|'elec'|'vent'`) : l'élément choisi du héros, au Hall. La clé `opts.heros` reste son identité (kit, voies,
+rôle, nom, modèle, Étoile du héros, records). Absent ou inconnu : la clé du héros. `DernierToit.accepte` annonce `'elHeros'` ; `DernierToit.version` vaut `'V5.2'`.
+L'élément choisi remplace la clé partout où elle servait d'élément : couleurs de l'avatar et des manches, prédilection (+10 % si l'élément de l'arme est l'élément choisi),
+élément de l'arme quand `elementArme` manque, effet propre du héros sur les balles, ultime teinté, textes (menu, Guide, écran de fin). Le message `pret` renvoie `elHeros`.
+Multi : chaque téléphone publie `eh` (l'élément choisi, à côté de `e`, vérifié contre les six clés ; absent : la clé du héros) et le joint à ses actions de héros ; un vieux
+téléphone qui ne l'envoie pas garde l'apparence d'avant. Page seule : élément choisi = clé du héros. Règles, commandes, écran et équilibre inchangés (hors lobby).
+
 ## V5.1 : Braise a son propre modèle 3D
 
 Rien à changer côté lobby : les autres joueurs incarnant Braise (feu) sont dessinés avec `MODELS['hero.braise']` (gfx/models/braise.js, le même fichier que

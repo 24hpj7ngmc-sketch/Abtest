@@ -193,7 +193,7 @@ function uiTick(dt) {
     const hero = HEROS[S.hero];
     setLbl('bAb', hero.sk);
     setLbl('bUlt', hero.ul);
-    btnComp.style.borderColor = S.hab > 0 ? '' : hero.c;
+    btnComp.style.borderColor = S.hab > 0 ? '' : HEROS[elH(S)].c;
     btnComp.classList.toggle('idle', S.hab > 0);
     setTxt('bAb', 'small', S.hab > 0 ? Math.ceil(S.hab) + ' s' : 'prêt');
     btnUlt.classList.toggle('rdy', S.ult >= 1);

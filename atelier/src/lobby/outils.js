@@ -165,7 +165,7 @@ function lGhostSet(k) {
   lGhost.userData.k = k;
   while (lGhost.children.length) lGhost.remove(lGhost.children[0]);
   const C = CAT[k],
-    g = K.inst(prepOf(C.ms[0], C.el ? elCtx(tHero) : undefined, C.el ? tHero : undefined), {
+    g = K.inst(prepOf(C.ms[0], C.el ? elCtx(elH(tHero)) : undefined, C.el ? elH(tHero) : undefined), {
       cast: false,
       recv: false,
       mats: lGhostMs

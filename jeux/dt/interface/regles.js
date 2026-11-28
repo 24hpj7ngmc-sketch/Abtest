@@ -216,7 +216,8 @@ function RULES_TOIT() {
             ', ' +
             hero.role +
             ' (' +
-            hero.el +
+            // V5.2 : l'élément choisi
+            (S && S.hero ? ELNOM[elH(S)] : hero.el) +
             '). Un passif (' +
             hero.pas.charAt(0).toLowerCase() +
             hero.pas.slice(1) +
@@ -237,9 +238,12 @@ function RULES_TOIT() {
           'Les armes et leurs éléments',
           WKEYS.length +
             " armes au choix : fusil en main, change d'arme dans la petite barre au-dessus des outils. La branche Fusil de l'arbre les renforce toutes. " +
-            "Tes balles prennent l'élément de ton arme (au menu, ou celui choisi au lobby ; sinon celui du héros), plus l'effet du héros. " +
+            "Tes balles prennent l'élément de ton arme (au menu, ou celui choisi au lobby ; sinon celui de ton héros), plus l'effet du héros. " +
             ELKEYS.map(e => ELNOM[e] + ' : elles ' + ELFX[e]).join(' ; ') +
-            ". Arme de l'élément du héros : +10 % de dégâts."
+            // V5.2 : l'élément choisi du héros
+            ". Arme de l'élément choisi pour ton héros" +
+            (S && S.hero ? ' (' + ELNOM[elH(S)] + ')' : '') +
+            ' : +10 % de dégâts.'
         ],
         [
           "Dans l'immeuble",

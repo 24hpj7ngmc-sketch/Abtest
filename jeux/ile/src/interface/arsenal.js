@@ -53,7 +53,7 @@ function armApply() {
   const h = sim.hero,
     a = armOf(tWeap);
   h.wk = tWeap;
-  h.wEl = a ? a.el : h.el;
+  h.wEl = a ? a.el : elOf(h);
   h.wu = Object.assign({}, armUp[tWeap] || {});
   $('bFire').style.setProperty('--hero', elc(h.wEl));
   setGun(h.wEl); // le cristal de l'arme en main prend la couleur de son élément
@@ -102,7 +102,7 @@ function arsTeam() {
     const q = net.aL[k];
     if (now - q.t < 3000 && q.l.length)
       tm.push(
-        `<b style="color:${EL[q.el].c}">${EL[q.el].hero}</b> ${q.l.map(o => WT[o.w].short + ' ' + EL[o.el].n).join(' · ')}`
+        `<b style="color:${EL[ELS.includes(q.ce) ? q.ce : q.el].c}">${EL[q.el].hero}</b> ${q.l.map(o => WT[o.w].short + ' ' + EL[o.el].n).join(' · ')}`
       );
   }
   $('arsC').innerHTML = tm.length ? 'Coéquipiers : ' + tm.join(' — ') : '';
@@ -119,7 +119,7 @@ $('arsW').addEventListener('click', ev => {
     arsenal.splice(i, 1);
   } else {
     if (arsenal.length >= 3) return arsMsg('3 armes au plus : touche une arme choisie pour la retirer.');
-    arsenal.push({ w, el: lobbyEl(w) || armNextEl(arsenal, sim ? sim.hero.el : 'feu') });
+    arsenal.push({ w, el: lobbyEl(w) || armNextEl(arsenal, sim ? elOf(sim.hero) : 'feu') });
   }
   $('arsM').hidden = true;
   arsDraw();
@@ -276,7 +276,7 @@ $('bArmes').onpointerdown = () => {
 // aw : [arme, élément] (indices) · au : les niveaux des améliorations de l'arme en main, un chiffre par ligne de ARMUP · aL : son choix d'armes (« 13,24,50 »)
 function armPres(pa) {
   const h = sim.hero;
-  pa.aw = [WTK.indexOf(tWeap), ELS.indexOf(h.wEl || h.el)];
+  pa.aw = [WTK.indexOf(tWeap), ELS.indexOf(h.wEl || elOf(h))];
   pa.au = ARMUP.map(u => armL(h, u.id)).join('');
   pa.aL = arsenal.map(o => WTK.indexOf(o.w) + '' + ELS.indexOf(o.el)).join(',');
 }
@@ -305,7 +305,7 @@ function armPeer(o, pr, peer) {
         e = ELS[+q[1]];
       if (q.length === 2 && w && e && l.length < 3) l.push({ w, el: e });
     }
-  net.aL[peer] = { el: o.el, l, t: performance.now() };
+  net.aL[peer] = { el: o.el, ce: o.ce, l, t: performance.now() };
 }
 // ---------- les effets à l'écran ----------
 const armZ = [],
@@ -412,7 +412,7 @@ function armEv(ev) {
         ev.y + 1.5,
         ev.z,
         ev.ef === 2 ? 'Efficace !' : 'Peu efficace',
-        ev.ef === 2 ? elc(sim.hero.wEl || sim.hero.el) : '#8fa3aa',
+        ev.ef === 2 ? elc(sim.hero.wEl || elOf(sim.hero)) : '#8fa3aa',
         ev.ef === 2 ? 14 : 11,
         1
       );

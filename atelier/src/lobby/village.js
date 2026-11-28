@@ -186,11 +186,12 @@ function vilView(B) {
   if (B.t === 'hall') {
     const sp = m.userData.prep.spots || [];
     g.userData.heroes = sp.map(S => {
-      const av = mdlOf('hero.avatar', elCtx(S.el), S.el, { cast: false });
+      const ee = elH(S.el),
+        av = mdlOf('hero.avatar', avCtx(S.el, ee), avKey(S.el, ee), { cast: false });
       av.position.set(S.x, S.y, S.z);
       av.rotation.y = S.a + Math.PI;
       inn.add(av);
-      const col = new THREE.Color(elc(S.el)).getHex(),
+      const col = new THREE.Color(elc(ee)).getHex(),
         beam = new THREE.Mesh(
           pillarG,
           new THREE.MeshBasicMaterial({
@@ -210,7 +211,7 @@ function vilView(B) {
       glow.position.set(S.x, S.y + 1.1, S.z);
       glow.scale.setScalar(3);
       inn.add(glow);
-      return { el: S.el, av, beam, glow, y: S.y, a: S.a, w: 0 };
+      return { el: S.el, ee, av, beam, glow, y: S.y, a: S.a, w: 0 };
     });
   }
   if (B.t === 'musee') {
@@ -485,12 +486,29 @@ function vilWhy(k, x, z) {
   return '';
 }
 
+// le héros du Hall change d'élément (V12.9) : son avatar est refait (même place) et son halo prend la couleur de l'élément choisi
+function hallAv(H) {
+  const ee = elH(H.el),
+    p = H.av.parent,
+    ps = H.av.position.clone(),
+    ry = H.av.rotation.y,
+    av = mdlOf('hero.avatar', avCtx(H.el, ee), avKey(H.el, ee), { cast: false }),
+    col = new THREE.Color(elc(ee)).getHex();
+  if (p) p.remove(H.av);
+  av.position.copy(ps);
+  av.rotation.y = ry;
+  if (p) p.add(av);
+  H.av = av;
+  H.ee = ee;
+  H.beam.material.color.setHex(col);
+  H.glow.material = glowM(col, 0.5);
+}
 function vilPlace(k, x, z, ry) {
   if (vilWhy(k, x, z)) return false;
   const C = CAT[k];
   if (C.c && !save.dev) save.gold -= C.c;
   const B = { t: k, x: Math.round(x * 100) / 100, z: Math.round(z * 100) / 100, r: Math.round(ry * 100) / 100 };
-  if (C.el) B.el = tHero;
+  if (C.el) B.el = elH(tHero);
   if (C.c && !save.dev) B.c = C.c;
   save.vil.push(B);
   const g = vilAdd(B);

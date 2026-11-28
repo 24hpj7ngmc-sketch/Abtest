@@ -16,7 +16,7 @@ function armeGants(h) {
     m = K.mix(c, 0x30353b, 0.5);
   return { sleeve: K.hex(m), sleeveD: K.hex(K.shade(m, 0.65)), glove: 0x3a3732, gloveD: 0x24221f };
 }
-// l'arme (modèle cuit une fois par arme, élément et héros) en main d'un joueur : un exemplaire neuf
+// l'arme (modèle cuit une fois par arme, élément et élément du porteur : h est l'ÉLÉMENT du héros, déjà choisi) en main d'un joueur : un exemplaire neuf
 function armeInst(a, el, h) {
   const p = prepOf('vm.' + a, { el, H: armeGants(h) }, a + '|' + el + '|' + h);
   return { g: K.inst(p, { cast: false, recv: false }), hold: p.hold || LA.hold, tip: p.tip };
@@ -62,10 +62,10 @@ function armeFrame(dt) {
     return;
   }
   const s = armeSel(),
-    key = s.a + '|' + s.el + '|' + tHero;
+    key = s.a + '|' + s.el + '|' + elH(tHero);
   if (key !== LA.key) {
     if (LA.g) lcam.remove(LA.g);
-    const m = armeInst(s.a, s.el, tHero);
+    const m = armeInst(s.a, s.el, elH(tHero));
     LA.g = m.g;
     LA.hold = m.hold;
     LA.key = key;

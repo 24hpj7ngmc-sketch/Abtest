@@ -1,5 +1,5 @@
 // [interface/roles.js] La refonte « rôles des héros, éléments sur les armes » (V12.1, claude/refonte-roles-elements.md) : six héros, six rôles, six éléments.
-// ---------- Le rôle, c'est qui tu es ; l'élément, c'est comment tu frappes. Un héros se reconnaît toujours à la clé de son élément de prédilection
+// ---------- Le rôle, c'est qui tu es ; l'élément, c'est comment tu frappes. Un héros se reconnaît toujours à sa clé (Braise = 'feu'…), qui reste son identité ; son élément se choisit (V12.9, elH)
 // (Braise = 'feu', Sylve = 'bois'…) ; Zéphyr ('vent') est le sixième. Tout ceci est au lobby : un mini-jeu ne connaît Zéphyr, le Vent et l'élément par arme
 // que lorsqu'il l'annonce (demandes claude/demande-<jeu>-roles-elements.md). ELS reste la liste des cinq éléments que connaissent les jeux collés.
 EL.bois.n = 'Nature';

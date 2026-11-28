@@ -5,12 +5,17 @@ function hallOpen() {
   SND.play('tick');
   hallDraw();
 }
-// la carte d'un héros, la même au hall et aux deux portails (V11.4 ; rôles en V12.1) : portrait, nom, rôle et niveau, compétence et ultime, élément de prédilection et éclats ; la toucher, c'est l'incarner
-const hPic = e => (typeof HPHOTO === 'object' && HPHOTO[e] ? `<img class="hpic" src="${HPHOTO[e]}" alt="">` : '');
+// la carte d'un héros, la même au hall et aux deux portails (V11.4 ; rôles en V12.1) : portrait, nom, rôle et niveau, compétence et ultime, son élément choisi et éclats ; la toucher, c'est l'incarner
+// V12.9 : le portrait suit l'élément choisi (HPHOTO[élément] pour un gardien ; HPHOTO['braise_' + élément] pour Braise)
+const hPicK = e => (e === 'feu' ? 'braise_' + elH(e) : elH(e)),
+  hPic = e => {
+    const p = typeof HPHOTO === 'object' ? HPHOTO[hPicK(e)] || HPHOTO[elH(e)] : '';
+    return p ? `<img class="hpic" src="${p}" alt="">` : '';
+  };
 function heroCards(id, redraw) {
   $(id).innerHTML = HEROS.map(
     e =>
-      `<button class="pick${e === tHero ? ' cur' : ''}" style="--c:${elc(e)}" data-el="${e}">${hPic(e)}<b>${EL[e].hero}</b><em>${ROLE[e]} · niv. ${hLevel(e)}</em><small class="kit">${heroTag(e)}</small><small class="pts">${EL[e].n} · ${save.sh[e]} éclats${save.loot['etoile_' + e] ? ' · étoile' : ''}</small></button>`
+      `<button class="pick${e === tHero ? ' cur' : ''}" style="--c:${hc(e)}" data-el="${e}">${hPic(e)}<b>${EL[e].hero}</b><em>${ROLE[e]} · niv. ${hLevel(e)}</em><small class="kit">${heroTag(e)}</small><small class="pts">${EL[elH(e)].n} · ${save.sh[e]} éclats${save.loot['etoile_' + e] ? ' · étoile' : ''}</small></button>`
   ).join('');
   $(id)
     .querySelectorAll('.pick')
@@ -31,10 +36,15 @@ function hallDraw() {
     ROLE[tHero] +
     ' : ' +
     PASSIF[tHero] +
-    ". Son kit est le même dans tous les jeux ; l'élément, lui, se choisit sur l'arme (prédilection : " +
-    EL[tHero].n +
-    "). Touche un héros pour l'incarner.";
+    '. Son kit est le même dans tous les jeux ; son élément se choisit ci-dessous (' +
+    EL[elH(tHero)].n +
+    "), et ses armes du même élément frappent 10 % plus fort. Touche un héros pour l'incarner.";
   $('hallA').textContent = 'Arbre de ' + EL[tHero].hero + ' · ' + save.sh[tHero] + ' éclats';
+  helRow('hallEl', tHero, () => {
+    SND.play('pure');
+    lobSync();
+    hallDraw();
+  });
   // la voie du héros incarné (V12.2) : deux choix à partir du niveau VOIE_NIV ; et l'ultime, qui prend l'élément de l'arme en main
   const e = tHero,
     v = voieOf(e),
@@ -46,7 +56,7 @@ function hallDraw() {
       : ['a', 'b']
           .map(
             k =>
-              `<button class="tchip${k === v ? ' sel' : ''}" data-voie="${k}" style="--c:${elc(e)}"><b>${VOIES[e][k].n}</b><span>${VOIES[e][k].d}</span></button>`
+              `<button class="tchip${k === v ? ' sel' : ''}" data-voie="${k}" style="--c:${hc(e)}"><b>${VOIES[e][k].n}</b><span>${VOIES[e][k].d}</span></button>`
           )
           .join('') +
         `<small>${v ? "Sa branche est ouverte dans son arbre. Tu peux changer de voie ici entre deux parties : rien n'est remboursé, rien n'est perdu." : 'Choisis une voie : elle ouvre sa branche dans son arbre.'}</small>`);
@@ -187,7 +197,7 @@ function lootOpen() {
   }).join('');
   $('lootS').innerHTML = HEROS.map(
     e =>
-      `<span class="tchip${save.loot['etoile_' + e] ? ' sel' : ''}" style="${save.loot['etoile_' + e] ? 'border-color:' + elc(e) + ';color:' + elc(e) : ''}">Étoile de ${EL[e].hero}</span>`
+      `<span class="tchip${save.loot['etoile_' + e] ? ' sel' : ''}" style="${save.loot['etoile_' + e] ? 'border-color:' + hc(e) + ';color:' + hc(e) : ''}">Étoile de ${EL[e].hero}</span>`
   ).join('');
 }
 $('lootX').onclick = () => {

@@ -323,6 +323,7 @@ function lobbyTick(dt, now) {
     if (u.heroes)
       for (const H of u.heroes) {
         const me = H.el === tHero;
+        if (H.ee !== elH(H.el)) hallAv(H);
         H.w += ((me ? 1 : 0) - H.w) * Math.min(1, dt * 5);
         K.pose(H.av, t, H.a, 0.1 + 0.25 * H.w);
         H.beam.visible = H.w > 0.02;

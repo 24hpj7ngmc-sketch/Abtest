@@ -492,6 +492,8 @@ const RANGK = [1, 1.35, 1.8, 2.4];
 let rangLobby = 1;
 // V4.8 : l'élément de l'arme emportée, choisi au lobby (opts.elementArme) ; null hors lobby (l'élément choisi au menu, sinon celui du héros)
 let elementArmeLobby = null;
+// V5.2 : l'élément choisi du héros (opts.elHeros du lobby) ; null hors lobby (alors : la clé du héros)
+let elHerosLobby = null;
 // V4.9 : la voie du héros (opts.voie.id du lobby : 'a' ou 'b' ; null sans voie, et toujours hors lobby) ; voies.js
 let voieLobby = null;
 const rangK = () => RANGK[Math.max(1, Math.min(RANGK.length, Math.round(rangLobby) || 1)) - 1];

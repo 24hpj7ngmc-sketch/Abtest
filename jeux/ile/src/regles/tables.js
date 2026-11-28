@@ -2,6 +2,8 @@
 // SIX ÉLÉMENTS ET SIX RÔLES (V2.1, refonte du lobby du 27/11 : claude/refonte-roles-contrat.md). Un héros garde sa clé, qui est aussi son élément de prédilection ;
 // « bois » s'affiche « Nature » ; le Vent est nouveau (Zéphyr, le Tireur). `role` : la famille du héros, façon LoL.
 const ELS = ['feu', 'eau', 'bois', 'terre', 'elec', 'vent'];
+// V2.5 : l'élément d'un héros = l'élément choisi au Hall (h.ce, une des six clés) ; sans choix (ou valeur douteuse), la clé du héros. La clé h.el reste son identité (kit, voies, nom, modèle).
+const elOf = h => (h && ELS.includes(h.ce) ? h.ce : h.el);
 // les deux voies de chaque héros (V2.2, noms du lobby) : 'a' et 'b' ; le jeu les lit dans opts.voie
 const VOIEN = {
   terre: { a: 'Gardien', b: 'Avant-garde' },

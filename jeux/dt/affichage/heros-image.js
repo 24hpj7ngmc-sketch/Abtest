@@ -587,7 +587,7 @@ function hxZombiesFrame(S) {
     nm = 0,
     nw = 0;
   const hero = !!S.hero,
-    eau = S.hero === 'eau' || S.elArme === 'eau';
+    eau = elH(S) === 'eau' || S.elArme === 'eau';
   for (let q = 0; q < S.nAct; q++) {
     const i = S.act[q],
       st = Z.st[i];

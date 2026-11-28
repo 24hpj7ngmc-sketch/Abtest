@@ -28,7 +28,7 @@ function renfort(s, h) {
       type: TKEYS[Math.floor(r() * TKEYS.length)],
       x,
       z,
-      els: Array(lv).fill(h.el),
+      els: Array(lv).fill(elOf(h)),
       cd: 0.4,
       aim: 0,
       wy: 0,
@@ -40,7 +40,7 @@ function renfort(s, h) {
   }
   if (!n) return false;
   h.sm = SUMCD;
-  s.events.push({ k: 'renfort', x: h.x, z: h.z, el: h.el, n });
+  s.events.push({ k: 'renfort', x: h.x, z: h.z, el: elOf(h), n });
   return true;
 }
 function ruinOf(s, t) {

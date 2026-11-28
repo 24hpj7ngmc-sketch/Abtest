@@ -241,7 +241,7 @@ function drawMini(mg, px, big) {
   mg.restore();
   for (const k in sim.others) {
     const o = sim.others[k];
-    mg.fillStyle = elc(o.el);
+    mg.fillStyle = elc(elOf(o));
     mg.strokeStyle = '#fff';
     mg.lineWidth = 1.5;
     mg.beginPath();

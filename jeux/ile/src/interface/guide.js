@@ -111,7 +111,11 @@ const RULES = {
           'Six éléments',
           'Eau bat Feu, Feu bat Nature, Nature bat Vent, Vent bat Terre, Terre bat Élec, Élec bat Eau : ×' +
             String(BAL.strong).replace('.', ',') +
-            " de dégâts. Dans l'autre sens : ×0,75. Contre son propre élément : normal. Une arme de l'élément de ton héros (sa prédilection) : +" +
+            " de dégâts. Dans l'autre sens : ×0,75. Contre son propre élément : normal. Une arme de l'élément de ton héros" +
+            (sim && sim.hero
+              ? ' (' + EL[elOf(sim.hero)].n + ', celui que tu as choisi : sa prédilection)'
+              : ' (sa prédilection)') +
+            ' : +' +
             Math.round(BAL.predi * 100) +
             ' %.'
         ],

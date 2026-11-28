@@ -205,6 +205,7 @@ function netTick(dt) {
             const v = +pr.hm[i];
             o.m[k] = Number.isFinite(v) ? Math.max(-3, Math.min(k[0] === 's' && k[1] === 'p' ? 100 : 12, v)) : 0; // les cases des voies (spA1…) peuvent valoir 25 ou 15
           });
+        o.ce = ELS.includes(pr.ce) ? pr.ce : undefined; // V2.5 : son élément choisi (un vieux téléphone ne l'envoie pas : sa clé)
         armPeer(o, pr, p.peer); // son arme en main, son élément, ses améliorations (V2.0)
         if (net.host && sim.phase === 'prep') {
           // « Prêt » d'un invité : lu dans sa présence à chaque image, marqué du numéro de la vague attendue (audit V2.0, problème 2)
@@ -266,6 +267,7 @@ function netTick(dt) {
             st: 'play',
             hs: net.hs,
             el: h.el,
+            ce: ELS.includes(h.ce) ? h.ce : undefined,
             p: [r1(h.x), r1(h.y), r1(h.z), Math.round(h.yaw * 100) / 100, Math.round(h.pitch * 100) / 100],
             f: inp.fire ? 1 : 0,
             d: h.down > 0 ? 1 : 0,

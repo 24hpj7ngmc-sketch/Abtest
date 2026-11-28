@@ -50,7 +50,7 @@ const fs = require('fs');
         DernierToit.HEROS.join() === 'feu,eau,bois,terre,elec,vent' &&
         DernierToit.accepte.includes('elementArme') &&
         DernierToit.accepte.includes('voie') &&
-        DernierToit.version === 'V5.1'
+        DernierToit.version === 'V5.2'
     )
   );
 

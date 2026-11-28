@@ -227,10 +227,11 @@ function animZone(z, v, dt) {
 // les coéquipiers : un gardien de l'île aux couleurs de son élément, son nom au-dessus de la tête
 function mateView(o) {
   const g = new THREE.Group(),
-    m = mdlOf('hero.avatar', elCtx(o.el), o.el),
+    ce = elOf(o),
+    m = mdlOf('hero.avatar', Object.assign(elCtx(ce), { hero: o.el }), o.el + '|' + ce),
     pr = m.userData.prep;
   g.add(m);
-  const l = label(EL[o.el].hero + (o.bot ? ' · bot' : ''), elc(o.el));
+  const l = label(EL[o.el].hero + (o.bot ? ' · bot' : ''), elc(ce));
   l.scale.set(3.4, 0.85, 1);
   l.position.y = (pr.labelY || pr.max[1] * (pr.scale || 1)) + 0.55;
   g.add(l);

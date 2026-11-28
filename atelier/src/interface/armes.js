@@ -506,22 +506,34 @@ const ET = {
     )
   ]
 };
-// L'ÉLÉMENT DE CHAQUE ARME (V12.1) : il se choisit à la salle d'armes ou au portail, arme par arme ; tant qu'on n'a rien choisi, l'arme prend l'élément de prédilection du héros joué.
+// L'ÉLÉMENT DE CHAQUE ARME (V12.1) : il se choisit à la salle d'armes ou au portail, arme par arme ; tant qu'on n'a rien choisi, l'arme prend l'élément choisi du héros joué (V12.9 ; sa clé tant qu'il n'a pas choisi).
 if (!save.wel || typeof save.wel !== 'object') save.wel = {};
-const wEl = (w, h) => (HEROS.includes(save.wel[w]) ? save.wel[w] : h || tHero);
+// V12.9 : l'ÉLÉMENT CHOISI D'UN HÉROS (save.hel[héros], vide = sa clé, donc une ancienne sauvegarde ne change rien). La clé reste son identité (kit, voies, rôle, nom, modèle, records) ;
+// l'élément choisi sert partout où elle servait d'élément : couleurs, prédilection, élément par défaut des armes, branche d'élément. Gratuit, réversible.
+if (!save.hel || typeof save.hel !== 'object') save.hel = {};
+const elH = h => (HEROS.includes(save.hel[h]) ? save.hel[h] : HEROS.includes(h) ? h : 'feu');
+function setHEl(h, e) {
+  if (!HEROS.includes(h) || !HEROS.includes(e)) return;
+  if (e === h) delete save.hel[h];
+  else save.hel[h] = e;
+  persist();
+}
+// la couleur d'un héros : celle de son élément choisi
+const hc = h => elc(elH(h));
+const wEl = (w, h) => (HEROS.includes(save.wel[w]) ? save.wel[w] : elH(h || tHero));
 function setWEl(w, e) {
   if (!WT[w] || !HEROS.includes(e)) return;
   save.wel[w] = e;
   persist();
 }
-// la rangée de choix de l'élément d'une arme (salle d'armes et portails) : six pastilles, celle de prédilection du héros marquée d'une étoile
+// la rangée de choix de l'élément d'une arme (salle d'armes et portails) : six pastilles, l'élément choisi du héros marqué d'une étoile
 function welRow(id, w, redraw) {
   const cur = wEl(w);
   $(id).innerHTML =
     '<span>Son élément</span>' +
     HEROS.map(
       e =>
-        `<button class="tchip${e === cur ? ' sel' : ''}" data-wel="${e}" style="border-color:${elc(e)};color:${elc(e)}">${EL[e].n}${e === tHero ? ' ★' : ''}</button>`
+        `<button class="tchip${e === cur ? ' sel' : ''}" data-wel="${e}" style="border-color:${elc(e)};color:${elc(e)}">${EL[e].n}${e === elH(tHero) ? ' ★' : ''}</button>`
     ).join('');
   $(id)
     .querySelectorAll('.tchip')
@@ -529,6 +541,25 @@ function welRow(id, w, redraw) {
       b =>
         (b.onclick = () => {
           setWEl(w, b.dataset.wel);
+          redraw();
+        })
+    );
+}
+// la rangée « Son élément » d'un héros, au Hall (V12.9) : les six éléments en pastilles, le sien (sa clé) marqué d'une étoile
+function helRow(id, h, redraw) {
+  const cur = elH(h);
+  $(id).innerHTML =
+    '<span>Son élément</span>' +
+    HEROS.map(
+      e =>
+        `<button class="tchip${e === cur ? ' sel' : ''}" data-hel="${e}" style="border-color:${elc(e)};color:${elc(e)}">${EL[e].n}${e === h ? ' ★' : ''}</button>`
+    ).join('');
+  $(id)
+    .querySelectorAll('.tchip')
+    .forEach(
+      b =>
+        (b.onclick = () => {
+          setHEl(h, b.dataset.hel);
           redraw();
         })
     );
@@ -659,7 +690,7 @@ const hLevel = e =>
 function heroMods(el) {
   const m = {};
   for (const n of HT[el].nodes) m[n.key] = (save.hl[el][n.id] || 0) * n.inc;
-  return elMods(el, armMods('ile', tWeap, m));
+  return elMods(elH(el), armMods('ile', tWeap, m));
 } // L'Île des Cinq : l'arbre du héros + l'arme portée, si ce jeu l'accepte, + la branche de son élément
 let tMode = 'hero',
   tSel = null;
@@ -790,7 +821,7 @@ function drawTree() {
       (tMode !== 'arme'
         ? ''
         : tTab === 'el'
-          ? `<div class="ti-n">Élément des balles · ${WT[tWeap].short} : ${EL[wEl(tWeap)].n}</div><div class="ti-h">Chaque arme a son élément : tu le choisis ici (« Son élément ») ou au portail. En partie, seule la branche de cet élément agit. L'étoile marque l'élément de prédilection de ${EL[tHero].hero}.</div><div class="ti-h">Ce que tu montes ici vaut pour toutes tes armes. Tant qu'un jeu n'a pas été mis à jour, ses balles suivent encore l'élément du héros.</div>`
+          ? `<div class="ti-n">Élément des balles · ${WT[tWeap].short} : ${EL[wEl(tWeap)].n}</div><div class="ti-h">Chaque arme a son élément : tu le choisis ici (« Son élément ») ou au portail. En partie, seule la branche de cet élément agit. L'étoile marque l'élément choisi de ${EL[tHero].hero} (${EL[elH(tHero)].n}), qui donne +10 % aux armes du même élément.</div><div class="ti-h">Ce que tu montes ici vaut pour toutes tes armes. Tant qu'un jeu n'a pas été mis à jour, ses balles suivent encore l'élément du héros.</div>`
           : tTab !== 'gen'
             ? `<div class="ti-n">${WT[tWeap].title} · ${gameN(tTab)}</div><div class="ti-h">Ces améliorations ne servent que dans ${gameN(tTab)}.</div>`
             : `<div class="ti-n">${tr.title} · en main</div><div class="ti-h">${tr.about}</div><div class="ti-h">Cette arme sert dans : ${tr.games.map(gameN).join(', ')}. L'arbre général vaut partout où elle sert.</div>`);
@@ -857,7 +888,8 @@ $('tClose').onclick = () => {
   if (treeBack) $(treeBack).hidden = false;
 };
 $('tHeroes').innerHTML = HEROS.map(
-  e => `<button class="tchip" data-e="${e}" style="border-color:${elc(e)};color:${elc(e)}">${EL[e].hero}</button>`
+  e =>
+    `<button class="tchip" data-e="${e}" style="border-color:${elc(elH(e))};color:${elc(elH(e))}">${EL[e].hero}</button>`
 ).join('');
 $('tHeroes')
   .querySelectorAll('.tchip')

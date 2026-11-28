@@ -30,15 +30,17 @@ const mixC = (a, b, t) => {
 let gearK = '';
 function heroGear() {
   const hero = S && S.hero,
-    el = hero ? (ELKEYS.includes(S.elArme) ? S.elArme : HEROS[hero] ? hero : null) : null,
-    cle = (hero || '') + '|' + (el || '');
+    // V5.2 : les manches suivent l'élément choisi du héros (elH), pas sa clé
+    eh = hero ? elH(S) : null,
+    el = hero ? (ELKEYS.includes(S.elArme) ? S.elArme : HEROS[hero] ? eh : null) : null,
+    cle = (hero || '') + '|' + (eh || '') + '|' + (el || '');
   if (cle === gearK || typeof gfxGuns !== 'function') return;
   gearK = cle;
   if (!hero) {
     gfxGuns(null);
     return;
   }
-  const couleur = parseInt(HEROS[hero].c.slice(1), 16),
+  const couleur = parseInt(HEROS[eh].c.slice(1), 16),
     manche = mixC(couleur, 0x30353b, 0.5);
   gfxGuns({ sleeve: manche, sleeveD: mixC(manche, 0, 0.35), glove: 0x3a3732, gloveD: 0x24221f }, el);
 }
@@ -163,7 +165,8 @@ function showStart() {
   // V4.8 : l'élément de l'arme (ses balles) : celui du héros par défaut (prédilection : +10 % de dégâts), ou un autre au choix
   $('sElA').hidden = !out;
   if (out) {
-    const hk = HEROS[save.hero] ? save.hero : 'feu',
+    // V5.2 : l'élément choisi du héros (sa clé hors lobby)
+    const hk = ELKEYS.includes(elHerosLobby) ? elHerosLobby : HEROS[save.hero] ? save.hero : 'feu',
       choix = ELKEYS.includes(save.elArme) ? save.elArme : '';
     $('sElA').innerHTML =
       '<small style="color:var(--mute)">Balles :</small>' +
@@ -174,7 +177,7 @@ function showStart() {
             `<button class="ghost${e === choix ? ' sel' : ''}" data-e="${e}"${e ? ` style="--c:${HEROS[e].c}"` : ''}>${e ? ELNOM[e] + (e === hk ? ' +10 %' : '') : 'Celles du héros'}</button>`
         )
         .join('') +
-      `<small id="sElD">Balles ${ELDE[choix || hk]} : elles ${ELFX[choix || hk]}.${!choix || choix === hk ? ' Élément du héros : +10 % de dégâts.' : ''}</small>`;
+      `<small id="sElD">Balles ${ELDE[choix || hk]} : elles ${ELFX[choix || hk]}.${!choix || choix === hk ? ' Élément de ton héros : +10 % de dégâts.' : ''}</small>`;
     $('sElA')
       .querySelectorAll('button')
       .forEach(
@@ -284,8 +287,9 @@ $('sTree').onclick = () => openTree('start');
 // V4.8 : « Zéphyr, Tireur · balles de Vent » (écran de fin, hors lobby ; mode fuite seulement)
 function heroLigne() {
   if (!S || !S.hero || !HEROS[S.hero]) return '';
-  const el = S.elArme || S.hero;
-  return heroRole(S.hero) + (S.voie ? ' (' + voieNom(S) + ')' : '') + ' · balles ' + ELDE[el] + (el === S.hero ? ' (+10 %)' : '');
+  // V5.2 : « (+10 %) » quand l'arme est de l'élément choisi du héros
+  const el = S.elArme || elH(S);
+  return heroRole(S.hero) + (S.voie ? ' (' + voieNom(S) + ')' : '') + ' · balles ' + ELDE[el] + (el === elH(S) ? ' (+10 %)' : '');
 }
 function showEnd(won) {
   running = false;

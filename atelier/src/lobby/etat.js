@@ -57,7 +57,7 @@ function lobSync() {
       '#ffcf5a'
     );
   }
-  if (hallV) lobText(hallV.userData.lab, 'HALL DES HÉROS', EL[cur].hero + ' · hall niv. ' + bLv('hall'), elc(cur));
+  if (hallV) lobText(hallV.userData.lab, 'HALL DES HÉROS', EL[cur].hero + ' · hall niv. ' + bLv('hall'), hc(cur));
   $('sGrid')
     .querySelectorAll('.pick')
     .forEach(b => b.classList.toggle('cur', b.dataset.el === cur));

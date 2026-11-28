@@ -312,7 +312,7 @@ function perce(s, h) {
     ex = h.x + fx * L,
     ez = h.z + fz * L,
     W = BAL.perceR + (h.m.uRad || 0),
-    el = h.wEl || h.el;
+    el = h.wEl || elOf(h);
   if (!s.client) {
     const d = BAL.perceDmg * (1 + (h.m.uDmg || 0)) * (1 + 0.08 * (lvl(s, s.wave) - 1));
     for (const e of s.enemies) {
@@ -330,7 +330,7 @@ function perce(s, h) {
 const ULT = { terre: quake, elec: storm, bois: guardians, feu: meteors, eau: deluge, vent: perce };
 // L'ULTIME TEINTÉ (V2.2) : l'ultime garde son effet et gagne celui de l'élément de l'arme en main (le Séisme de Roc avec une arme de feu devient un séisme de lave).
 // tintEl : l'élément qui teinte (rien si l'arme est de l'élément du héros) ; tintUlt l'applique aux ennemis touchés. r > 0 : un cercle à montrer ; r = 0 : toute l'île ; r < 0 : rien à montrer.
-const tintEl = h => (h.wEl && ELS.includes(h.wEl) && h.wEl !== h.el ? h.wEl : '');
+const tintEl = h => (h.wEl && ELS.includes(h.wEl) && h.wEl !== elOf(h) ? h.wEl : '');
 function tintUlt(s, h, es, x, z, r, el) {
   el = el || tintEl(h);
   if (!el || s.client) return;

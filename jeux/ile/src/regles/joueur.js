@@ -159,7 +159,7 @@ function flameShot(s, h, d, ey) {
     R = 51 * (1 + m.hLife),
     cc = Math.cos(m.hCone || 0.38),
     dmg = BAL.gun * (1 + m.hDmg) * (1 + ARMK.deg * armL(h, 'deg')),
-    el = h.wEl || h.el,
+    el = h.wEl || elOf(h),
     bu = armL(h, 'brul');
   let n = 0;
   if (!s.client)
@@ -177,7 +177,7 @@ function flameShot(s, h, d, ey) {
         dmg *
           mult(el, e.el, e.boss, BAL.strong + s.m.strong) *
           (e.boss ? 1 + (m.hBoss || 0) : 1) *
-          (h.wEl && h.wEl === h.el ? 1 + BAL.predi : 1),
+          (h.wEl && h.wEl === elOf(h) ? 1 + BAL.predi : 1),
         false,
         true
       );
@@ -185,12 +185,12 @@ function flameShot(s, h, d, ey) {
       if (bu) e.bk = Math.max(e.bk || 1, 1 + ARMK.bk * bu);
       e.mk = m.hMark || 0;
       e.mark = BAL.markT;
-      if (el === 'eau' || h.el === 'eau') e.slow = Math.max(e.slow, 1.2 + (el === 'eau' ? m.eSlow || 0 : 0));
-      if (el === 'bois' || h.el === 'bois') {
+      if (el === 'eau' || elOf(h) === 'eau') e.slow = Math.max(e.slow, 1.2 + (el === 'eau' ? m.eSlow || 0 : 0));
+      if (el === 'bois' || elOf(h) === 'bois') {
         e.poi = Math.max(e.poi || 0, 2.5 + (el === 'bois' ? m.ePois || 0 : 0));
         e.pk = 1 + (el === 'bois' ? m.ePoisD || 0 : 0);
       }
-      if ((el === 'vent' || h.el === 'vent') && liftable(e))
+      if ((el === 'vent' || elOf(h) === 'vent') && liftable(e))
         lift(e, BAL.ventLift * 0.5 + (el === 'vent' ? m.eLift || 0 : 0));
     }
   if (n && h === s.hero) h.ult = Math.min(100, h.ult + BAL.ultHit * 0.35 * (1 + m.uCharge));
@@ -302,9 +302,9 @@ function heroStep(s, h, inp, dt, move) {
       const ML = armL(h, 'multi'),
         NP = m.hPel > 0 ? Math.round(m.hPel) + ARMK.pelL * ML : 1,
         NF = m.hPel > 0 ? 0 : ML, // tirs multiples : des balles en plus, en éventail de part et d'autre (le fusil à pompe gagne des plombs)
-        el = h.wEl || h.el,
+        el = h.wEl || elOf(h),
         we = el, // V2.1 : la balle porte l'effet de l'élément de l'arme (avec sa branche de l'arbre « Élément des balles »)
-        he = h.el, // … et celui du héros (son passif : chaîne de Volt, poison de Sylve, éclats de Braise, ralenti d'Ondine)
+        he = elOf(h), // … et celui du héros (son passif : chaîne de Volt, poison de Sylve, éclats de Braise, ralenti d'Ondine)
         has = x => we === x || he === x,
         L0 =
           0.85 * (1 + m.hLife) * (h.el === 'feu' && m.voA ? 1 + BAL.artiK : 1) +
@@ -348,7 +348,7 @@ function heroStep(s, h, inp, dt, move) {
             BAL.gun *
             (1 + m.hDmg) *
             (pn >= NP ? ARMK.multiK : 1) *
-            (h.wEl && h.wEl === h.el ? 1 + BAL.predi : 1) *
+            (h.wEl && h.wEl === elOf(h) ? 1 + BAL.predi : 1) *
             (chg ? BAL.chargeK : 1), // prédilection (V2.1) : arme de l'élément du héros, +10 % ; tir chargé du Sniper (V2.2)
           left: 1 + m.hPierce + (has('vent') ? 1 + (we === 'vent' ? m.ePierce || 0 : 0) : 0), // Vent : la balle traverse un ennemi de plus (et ePierce)
           lift: has('vent') ? BAL.ventLift + (we === 'vent' ? m.eLift || 0 : 0) : 0, // Vent : soulève les petits ennemis touchés

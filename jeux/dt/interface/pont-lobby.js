@@ -7,6 +7,7 @@
 //   DernierToit.ouvrir(opts, rappels)   lance une partie, plein écran par-dessus le lobby
 //     opts : { heros: 'feu'|'eau'|'bois'|'terre'|'elec'|'vent', arme: 'fusil'|'pistolet'|'assaut'|'sniper'|'pompe'|'lance',
 //              elementArme: 'feu'|'eau'|'bois'|'terre'|'elec'|'vent' (facultatif, V4.8 : l'élément de l'arme ; sinon celui du héros),
+//              elHeros: 'feu'|'eau'|'bois'|'terre'|'elec'|'vent' (facultatif, V5.2 : l'élément choisi du héros, dont la clé reste l'identité ; sinon sa clé),
 //              voie: { id: 'a'|'b', nom } ou null (facultatif, V4.9 : la voie du héros ; ses cases spA1, spA2, spB1, spB2 dans bonus.heros),
 //              jour: 1 (facultatif : sinon le jour le plus loin permis par la case « Raccourci » de l'immeuble),
 //              rang: 1 à 4 (facultatif : vie des zombies ×1 · ×1,35 · ×1,8 · ×2,4),
@@ -133,7 +134,7 @@ const DernierToit = (() => {
     // V4.3 : multi (plusieurs joueurs sur le même toit : opts.multi, pairs, rappels.etat)
     // V4.8 : elementArme (les balles prennent l'élément de l'arme : bonus.balles = la branche de cet élément)
     // V4.9 : voie (les voies du héros et l'ultime teinté)
-    accepte: ['rang', 'argent', 'heros', 'balles', 'niveaux', 'multi', 'elementArme', 'voie'],
+    accepte: ['rang', 'argent', 'heros', 'balles', 'niveaux', 'multi', 'elementArme', 'voie', 'elHeros'],
     ouvrir,
     fermer,
     pairs,

@@ -280,8 +280,8 @@ function chargeRempart(S, wall, dt) {
 }
 
 // ---------------------------------------------------------------- l'ultime teinté
-// l'élément qui teinte l'ultime du héros h : celui de l'arme, s'il n'est pas le sien (null sinon)
-const teinteDe = (S, h) => (S.elArme && S.elArme !== h && ELKEYS.includes(S.elArme) ? S.elArme : null);
+// l'élément qui teinte l'ultime du héros : celui de l'arme, s'il n'est pas l'élément choisi du héros (V5.2 : elH ; null sinon)
+const teinteDe = (S, h) => (S.elArme && S.elArme !== elH(S) && ELKEYS.includes(S.elArme) ? S.elArme : null);
 // hurtZ (chez l'hôte) pendant que l'ultime frappe (S.ultEl) : l'effet des balles de cet élément sur le zombie i, une fois par seconde
 function teinte(S, i, dmg) {
   const el = S.ultEl,

@@ -7,6 +7,13 @@ Le jeu arrive en **un seul fichier**, `ile-pour-lobby.js`, à coller tel quel da
 
 Le jeu **n'écrit aucune sauvegarde**. Tout ce qui dure reste au lobby : or céleste, éclats, arbres des héros et des armes, campagne, défis, butin, réglages.
 
+## V2.5 (28/11/2026) — l'élément du héros se choisit (contrat V12.9)
+- **Nouveau** : `opts.elHeros`, une des six clés (`feu eau bois terre elec vent`). Absent ou inconnu : la clé du héros, comme avant. Annoncé dans `IleDesCinq.accepte` (`'elHeros'`). `IleDesCinq.version` vaut `'V2.5'`.
+- La clé `opts.heros` reste l'identité (kit, voies, rôle, nom, modèle, butin, records). L'élément choisi remplace la clé là où elle servait d'élément pour le héros du joueur : couleurs de l'avatar, de l'arme et de l'interface, bonus de prédilection (+10 % si l'élément de l'arme = l'élément choisi), élément d'une arme sans choix (écran des 3 armes, `opts.elements`), effets propres du héros (ralenti, poison, soulèvement, chaîne, éclats), Renfort, teinte de l'ultime. Les armes gardent leur élément choisi.
+- Pas changé : les dégâts de la compétence et de l'ultime (le Feu de Braise reste du Feu), les bots et esclaves (leur clé est leur élément).
+- Multi : chaque joueur met `ce` (l'élément choisi, vérifié contre les six clés) dans sa présence ; absent ou douteux, la clé du héros (un vieux téléphone garde son apparence). Modèle : `hero.avatar` reçoit `{ P, el: élément choisi, hero: clé }`.
+- Sans `elHeros`, les règles sont inchangées (même simulation à graine fixe, comparée avec la V2.4).
+
 ## V2.4 (28/11/2026)
 Rien ne change dans le contrat. `IleDesCinq.version` vaut `'V2.4'`. Les coéquipiers, bots et esclaves qui incarnent Braise (feu) sont dessinés avec son propre modèle 3D, `MODELS['hero.braise']` (`gfx/models/braise.js`, le même fichier que celui du lobby et de Dernier Toit).
 
@@ -33,6 +40,7 @@ Rien ne change dans le contrat (`opts`, `rappels`, tables). `IleDesCinq.version`
 Tout est facultatif. Une valeur absente ou abîmée est remplacée par le réglage par défaut : le jeu démarre toujours.
 
 - `heros` : `'feu' | 'eau' | 'bois' | 'terre' | 'elec' | 'vent'` (défaut `feu`). **Depuis la V2.1**, `'vent'` (Zéphyr, le Tireur) est jouable : `IleDesCinq.HEROS` le contient.
+- `elHeros` (**V2.5**) : l'élément choisi du héros joué, une des six clés ; voir « V2.5 ». Absent ou inconnu : la clé du héros.
 - `elements` (**V2.1**) : `{ pistolet: 'feu', fusil: 'vent', … }`, l'élément choisi au lobby pour chaque arme. Il préremplit l'écran du choix des 3 armes (le joueur peut encore changer). Une clé inconnue ou un élément inconnu est ignoré : l'arme prend alors l'élément du héros pour la n° 1, un autre élément libre pour les suivantes.
 - `voie` (**V2.2**) : `null` ou `{ id: 'a' | 'b', nom }`, la voie du héros joué. Elle modifie son kit (voir « Les voies » plus bas) ; seules les cases de sa branche (`spA1`, `spA2` ou `spB1`, `spB2`, dans `bonus.mods[héros][arme]`) comptent. Le nom s'affiche à l'entrée (« Roc · Tank · Avant-garde entre en jeu »).
 - `role` : pas lu ; le jeu affiche le rôle depuis ses propres tables (`EL[x].role`).

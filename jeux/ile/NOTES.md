@@ -1,5 +1,12 @@
 # Notes de travail — L'Île des Cinq (le mini-jeu, dans son propre atelier)
 
+## V2.5 (28 nov. 2026) — l'élément du héros se choisit (opts.elHeros, contrat V12.9)
+- Décision de Frédéric : « Braise est mage, mais pas de feu. On peut choisir son élément. » Pour les six héros : la clé (`h.el`) reste l'identité ; `h.ce` (posé par `begin` depuis `LOBBY.elHeros`, vérifié contre `ELS`) est l'élément choisi ; **`elOf(h)`** (regles/tables.js) = `h.ce` ou `h.el`. Bots, esclaves : pas de `ce`.
+- `elOf` remplace `h.el` quand c'est un ÉLÉMENT : joueur.js (élément de l'arme par défaut, prédilection x2, effets propres `he`/ralenti/poison/soulèvement), heros.js (perce, `tintEl`), defenses.js (Renfort et son événement), arsenal.js (arme sans choix, étoile du choix, présence, couleur du tir), partie.js (`--hero`, armes par défaut, message d'entrée), ghostSet (ciel.js, vie.js), minicarte, Guide « Règles ». Reste sur la clé : kit, voies (`h.el === 'feu' && m.voA`…), noms, `heroMods`, butin, `finish`.
+- Modèle : `mateView` demande `hero.avatar` avec `{ el: élément choisi, P, hero: clé }`, cache `clé|élément` ; gfx/models/mains.js : `(ctx.hero || ctx.el) === 'feu'` (une ligne). Multi : champ `ce` de la présence (bots-marchand.js `netTick`), relu dans `o.ce` ; aussi dans `net.aL`.
+- Pas touché : les dégâts de la compétence et de l'ultime gardent leur élément fixe (Boule de feu, Météores : Feu).
+- Test : `tests/runelheros.js` (`mk3d.py` expose `elOf`, `mateView`).
+
 ## V2.4 (28 nov. 2026) — Braise, le Mage de feu, a son propre modèle 3D
 - Demande de Frédéric : « Modélise-le vraiment en 3D. » `gfx/models/braise.js` (MODELS['hero.braise'], fichier commun aux trois jeux, dans `ORDER` de build.py avant mains.js) ; `hero.avatar` (gfx/models/mains.js) le rend quand `el = 'feu'` (une ligne en tête). Les cinq autres héros ne changent pas.
 - Pièces : body, armL, armR (mêmes pivots que le gardien, `mateTick` les anime pareil), plus flamL et flamR (flammes des mains qui vacillent avec `K.pose`). 2704 triangles (gardien : 1278).

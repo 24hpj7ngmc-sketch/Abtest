@@ -33,7 +33,7 @@ function toitBonus(el, w) {
     recharge: r3(Math.max(0.4, (CD - (hm.abCd || 0)) / CD)),
     heros: hm,
     // la branche d'élément envoyée : celle de l'arme dès que le jeu dit la lire ('elementArme' dans DernierToit.accepte), sinon celle du héros comme avant (V12.2)
-    balles: elMods(dtLit('elementArme') ? wEl(w, el) : el, {}),
+    balles: elMods(dtLit('elementArme') ? wEl(w, el) : elH(el), {}),
     niveaux: { heros: hLevel(el), arme: wLevel(w) }
   };
 }
@@ -174,6 +174,7 @@ function toitGo(el) {
     Object.assign(
       {
         heros: el,
+        elHeros: elH(el),
         arme: w,
         rang: rg,
         bonus,

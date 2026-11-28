@@ -1226,7 +1226,7 @@
   // ---------------------------------------------------------------- hero.avatar : le gardien vu par ses coéquipiers (≈ 1,8 m, regarde vers −Z)
   MODELS['hero.avatar'] = ctx => {
     // V5.1 : Braise (feu) a son propre modèle, MODELS['hero.braise'] (gfx/models/braise.js, commun aux trois jeux)
-    if (ctx.el === 'feu' && MODELS['hero.braise']) return MODELS['hero.braise'](ctx);
+    if ((ctx.hero || ctx.el) === 'feu' && MODELS['hero.braise']) return MODELS['hero.braise'](ctx);
     const P = ctx.P || K.EL.feu,
       b = K.make(71),
       aL = K.make(72),
