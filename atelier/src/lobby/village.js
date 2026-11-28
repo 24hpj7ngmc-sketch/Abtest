@@ -52,10 +52,11 @@ const CAT = {
   armes: {
     n: "Salle d'armes",
     m: 'vil.armes',
-    r: 5.4,
+    r: 8.7,
     u: 1,
     up: 1,
     mx: 6,
+    fix: 1,
     act: 'armes',
     ly: 8.9,
     col: '#ff9d5c',
@@ -145,7 +146,7 @@ let vilId = 1,
   museeV = null;
 const mdlFor = (C, B) => C.ms[Math.abs(Math.round(B.x * 7 + B.z * 13)) % C.ms.length];
 // un bâtiment améliorable monte jusqu'au niveau `mx` (6) : chaque niveau l'agrandit de 6 % et augmente son bonus
-// fix : le Hall (la cathédrale) garde sa taille, à l'échelle du joueur qui y entre ; son modèle s'embellit avec le niveau (ctx.lvl)
+// fix : le Hall (la cathédrale) et la salle d'armes (l'Arsenal) gardent leur taille, à l'échelle du joueur qui y entre ; leur modèle s'embellit avec le niveau (ctx.lvl)
 const lvOf = B => Math.max(1, Math.min(CAT[B.t].mx || 3, B.l || 1)),
   kOf = B => (!CAT[B.t].up || CAT[B.t].fix ? 1 : 1 + 0.06 * (lvOf(B) - 1)),
   rOf = B => CAT[B.t].r * kOf(B),
@@ -179,7 +180,45 @@ function hallPlaque(e) {
   g.fillText(ROLE[e], 128, 72, 228);
   return new THREE.Mesh(hallPlG, new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c) }));
 }
-// un point du repère d'un bâtiment (x, z) dans le monde (sans échelle : sert au Hall, qui ne grandit pas)
+// à l'Arsenal, chaque arme exposée a sa plaque : son nom, son niveau et son élément, gravés en or sur le bronze (redessinée quand ils changent)
+function armPlaque(o) {
+  const g = o.cv.getContext('2d'),
+    el = wEl(o.w);
+  g.fillStyle = '#3b2a16';
+  g.fillRect(0, 0, 256, 96);
+  g.strokeStyle = elc(el);
+  g.lineWidth = 6;
+  g.strokeRect(5, 5, 246, 86);
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.fillStyle = '#ffe6a6';
+  g.font = "700 34px 'Chakra Petch',sans-serif";
+  g.fillText(WT[o.w].short.toUpperCase(), 128, 36, 228);
+  g.fillStyle = '#e8d6b0';
+  g.font = "600 25px 'Barlow',sans-serif";
+  g.fillText('niv. ' + wLevel(o.w) + ' · ' + EL[el].n, 128, 71, 228);
+  o.tex.needsUpdate = true;
+  o.lv = wLevel(o.w);
+}
+// l'arme d'un présentoir, dans l'élément choisi pour elle : un exemplaire neuf, centré sur l'axe du présentoir (elle y tourne), à une taille qui tient dans la vitrine
+function armExpo(o) {
+  const el = wEl(o.w),
+    p = prepOf('arm.expo', { a: o.w, el }, o.w + '|' + el),
+    it = K.inst(p, { cast: false, recv: false }),
+    len = Math.max(0.2, p.max[2] - p.min[2]),
+    s = Math.min(1.8, 1.16 / len),
+    col = new THREE.Color(elc(el)).getHex();
+  it.scale.setScalar(s);
+  it.position.set(((p.min[0] + p.max[0]) / -2) * s, ((p.min[1] + p.max[1]) / -2) * s, ((p.min[2] + p.max[2]) / -2) * s);
+  if (o.it) o.tilt.remove(o.it);
+  o.tilt.add(it);
+  o.it = it;
+  o.el = el;
+  o.beam.material.color.setHex(col);
+  o.glow.material = glowM(col, 0.5);
+  armPlaque(o);
+}
+// un point du repère d'un bâtiment (x, z) dans le monde (sans échelle : sert au Hall et à l'Arsenal, qui ne grandissent pas)
 function vilMonde(B, x, z) {
   const c = Math.cos(B.r),
     s = Math.sin(B.r);
@@ -221,11 +260,84 @@ function vilView(B) {
   }
   // le Hall, une cathédrale : ses murs arrêtent le joueur (cercles du modèle, mis dans le monde), et les six héros y sont exposés comme des figures de cire,
   // chacun sur son socle, dans l'élément choisi par le joueur : pose figée, cône de lumière de sa couleur, halo, plaque à son nom
+  if (C.fix && m.userData.prep.col) {
+    const pr = m.userData.prep;
+    g.userData.cols = pr.col.map(o => vilMonde(B, o[0], o[1]).concat(o[2]));
+    g.userData.porte = pr.porte || [0, rOf(B)];
+  }
+  // l'Arsenal : les six armes du joueur exposées comme des pièces de collection, chacune sur son présentoir, dans l'élément choisi pour elle :
+  // elle tourne lentement sous un cône de lumière de sa couleur, avec son halo et sa plaque ; la forge du fond rougeoie (halo qui palpite)
+  if (B.t === 'armes') {
+    const pr = m.userData.prep;
+    g.userData.expo = (pr.spots || [])
+      .filter(S => WT[S.w])
+      .map(S => {
+        const piv = new THREE.Group(),
+          tilt = new THREE.Group(),
+          beam = new THREE.Mesh(
+            hallConeG,
+            new THREE.MeshBasicMaterial({
+              transparent: true,
+              opacity: 0.1,
+              blending: THREE.AdditiveBlending,
+              depthWrite: false,
+              side: THREE.DoubleSide,
+              fog: false
+            })
+          ),
+          glow = new THREE.Sprite(glowM(0xffffff, 0.4)),
+          cv = document.createElement('canvas');
+        cv.width = 256;
+        cv.height = 96;
+        const tex = new THREE.CanvasTexture(cv),
+          pl = new THREE.Mesh(hallPlG, new THREE.MeshBasicMaterial({ map: tex }));
+        piv.position.set(S.x, S.y, S.z);
+        tilt.rotation.x = -0.12;
+        piv.add(tilt);
+        inn.add(piv);
+        beam.scale.set(0.72, 0.78, 0.72);
+        beam.position.set(S.x, S.y + 1.95, S.z);
+        inn.add(beam);
+        glow.position.set(S.x, S.y, S.z);
+        glow.scale.setScalar(2);
+        inn.add(glow);
+        pl.rotation.order = 'YXZ';
+        pl.rotation.set(-(S.plaque[4] || 0.16), S.plaque[3], 0);
+        pl.position.set(S.plaque[0], S.plaque[1], S.plaque[2]);
+        inn.add(pl);
+        const o = {
+          w: S.w,
+          sd: S.sd,
+          x: S.x,
+          y: S.y,
+          z: S.z,
+          piv,
+          tilt,
+          it: null,
+          el: '',
+          beam,
+          glow,
+          pl,
+          cv,
+          tex,
+          lv: -1,
+          k: 0
+        };
+        armExpo(o);
+        piv.rotation.y = S.x + S.z;
+        return o;
+      });
+    if (pr.forge) {
+      const f = new THREE.Sprite(glowM(0xff8a3c, 0.6));
+      f.position.set(pr.forge[0], pr.forge[1], pr.forge[2]);
+      f.scale.setScalar(3.2);
+      inn.add(f);
+      g.userData.forge = f;
+    }
+  }
   if (B.t === 'hall') {
     const pr = m.userData.prep,
       sp = pr.spots || [];
-    g.userData.cols = (pr.col || []).map(o => vilMonde(B, o[0], o[1]).concat(o[2]));
-    g.userData.porte = pr.porte || [0, rOf(B)];
     g.userData.heroes = sp.map(S => {
       const ee = elH(S.el),
         av = mdlOf('hero.avatar', avCtx(S.el, ee), avKey(S.el, ee), { cast: false });
@@ -516,6 +628,21 @@ function terrLocks() {
         return Math.abs(x) < 7.8 && z > -10.4 && z < 9.6;
       },
       hors = save.vil.filter(B => B !== H && !CAT[B.t].up && dedans(B));
+    if (hors.length) {
+      save.gold = (save.gold || 0) + hors.reduce((a, B) => a + (B.c || 0), 0);
+      save.vil = save.vil.filter(B => !hors.includes(B));
+      persist();
+    }
+  }
+}
+// la salle d'armes est devenue l'Arsenal (V13.5), plus grand que l'ancienne forge : un décor resté dans son emprise est rangé aussi, et son or rendu
+{
+  const A = save.vil.find(B => B.t === 'armes');
+  if (A) {
+    const R = CAT.armes.r + 0.4,
+      hors = save.vil.filter(
+        B => B !== A && !CAT[B.t].up && Math.hypot(B.x - A.x, B.z - A.z) < R + (CAT[B.t].r || 0) * 0.5
+      );
     if (hors.length) {
       save.gold = (save.gold || 0) + hors.reduce((a, B) => a + (B.c || 0), 0);
       save.vil = save.vil.filter(B => !hors.includes(B));

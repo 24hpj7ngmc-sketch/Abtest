@@ -1,4 +1,4 @@
-// [lobby/batiments.js] Les panneaux des bâtiments : hall des héros, maison, marchand céleste, musée.
+// [lobby/batiments.js] Les panneaux des bâtiments : hall des héros, maison, marchand céleste, musée ; armesVoir (une arme exposée à l'Arsenal ouvre le panneau de la salle d'armes sur elle).
 // ---- hall des héros : on y choisit qui l'on incarne. Ouvert devant un héros exposé dans la cathédrale, le panneau montre CE héros (hallVu) :
 // son élément, sa voie, son arbre, et le bouton pour l'incarner ; ouvert par la porte, il montre le héros incarné
 let hallVu = null;
@@ -239,3 +239,11 @@ function lootOpen() {
 $('lootX').onclick = () => {
   $('lootV').hidden = true;
 };
+// ---- l'Arsenal (la salle d'armes) : devant une arme exposée, Action ouvre le panneau de la salle d'armes sur CETTE arme. Comme au panneau,
+// l'arme qu'on regarde devient l'arme en main (prochaine partie, outil Arme) : sa vitrine prend la lumière la plus forte
+function armesVoir(w) {
+  if (!WT[w]) return;
+  setWeap(w);
+  openTree('arme');
+  SND.play('tick');
+}

@@ -158,8 +158,8 @@ function pnjTick(dt, t) {
         for (const B of save.vil) {
           const C = CAT[B.t];
           if (C.pass) continue;
-          // la cathédrale du Hall occupe tout son cercle (tours, abside) : les habitants en font le tour
-          const br = Math.max(0.5, rOf(B) * (B.t === 'hall' ? 1 : 0.8)) + 0.45,
+          // la cathédrale du Hall et l'Arsenal occupent tout leur cercle (tours, abside, appentis) : les habitants en font le tour
+          const br = Math.max(0.5, rOf(B) * (CAT[B.t].fix ? 1 : 0.8)) + 0.45,
             ex = nx - B.x,
             ez = nz - B.z,
             e = Math.hypot(ex, ez);

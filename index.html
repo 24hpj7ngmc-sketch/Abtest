@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Abtest"><meta name="theme-color" content="#0d2a37"><link rel="apple-touch-icon" href="icon-180.png"><link rel="manifest" href="manifest.webmanifest"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <meta name="claude:viewport-fit-sides" content="cover">
-<title>Abtest. V13.4</title>
+<title>Abtest. V13.5</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Barlow:wght@400;600&display=swap">
 <style>
 /* Layout : la vue 3D occupe tout l'écran ; le HUD est un calque — infos en haut, commandes sous les pouces en bas. Jeu tactile uniquement. */
@@ -1570,7 +1570,7 @@ button:focus-visible {
 </div>
 
 <div id="start" class="veil" hidden><div class="card">
-  <div class="row head"><h1>L'Île des Cinq <span class="ver">Abtest. V13.4</span></h1><span style="display:flex;gap:8px;flex-wrap:wrap"><button class="ghost" id="sTuto">Tutoriel · 3 min</button><button class="ghost" id="sTree">Arbres des héros</button><button class="ghost fx" id="sBack" aria-label="Fermer">✕</button></span></div>
+  <div class="row head"><h1>L'Île des Cinq <span class="ver">Abtest. V13.5</span></h1><span style="display:flex;gap:8px;flex-wrap:wrap"><button class="ghost" id="sTuto">Tutoriel · 3 min</button><button class="ghost" id="sTree">Arbres des héros</button><button class="ghost fx" id="sBack" aria-label="Fermer">✕</button></span></div>
   <p>Défends le cœur au centre de l'île. Les ennemis sortent de la mer tout autour, un par un, éléments mélangés. Au début de la partie tu choisis jusqu'à trois armes (celle d'ici est la première). Entre deux vagues, tu passes en vue du ciel pour poser, améliorer, murer et creuser, puis « Prêt ».</p>
   <div class="cycle" id="sCycle"></div>
   <div class="row" id="sArms"></div>
@@ -7643,22 +7643,6 @@ for(let i=0;i<8;i++){const x=(i<4?-4.75+i*1.15:1.3+(i-4)*1.15),z=3.9;slots.push(
 b.add(K.box(.8,.14,.8),{p:[x,.37,z],c:PAL.stone});b.add(K.cyl(.26,.31,.72,8),{p:[x,.8,z],c:MARBD,c2:MARB});b.add(K.box(.7,.1,.7),{p:[x,1.2,z],c:MARB,c2:0xffffff});}
 b.add(K.box(1.6,.04,3.6),{p:[0,.32,3.4],c:PAL.purple,c2:PAL.purpleD,jit:0});
 return{parts:[{name:'body',b}],bake:{ground:.15,groundH:.6},slots,rad:6.9};};
-const armes1=ctx=>{const b=K.make(441);
-b.add(K.box(8,.3,7),{p:[0,.15,.3],c:PAL.stoneD,c2:PAL.stone});
-SH.blockWall(b,{p:[0,.3,-2.6],w:7,h:3.4,d:.5,rows:6,cols:7});for(const sd of[1,-1])SH.blockWall(b,{p:[sd*3.3,.3,-.6],r:[0,PI/2,0],w:4,h:3.4,d:.5,rows:6,cols:4});
-for(const sd of[1,-1]){b.add(K.box(.36,3.4,.36),{p:[sd*3.3,2,2.2],c:PAL.woodD,c2:PAL.wood});b.add(K.box(.3,.3,1.2),{p:[sd*3.3,3.3,1.75],r:[.6,0,0],c:PAL.wood});}
-b.add(K.box(7.3,.3,.36),{p:[0,3.72,2.2],c:PAL.woodD});
-b.add(K.box(8.2,2.3,6.2,1,0),{p:[0,4.95,-.2],c:0x3a3f52,c2:0x5a6079,jit:.05});b.add(K.box(8.3,.14,.2),{p:[0,6.12,-.2],c:PAL.iron,ch:'s'});
-b.add(K.box(2,2.2,1.5),{p:[-2,1.4,-1.7],c:PAL.stoneD,c2:PAL.stone});b.add(K.box(1.3,.9,.2),{p:[-2,1.25,-.95],c:0xff7a2e,c2:0xffd27a,ch:'g',jit:0});
-b.add(K.box(1.2,5,1.1,.8,.8),{p:[-2,5,-1.8],c:PAL.stoneD,c2:PAL.stone});b.add(K.box(1.3,.2,1.2),{p:[-2,7.55,-1.8],c:PAL.stoneDD});b.add(K.ico(.3,0),{p:[-2,7.75,-1.8],c:0xff9d5c,ch:'g',jit:0});
-b.add(K.cyl(.42,.46,.7,8),{p:[-.2,.65,.9],c:PAL.barkD,c2:PAL.bark});b.add(K.box(.9,.22,.4),{p:[-.2,1.22,.9],c:PAL.iron,c2:PAL.ironL,ch:'s'});b.add(K.box(.5,.2,.32,.7,1),{p:[-.2,1.05,.9],c:PAL.iron,ch:'s'});b.add(K.cone(.14,.5,5),{p:[.45,1.22,.9],r:[0,0,-PI/2],c:PAL.ironL,ch:'s'});
-b.add(K.box(.3,.2,.2),{p:[-.35,1.44,.86],r:[0,.4,0],c:PAL.steel,ch:'s'});b.add(K.cyl(.035,.035,.55,5),{p:[-.12,1.44,.96],r:[0,.4,PI/2],c:PAL.wood});
-b.add(K.box(2.4,.12,.3),{p:[1.8,1.1,-2.2],c:PAL.wood});b.add(K.box(2.4,.12,.3),{p:[1.8,2.3,-2.2],c:PAL.wood});
-for(let i=0;i<5;i++){const x=.9+i*.45;b.add(K.box(.09,1.5,.03),{p:[x,1.9,-2.15],c:PAL.steel,c2:0xf2f6fa,ch:'s',jit:0});b.add(K.box(.34,.07,.08),{p:[x,1.12,-2.15],c:ORC,ch:'s'});b.add(K.cyl(.035,.035,.3,5),{p:[x,.94,-2.15],c:PAL.woodD});}
-ELK.forEach((el,i)=>{const x=-2.8+i*1.4,E=K.EL[el];b.add(K.cyl(.46,.46,.1,10),{p:[x,3.72,2.42],r:[PI/2,0,0],c:E.dark,c2:E.main});b.add(K.torus(.46,.05,4,12),{p:[x,3.72,2.46],c:PAL.ironL,ch:'s',jit:0});b.add(K.ico(.12,0),{p:[x,3.72,2.52],c:E.glow,ch:'g',jit:0});});
-b.add(K.cyl(.08,.1,1.9,6),{p:[2.6,1.25,1.4],c:PAL.wood});b.add(K.box(1.3,.12,.12),{p:[2.6,1.75,1.4],c:PAL.wood});b.add(K.ico(.28,1),{p:[2.6,2.35,1.4],c:PAL.rope});b.add(K.cyl(.34,.3,.9,8),{p:[2.6,1.35,1.4],c:PAL.rope,c2:PAL.sand});
-b.add(K.cyl(.4,.36,.9,9),{p:[1.2,.75,1.9],c:PAL.wood,c2:PAL.woodL});b.add(K.cyl(.36,.36,.03,9),{p:[1.2,1.17,1.9],c:0x3fa9ff,ch:'s',jit:0});
-return{parts:[{name:'body',b}],bake:{ground:.18,groundH:.7},rad:5.4};};
 MODELS['vil.fontaine']=ctx=>{const b=K.make(451),st=K.make(452);
 SH.bricks(b,{r:2.1,h:.6,rows:1,n:14,y:0,d:.45,c:MARBD});b.add(K.cyl(2.2,2.2,.1,18),{p:[0,.63,0],c:MARB,c2:0xffffff});b.add(K.cyl(1.72,1.72,.06,18),{p:[0,.67,0],c:NUITD,jit:0});
 b.add(K.cyl(1.7,1.7,.04,18),{p:[0,.5,0],c:0x5fc4ff,c2:0xbfe9ff,ch:'s',jit:0});
@@ -7690,7 +7674,6 @@ b.add(K.cyl(.1,.09,.2,6),{p:[1.8,1,4.5],c:ORC,ch:'s'});b.add(K.cyl(.1,.09,.2,6),
 return{parts:[{name:'body',b}],bake:{ground:.18,groundH:.7},rad:5.6};};
 MODELS['vil.maison']=maison1;
 MODELS['vil.musee']=musee1;
-MODELS['vil.armes']=armes1;
 MODELS['vil.marchand']=ctx=>MODELS['set.etal'](ctx);
 const verger1=ctx=>{const b=K.make(487),FR=0xffd27a,FRL=0xfff0b8,LF=K.mix(PAL.leaf,PAL.leafL,.45),LFD=K.mix(PAL.leafD,PAL.leaf,.35),LFU=K.mix(PAL.leafL,PAL.grassL,.5);
 const arbre=(x,z,h,ry,sd)=>b.group({p:[x,0,z],r:[0,ry,0],s:h},g=>{
@@ -8609,6 +8592,1015 @@ rad: 10.6
 };
 };
 MODELS['vil.hall'] = cathedrale;
+}
+{
+const { PAL, TAU } = K,
+PI = Math.PI;
+const PIER = 0xd3c3a6,
+PIERL = 0xe9ddc4,
+PIERD = 0xa89878,
+PIERDD = 0x7e715c,
+TUIL = 0xa8492c,
+TUILL = 0xd06a3c,
+BOIS = PAL.wood,
+BOISL = PAL.woodL,
+BOISD = PAL.woodD,
+FER = PAL.iron,
+FERL = PAL.ironL,
+LAI = PAL.bronze,
+LAIL = PAL.bronzeL,
+OR = PAL.gold,
+ORD = PAL.goldD,
+BRAISE = 0xff7a2e,
+BRAISEL = 0xffd27a,
+ORANGE = 0xe8743a,
+ORANGED = 0xa8452a,
+VITRE = 0xffc56b,
+VERRE = 0x0c1a22;
+const ELK = ['feu', 'eau', 'bois', 'terre', 'elec', 'vent'];
+const W = 4.5,
+T = 0.8,
+WC = W + T / 2,
+WO = W + T,
+ZF = 4.7,
+ZB = -4.5,
+ZI = ZF - T / 2,
+ZJ = ZB + T / 2,
+Y0 = 0.15,
+HM = 6.2,
+HF = 10.5,
+DH = HM - 5.6,
+DP = 1.5,
+DY = 3.3;
+const PZ = [2.75, 0.4, -1.95],
+PX = 3.25,
+QUI = [
+['pistolet', 1, 0],
+['assaut', 1, 1],
+['sniper', 1, 2],
+['fusil', -1, 0],
+['pompe', -1, 1],
+['lance', -1, 2]
+];
+const plaque = (b, contour, th, o) =>
+b.group({ p: o.p, r: [0, o.ry || 0, 0] }, b =>
+b.add(K.prism(contour, th), {
+p: [0, 0, -th / 2],
+r: [PI / 2, 0, 0],
+s: [1, 1, -1],
+c: o.c,
+c2: o.c2,
+ch: o.ch,
+jit: o.jit
+})
+);
+const cintre = (r, y0, n) => {
+const P = [];
+for (let i = 0; i <= n; i++) {
+const t = PI - (PI * i) / n;
+P.push([r * Math.cos(t), y0 + r * Math.sin(t)]);
+}
+return P;
+};
+const baie = (w, hs, n) => [[w / 2, 0], ...cintre(w / 2, hs, n).reverse(), [-w / 2, 0]];
+const ecu = (w, h) => [
+[-w / 2, h * 0.5],
+[w / 2, h * 0.5],
+[w / 2, -h * 0.05],
+[w * 0.36, -h * 0.3],
+[0, -h * 0.5],
+[-w * 0.36, -h * 0.3],
+[-w / 2, -h * 0.05]
+];
+const arsenal = ctx => {
+const L = Math.max(1, Math.min(6, Math.round(+ctx.lvl || 1))),
+b = K.make(511),
+d = K.make(512),
+fe = K.make(513),
+so = K.make(514),
+fu = K.make(515),
+spots = [],
+col = [],
+dor = L >= 6,
+vit = L >= 2,
+gr = L >= 3,
+TR = dor ? OR : LAI,
+TRch = 's',
+cerc = (x, z, r) => col.push([+x.toFixed(2), +z.toFixed(2), r]),
+chaine = (x0, z0, x1, z1, r) => {
+const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, z1 - z0) / 0.5));
+for (let i = 0; i <= n; i++) cerc(x0 + ((x1 - x0) * i) / n, z0 + ((z1 - z0) * i) / n, r);
+};
+b.add(K.box(2 * WO + 0.4, Y0, ZF - ZB + T + 0.3), {
+p: [0, Y0 / 2, (ZF + ZB) / 2],
+c: PIERDD,
+c2: PIERD,
+jit: 0.02
+});
+b.add(K.box(4.6, Y0, 0.9), { p: [0, Y0 / 2, ZF + T / 2 + 0.45], c: PIERD, c2: PIER });
+b.add(K.box(5.4, Y0 / 2, 0.8), { p: [0, Y0 / 4, ZF + T / 2 + 1.3], c: PIERDD, c2: PIERD });
+for (let i = 0; i < 6; i++)
+for (let j = 0; j < 6; j++) {
+const dz = (ZI - ZJ) / 6;
+b.add(K.box(1.46, 0.04, dz - 0.04), {
+p: [-W + 0.75 + i * 1.5, Y0 + 0.02, ZJ + dz * (j + 0.5)],
+c: (i * 7 + j * 3) % 4 ? 0xa59a88 : 0x8d8373,
+jit: 0.05
+});
+}
+d.add(K.box(1.6, 0.03, ZI - ZJ - 2.2), {
+p: [0, Y0 + 0.055, (ZI + ZJ + 2.2) / 2 + 0.25],
+c: ORANGED,
+c2: 0xc0532e,
+jit: 0
+});
+for (const sd of [1, -1])
+d.add(K.box(0.07, 0.035, ZI - ZJ - 2.2), {
+p: [sd * 0.76, Y0 + 0.06, (ZI + ZJ + 2.2) / 2 + 0.25],
+c: dor ? OR : 0xe8b04a,
+ch: 's',
+jit: 0
+});
+for (const sd of [1, -1]) {
+b.add(K.box(T, HM, ZF - ZB + T), { p: [sd * WC, HM / 2, (ZF + ZB) / 2], c: PIERD, c2: PIER, jit: 0.025 });
+b.add(K.box(T + 0.3, 1.1, ZF - ZB + T + 0.3), {
+p: [sd * WC, 0.55, (ZF + ZB) / 2],
+c: PIERDD,
+c2: PIERD,
+jit: 0.03
+});
+b.add(K.box(T + 0.5, 0.32, ZF - ZB + T + 0.5), {
+p: [sd * WC, HM - 0.12, (ZF + ZB) / 2],
+c: dor ? ORD : PIERD,
+c2: dor ? OR : PIERL,
+ch: dor ? 's' : 'm',
+jit: 0
+});
+b.add(K.box(T + 0.14, 0.14, ZF - ZB + T + 0.14), { p: [sd * WC, 2.4, (ZF + ZB) / 2], c: PIERD, jit: 0 });
+for (let i = 0; i < 9; i++)
+b.add(K.box(0.14, 0.42, 0.95, 0.7, 0.85), {
+p: [sd * (WO + 0.16), 0.55 + (i % 2 ? 0.02 : -0.02), ZB + 0.1 + i * 1.07],
+r: [0, 0, sd * (PI / 2)],
+c: PIERD,
+jit: 0.06
+});
+for (const z of [ZF + T / 2, ZB - T / 2])
+for (let i = 0; i < 5; i++)
+b.add(K.box(i % 2 ? 0.55 : 0.9, 0.8, i % 2 ? 0.9 : 0.55), {
+p: [
+sd * (WO - (i % 2 ? 0.2 : 0.38)) + sd * 0.06,
+1.55 + i * 0.85,
+z + (z > 0 ? 1 : -1) * (i % 2 ? 0.38 : 0.2) - (z > 0 ? 1 : -1) * 0.3
+],
+c: PIERL,
+jit: 0.04
+});
+for (const z of PZ)
+if (!(sd < 0 && L >= 4 && z > 2))
+b.add(K.box(0.3, HM - 1.3, 0.7), {
+p: [sd * (WO + 0.12), (HM + 1.1) / 2 - 0.1, z],
+c: PIERD,
+c2: PIERL,
+jit: 0.03
+});
+b.add(K.box(WO - DP, HM, T), { p: [sd * (DP + (WO - DP) / 2), HM / 2, ZF], c: PIERD, c2: PIER, jit: 0.025 });
+b.add(K.box(WO - DP + 0.15, 1.1, T + 0.3), {
+p: [sd * (DP + (WO - DP) / 2 + 0.07), 0.55, ZF],
+c: PIERDD,
+c2: PIERD,
+jit: 0.03
+});
+chaine(sd * WC, ZB, sd * WC, ZF + T / 2, 0.6);
+chaine(sd * (DP + 0.55), ZF, sd * WO, ZF, 0.6);
+}
+b.add(K.box(2 * WO, HM, T), { p: [0, HM / 2, ZB], c: PIERD, c2: PIER, jit: 0.025 });
+b.add(K.box(2 * WO + 0.3, 1.1, T + 0.3), { p: [0, 0.55, ZB], c: PIERDD, c2: PIERD, jit: 0.03 });
+b.add(K.box(2 * WO + 0.5, 0.32, T + 0.5), {
+p: [0, HM - 0.12, ZB],
+c: dor ? ORD : PIERD,
+c2: dor ? OR : PIERL,
+ch: dor ? 's' : 'm',
+jit: 0
+});
+chaine(-WC, ZB, WC, ZB, 0.6);
+{
+const A = cintre(DP, DY, 8);
+plaque(b, [...A, [DP, HM], [-DP, HM]], T, { p: [0, 0, ZF], c: PIERD, c2: PIER, jit: 0.02 });
+for (let i = 0; i < 9; i++) {
+const t = PI - (PI * (i + 0.5)) / 9,
+r = DP + 0.28;
+b.add(K.box(0.5, i === 4 ? 0.75 : 0.55, 0.22, 1, 1), {
+p: [Math.cos(t) * r, DY + Math.sin(t) * r, ZF + T / 2 + 0.08],
+r: [0, 0, t - PI / 2],
+c: i === 4 ? (dor ? OR : PIERL) : i % 2 ? PIERL : PIER,
+ch: i === 4 && dor ? 's' : 'm',
+jit: 0.03
+});
+}
+for (const sd of [1, -1])
+b.add(K.box(0.5, DY, 0.24), {
+p: [sd * (DP + 0.25), DY / 2, ZF + T / 2 + 0.07],
+c: PIER,
+c2: PIERL,
+jit: 0.03
+});
+for (const sd of [1, -1]) b.add(K.box(0.12, DY, T), { p: [sd * (DP - 0.06), DY / 2, ZF], c: BOISD, jit: 0 });
+}
+b.sym(sd =>
+b.group({ p: [sd * DP, Y0, ZF + T / 2 + 0.06], r: [0, sd * 2.0, 0], s: [sd, 1, 1] }, b => {
+const A = [];
+for (let i = 0; i <= 5; i++) {
+const t = (PI / 2) * (i / 5);
+A.push([-DP + DP * Math.cos(t), DY - Y0 + DP * Math.sin(t)]);
+}
+plaque(b, [[0, 0], ...A, [-DP, 0]], 0.14, { p: [0, 0, 0], c: BOISD, c2: BOIS, jit: 0.04 });
+for (let i = 1; i < 4; i++)
+b.add(K.box(0.04, DY - 0.2, 0.17), { p: [-i * 0.38, (DY - 0.2) / 2, 0], c: BOISD, jit: 0 });
+for (const y of [0.6, 1.8, 3.0]) b.add(K.box(1.35, 0.13, 0.19), { p: [-0.68, y, 0], c: FER, ch: 's', jit: 0 });
+for (const y of [0.6, 1.8, 3.0])
+for (let i = 0; i < 4; i++) b.add(K.oct(0.035), { p: [-0.2 - i * 0.33, y, 0.1], c: FERL, ch: 's', jit: 0 });
+b.add(K.torus(0.13, 0.03, 4, 8), { p: [-1.2, 1.6, 0.12], c: dor ? OR : FERL, ch: 's', jit: 0 });
+})
+);
+for (const sd of [1, -1]) {
+cerc(sd * (DP + 0.75 * 0.42), ZF + T / 2 + 0.75 * 0.9, 0.42);
+cerc(sd * (DP + 1.35 * 0.42), ZF + T / 2 + 1.35 * 0.9, 0.35);
+}
+for (const sd of [1, -1])
+for (const z of [1.6, -0.8]) {
+plaque(b, baie(1.05, 1.45, 6), T + 0.08, {
+p: [sd * WC, 2.55, z],
+ry: PI / 2,
+c: dor ? OR : PIERL,
+ch: dor ? 's' : 'm',
+jit: 0
+});
+plaque(b, baie(0.8, 1.35, 6), T + 0.14, {
+p: [sd * WC, 2.65, z],
+ry: PI / 2,
+c: vit ? VITRE : 0x5a4a3a,
+c2: vit ? 0xffe3a8 : 0x3a2f25,
+ch: vit ? 'g' : 'm',
+jit: 0
+});
+b.add(K.box(T + 0.18, 0.05, 0.82), { p: [sd * WC, 3.5, z], c: FER, jit: 0 });
+b.add(K.box(T + 0.18, 1.7, 0.05), { p: [sd * WC, 3.45, z], c: FER, jit: 0 });
+b.add(K.box(0.3, 0.12, 1.2), { p: [sd * (WO + 0.1), 2.5, z], c: PIERL, jit: 0 });
+}
+const ex = L >= 5 ? WC : WO + 0.55,
+ey = L >= 5 ? HM + 0.15 : HM - 0.2,
+Lz = ZF - ZB + T + (L >= 5 ? 0.2 : 1.2),
+cz = (ZF + ZB) / 2;
+for (const z of [ZF, ZB])
+plaque(
+b,
+[
+[-WO - 0.25, 0],
+[WO + 0.25, 0],
+[0, HF - HM + 0.3]
+],
+T,
+{ p: [0, HM, z], c: PIERD, c2: PIER, jit: 0.02 }
+);
+{
+const sl = Math.hypot(ex, HF - ey),
+al = Math.atan2(HF - ey, ex);
+for (const sd of [1, -1]) {
+b.add(K.box(sl + 0.25, 0.34, Lz), {
+p: [(sd * ex) / 2, (ey + HF) / 2, cz],
+r: [0, 0, -sd * al],
+c: PAL.plank,
+c2: TUIL,
+jit: 0.04
+});
+for (let i = 0; i < 6; i++) {
+const u = (i + 0.4) / 6.3,
+x = sd * ex * (1 - u),
+y = ey + (HF - ey) * u;
+b.add(K.box(0.85, 0.1, Lz + 0.05), {
+p: [x + sd * Math.sin(al) * 0.18, y + Math.cos(al) * 0.18, cz],
+r: [0, 0, -sd * al],
+c: i % 2 ? TUILL : TUIL,
+c2: i % 2 ? 0xe07c48 : TUILL,
+jit: 0.06
+});
+}
+}
+b.add(K.box(0.42, 0.42, Lz + 0.2), {
+p: [0, HF + 0.12, cz],
+r: [0, 0, PI / 4],
+c: dor ? OR : FER,
+c2: dor ? OR : FERL,
+ch: 's',
+jit: 0
+});
+for (const z of [cz - Lz / 2 - 0.05, cz + Lz / 2 + 0.05]) {
+b.add(K.cyl(0.05, 0.08, 0.9, 5), { p: [0, HF + 0.6, z], c: dor ? OR : FER, ch: 's', jit: 0 });
+b.add(K.oct(0.16), { p: [0, HF + 1.15, z], s: [1, 1.5, 1], c: dor ? OR : LAIL, ch: 's', jit: 0 });
+}
+}
+{
+const y = 8.35,
+z = ZF + T / 2 + 0.06;
+plaque(b, ecu(1.95, 2.25), 0.16, { p: [0, y, z], c: dor ? ORD : FER, c2: dor ? OR : FERL, ch: 's', jit: 0 });
+plaque(b, ecu(1.65, 1.95), 0.24, { p: [0, y + 0.02, z], c: ORANGED, c2: ORANGE, jit: 0.02 });
+b.add(K.box(0.8, 0.18, 0.12), { p: [0, y - 0.05, z + 0.16], c: dor ? OR : FERL, ch: 's', jit: 0 });
+b.add(K.box(0.36, 0.22, 0.12), { p: [0, y - 0.24, z + 0.16], c: dor ? OR : FERL, ch: 's', jit: 0 });
+b.add(K.box(0.6, 0.12, 0.12), { p: [0, y - 0.4, z + 0.16], c: dor ? OR : FERL, ch: 's', jit: 0 });
+b.add(K.cone(0.09, 0.32, 4), {
+p: [0.55, y - 0.05, z + 0.16],
+r: [0, 0, -PI / 2],
+c: dor ? OR : FERL,
+ch: 's',
+jit: 0
+});
+for (const sd of [1, -1]) {
+b.add(K.box(0.07, 1.1, 0.08), { p: [sd * 0.22, y + 0.35, z + 0.2], r: [0, 0, sd * 0.6], c: BOISL, jit: 0 });
+b.add(K.box(0.36, 0.2, 0.14), {
+p: [sd * 0.53, y + 0.78, z + 0.2],
+r: [0, 0, sd * 0.6],
+c: dor ? OR : PAL.steel,
+ch: 's',
+jit: 0
+});
+}
+}
+for (const sd of [1, -1]) {
+b.add(K.box(0.1, 0.1, 0.45), { p: [sd * 2.1, 2.55, ZF + T / 2 + 0.22], c: FER, jit: 0 });
+b.add(K.cyl(0.11, 0.06, 0.32, 6), { p: [sd * 2.1, 2.72, ZF + T / 2 + 0.42], c: FER, ch: 's', jit: 0 });
+fe.add(K.cone(0.12, 0.42, 5), {
+p: [sd * 2.1, 3.05, ZF + T / 2 + 0.42],
+c: BRAISE,
+c2: BRAISEL,
+ch: 'g',
+jit: 0
+});
+}
+{
+const x = WO + 0.05,
+z = ZF + 0.1;
+b.add(K.box(1.3, 0.09, 0.09), { p: [x + 0.6, 4.1, z], c: FER, ch: 's', jit: 0 });
+b.add(K.box(0.07, 0.6, 0.07), { p: [x + 0.25, 3.82, z], r: [0, 0, 0.75], c: FER, ch: 's', jit: 0 });
+for (const dx of [0.35, 1.05]) b.add(K.cyl(0.012, 0.012, 0.3, 3), { p: [x + dx, 3.92, z], c: FER, jit: 0 });
+b.add(K.box(0.95, 0.66, 0.07), { p: [x + 0.7, 3.45, z], c: BOISD, c2: BOIS, jit: 0.03 });
+b.add(K.box(1.02, 0.07, 0.1), { p: [x + 0.7, 3.8, z], c: dor ? OR : LAI, ch: 's', jit: 0 });
+for (const sz of [1, -1]) {
+b.add(K.box(0.42, 0.11, 0.05), { p: [x + 0.7, 3.47, z + sz * 0.05], c: OR, ch: 's', jit: 0 });
+b.add(K.box(0.2, 0.14, 0.05), { p: [x + 0.7, 3.34, z + sz * 0.05], c: OR, ch: 's', jit: 0 });
+b.add(K.box(0.34, 0.07, 0.05), { p: [x + 0.7, 3.24, z + sz * 0.05], c: OR, ch: 's', jit: 0 });
+}
+}
+const HC = gr ? 14.0 : 12.8,
+zc = ZB - T / 2 - 0.62;
+b.add(K.box(2.2, 1.1, 1.4), { p: [0, 0.55, zc], c: PIERDD, c2: PIERD, jit: 0.03 });
+b.add(K.box(2.0, HC - 1.6, 1.24, 0.82, 0.86), {
+p: [0, 1.1 + (HC - 1.6) / 2 - 0.5, zc],
+c: PIERD,
+c2: PIER,
+jit: 0.03
+});
+for (let i = 0; i < 4; i++)
+b.add(K.box(2.1 - i * 0.08, 0.14, 1.32 - i * 0.04), { p: [0, 2.6 + i * 2.2, zc], c: PIERL, jit: 0 });
+b.add(K.box(1.95, 0.4, 1.3), { p: [0, HC - 0.6, zc], c: PIERD, c2: PIERL, jit: 0 });
+b.add(K.box(1.3, 0.12, 0.72), { p: [0, HC - 0.36, zc], c: BRAISE, c2: BRAISEL, ch: 'g', jit: 0 });
+if (gr) {
+for (const ax of [1, -1])
+for (const az of [1, -1])
+b.add(K.box(0.3, 0.5, 0.3), { p: [ax * 0.82, HC - 0.15, zc + az * 0.5], c: PIERL, jit: 0 });
+b.add(K.box(1.95, 0.1, 1.3), { p: [0, HC + 0.12, zc], c: dor ? OR : FER, ch: 's', jit: 0 });
+}
+cerc(0, zc, 1.05);
+cerc(-0.7, zc, 0.7);
+cerc(0.7, zc, 0.7);
+for (let i = 0; i < 6; i++) {
+const a = i * 1.1,
+y = HC + 0.4 + i * 0.75,
+r = 0.18 + i * 0.12;
+fu.add(K.ico(0.32 + i * 0.1, 0), {
+p: [Math.sin(a) * r, y, zc + Math.cos(a) * r],
+r: [i, i * 2, 0],
+c: K.mix(0x8a8790, 0xe8e6ee, i / 6),
+jit: 0.05
+});
+}
+{
+const yE = HM - 0.35;
+for (const z of PZ) {
+d.add(K.box(2 * W + 0.2, 0.32, 0.3), { p: [0, yE, z], c: BOISD, c2: BOIS, jit: 0.03 });
+d.add(K.box(0.26, HF - yE - 0.3, 0.26), { p: [0, (yE + HF - 0.3) / 2, z], c: BOISD, c2: BOIS, jit: 0.03 });
+for (const sd of [1, -1]) {
+const x0 = sd * (W - 0.2),
+y0 = yE + 0.1,
+x1 = 0,
+y1 = HF - 0.45,
+ln = Math.hypot(x1 - x0, y1 - y0);
+d.add(K.box(ln, 0.26, 0.24), {
+p: [(x0 + x1) / 2, (y0 + y1) / 2, z],
+r: [0, 0, Math.atan2(y1 - y0, x1 - x0)],
+c: BOISD,
+c2: BOIS,
+jit: 0.03
+});
+d.add(K.box(1.9, 0.16, 0.16), { p: [sd * 0.85, yE + 0.95, z], r: [0, 0, -sd * 0.75], c: BOIS, jit: 0.03 });
+d.add(K.box(0.4, 0.3, 0.42, 1, 0.7), { p: [sd * (W - 0.15), yE - 0.3, z], r: [PI, 0, 0], c: PIERL, jit: 0 });
+d.add(K.box(1.1, 0.14, 0.14), { p: [sd * (W - 0.55), yE - 0.5, z], r: [0, 0, sd * 0.7], c: BOISD, jit: 0 });
+}
+d.add(K.box(0.24, 0.06, 0.34), { p: [0, yE - 0.18, z], c: FER, jit: 0 });
+for (const sd of [1, -1]) {
+d.add(K.cyl(0.18, 0.1, 0.22, 6), { p: [sd * PX, yE - 0.3, z], c: dor ? OR : FER, ch: 's', jit: 0 });
+d.add(K.cyl(0.15, 0.15, 0.03, 6), { p: [sd * PX, yE - 0.42, z], c: 0xfff2c4, ch: 'g', jit: 0 });
+}
+}
+for (const sd of [1, -1])
+for (const u of [0.33, 0.66]) {
+const x = sd * (W - 0.2) * (1 - u),
+y = yE + 0.1 + (HF - 0.45 - yE - 0.1) * u + 0.12;
+d.add(K.box(0.2, 0.2, ZI - ZJ), { p: [x, y, (ZI + ZJ) / 2], c: BOIS, jit: 0.03 });
+}
+d.add(K.box(0.26, 0.26, ZI - ZJ), { p: [0, HF - 0.45, (ZI + ZJ) / 2], c: BOISD, jit: 0.03 });
+}
+const HW = gr ? 3.0 : 2.2,
+zf = ZJ + 0.7;
+{
+d.add(K.box(HW + 0.3, 0.85, 1.4), { p: [0, Y0 + 0.42, zf], c: PIERDD, c2: PIERD, jit: 0.03 });
+d.add(K.box(HW + 0.45, 0.14, 1.55), { p: [0, Y0 + 0.9, zf], c: PIERL, jit: 0 });
+d.add(K.box(HW - 0.2, 0.14, 1.0), { p: [0, Y0 + 0.98, zf + 0.05], c: BRAISE, c2: BRAISEL, ch: 'g', jit: 0.05 });
+for (let i = 0; i < 9; i++)
+d.add(K.oct(0.1 + ((i * 7) % 3) * 0.03), {
+p: [-HW / 2 + 0.35 + ((i * 0.37) % 1) * (HW - 0.7), Y0 + 1.08, zf - 0.3 + ((i * 0.61) % 1) * 0.6],
+r: [i, i * 0.7, 0],
+c: 0x2a2320,
+jit: 0.05
+});
+for (let i = 0; i < (gr ? 5 : 3); i++) {
+const x = -HW / 2 + 0.5 + (i * (HW - 1.0)) / ((gr ? 5 : 3) - 1);
+fe.add(K.cone(0.22 - (i % 2) * 0.05, 0.75 - (i % 2) * 0.2, 5), {
+p: [x, Y0 + 1.42 - (i % 2) * 0.1, zf + 0.05],
+r: [0, i, 0],
+c: BRAISE,
+c2: BRAISEL,
+ch: 'g',
+jit: 0
+});
+}
+d.add(K.box(HW + 0.5, HM - 2.4, 1.5, 0.55, 0.55), {
+p: [0, (HM + 2.4) / 2, ZJ + 0.6],
+c: PIERD,
+c2: PIER,
+jit: 0.03
+});
+d.add(K.box(HW + 0.7, 0.3, 0.3), { p: [0, 2.45, zf + 0.62], c: BOISD, c2: BOIS, jit: 0.03 });
+for (let i = 0; i < 5; i++)
+d.add(K.box(0.04, 0.4, 0.04), { p: [-0.8 + i * 0.4, 2.15, zf + 0.72], c: FER, ch: 's', jit: 0 });
+for (let k = 0; k < (gr ? 3 : 2); k++)
+d.add(K.oct(0.16), { p: [-0.6 + k * 0.6, 2.82, zf + 0.79], c: K.EL[ELK[k * 2]].main, ch: 'g', jit: 0 });
+chaine(-HW / 2 - 0.1, zf + 0.2, HW / 2 + 0.1, zf + 0.2, 0.75);
+}
+{
+const z = -1.0;
+d.add(K.cyl(0.4, 0.46, 0.62, 8), { p: [0, Y0 + 0.31, z], c: PAL.barkD, c2: PAL.bark, jit: 0.04 });
+d.add(K.box(0.55, 0.22, 0.42, 0.75, 0.8), { p: [0, Y0 + 0.73, z], c: FER, ch: 's', jit: 0 });
+d.add(K.box(0.3, 0.2, 0.28), { p: [0, Y0 + 0.92, z], c: FER, ch: 's', jit: 0 });
+d.add(K.box(0.95, 0.22, 0.4), { p: [0.05, Y0 + 1.12, z], c: FERL, c2: PAL.steel, ch: 's', jit: 0 });
+d.add(K.cone(0.17, 0.55, 6), {
+p: [0.79, Y0 + 1.12, z],
+r: [0, 0, -PI / 2],
+c: FERL,
+c2: PAL.steel,
+ch: 's',
+jit: 0
+});
+d.add(K.box(0.42, 0.06, 0.1), { p: [-0.1, Y0 + 1.26, z + 0.05], c: BRAISE, c2: BRAISEL, ch: 'g', jit: 0 });
+d.add(K.box(0.24, 0.12, 0.13), { p: [0.25, Y0 + 1.3, z - 0.1], r: [0, 0.5, 0], c: PAL.steel, ch: 's', jit: 0 });
+d.add(K.cyl(0.03, 0.03, 0.5, 5), { p: [0.4, Y0 + 1.27, z + 0.08], r: [0, 0.5, PI / 2 - 0.1], c: BOISL, jit: 0 });
+for (let i = 0; i < 6; i++)
+d.add(K.oct(0.025), {
+p: [-0.2 + i * 0.09, Y0 + 1.4 + (i % 3) * 0.12, z + (i % 2) * 0.1],
+c: 0xffe08a,
+ch: 'g',
+jit: 0
+});
+cerc(0, z, 0.62);
+cerc(0.55, z, 0.4);
+}
+{
+const x = -HW / 2 - 0.95,
+z = zf + 0.1;
+d.add(K.box(0.16, 0.7, 0.16), { p: [x - 0.5, Y0 + 0.35, z], c: BOISD, jit: 0 });
+d.add(K.box(0.16, 0.7, 0.16), { p: [x + 0.5, Y0 + 0.35, z], c: BOISD, jit: 0 });
+d.add(K.box(1.3, 0.08, 0.75, 1, 1), { p: [x, Y0 + 0.74, z], c: BOIS, jit: 0.03 });
+d.add(K.box(1.15, 0.3, 0.62, 0.85, 0.85), { p: [x, Y0 + 0.92, z], c: 0x7a4a2c, c2: 0x9a6038, jit: 0.04 });
+d.add(K.cyl(0.05, 0.08, 0.6, 5), { p: [x + 0.85, Y0 + 0.86, z], r: [0, 0, -PI / 2], c: LAI, ch: 's', jit: 0 });
+so.add(K.box(1.3, 0.07, 0.75), { p: [x, Y0 + 1.1, z], c: BOIS, c2: BOISL, jit: 0.03 });
+so.add(K.box(0.07, 0.07, 0.6), { p: [x - 0.75, Y0 + 1.16, z], c: BOISD, jit: 0 });
+so.add(K.cyl(0.03, 0.03, 0.55, 4), { p: [x - 0.75, Y0 + 1.16, z], r: [PI / 2, 0, 0], c: BOISL, jit: 0 });
+cerc(x, z, 0.75);
+}
+{
+const x = HW / 2 + 0.9,
+z = zf + 0.05;
+d.add(K.box(0.85, 0.6, 1.2), { p: [x, Y0 + 0.3, z], c: BOISD, c2: BOIS, jit: 0.04 });
+d.add(K.box(0.7, 0.04, 1.05), { p: [x, Y0 + 0.55, z], c: 0x3fa9ff, c2: 0x8fd2ff, ch: 's', jit: 0 });
+for (const dz of [-0.45, 0.45]) d.add(K.box(0.9, 0.06, 0.06), { p: [x, Y0 + 0.45, z + dz], c: FER, jit: 0 });
+cerc(x, z, 0.75);
+d.add(K.box(1.4, 1.1, 0.06), { p: [x, 2.0, ZJ + 0.04], c: BOISD, c2: BOIS, jit: 0.03 });
+for (let i = 0; i < 4; i++) {
+const xx = x - 0.5 + i * 0.33;
+d.add(K.cyl(0.025, 0.025, 0.5, 4), { p: [xx, 1.9, ZJ + 0.12], c: BOISL, jit: 0 });
+d.add(K.box(i % 2 ? 0.08 : 0.2, i % 2 ? 0.3 : 0.1, 0.1), {
+p: [xx, 2.18, ZJ + 0.12],
+c: PAL.steel,
+ch: 's',
+jit: 0
+});
+}
+}
+if (gr) {
+const x = 2.05,
+z = -0.35;
+d.add(K.box(0.9, 0.12, 0.5), { p: [x, Y0 + 0.06, z], c: BOISD, jit: 0 });
+for (const dz of [-0.2, 0.2]) d.add(K.box(0.1, 0.75, 0.08), { p: [x, Y0 + 0.45, z + dz], c: BOIS, jit: 0 });
+d.add(K.cyl(0.42, 0.42, 0.16, 10), {
+p: [x, Y0 + 0.82, z],
+r: [PI / 2, 0, 0],
+c: 0xb8ad98,
+c2: 0xd8cdb6,
+jit: 0.04
+});
+d.add(K.cyl(0.03, 0.03, 0.6, 4), { p: [x, Y0 + 0.82, z], r: [PI / 2, 0, 0], c: FER, ch: 's', jit: 0 });
+d.add(K.box(0.45, 0.05, 0.05), { p: [x - 0.1, Y0 + 0.82, z + 0.32], r: [0, 0, -0.5], c: FER, ch: 's', jit: 0 });
+for (let i = 0; i < 5; i++)
+d.add(K.oct(0.02), {
+p: [x - 0.42 - i * 0.07, Y0 + 0.82 + (i % 2) * 0.08, z + 0.05],
+c: 0xffe08a,
+ch: 'g',
+jit: 0
+});
+cerc(x, z, 0.55);
+}
+for (const [w, sd, j] of QUI) {
+const x = sd * PX,
+z = PZ[j],
+yt = Y0 + 0.88;
+d.add(K.box(1.25, 0.14, 1.25), { p: [x, Y0 + 0.07, z], c: PIERDD, c2: PIERD, jit: 0.02 });
+d.add(K.cyl(0.46, 0.52, 0.18, 8, { a0: PI / 8 }), { p: [x, Y0 + 0.23, z], c: PIERD, c2: PIERL, jit: 0.02 });
+d.add(K.cyl(0.27, 0.33, 0.48, 8, { a0: PI / 8 }), {
+p: [x, Y0 + 0.56, z],
+c: vit ? 0x5a3424 : BOISD,
+c2: vit ? 0x8a5232 : BOIS,
+jit: 0.02
+});
+d.add(K.cyl(0.64, 0.4, 0.12, 10), {
+p: [x, yt - 0.06, z],
+c: vit ? 0x4a3024 : BOISD,
+c2: vit ? 0x7a4a30 : BOISL,
+jit: 0
+});
+d.add(K.torus(0.64, 0.03, 3, 14), { p: [x, yt, z], r: [PI / 2, 0, 0], c: TR, ch: TRch, jit: 0 });
+for (const r of [0.35, 0.79])
+d.add(K.torus(0.3 + r * 0.05, 0.025, 3, 10), { p: [x, Y0 + r, z], r: [PI / 2, 0, 0], c: TR, ch: 's', jit: 0 });
+d.add(K.box(0.07, 0.5, 0.07), { p: [x - sd * 0.8, Y0 + 0.25, z], c: FER, ch: 's', jit: 0 });
+d.add(K.box(0.05, 0.3, 0.64), { p: [x - sd * 0.82, Y0 + 0.55, z], r: [0, 0, sd * 0.55], c: TR, ch: 's', jit: 0 });
+if (vit) {
+d.add(K.cyl(0.6, 0.6, 0.95, 12, { open: true }), {
+p: [x, yt + 0.48, z],
+c: VERRE,
+c2: 0x183644,
+ch: 'x',
+jit: 0
+});
+d.add(K.torus(0.61, 0.035, 3, 14), { p: [x, yt + 0.96, z], r: [PI / 2, 0, 0], c: TR, ch: 's', jit: 0 });
+d.add(K.cyl(0.36, 0.62, 0.18, 12), { p: [x, yt + 1.05, z], c: TR, c2: dor ? 0xfff2c4 : LAIL, ch: 's', jit: 0 });
+d.add(K.oct(0.09), {
+p: [x, yt + 1.24, z],
+s: [1, 1.5, 1],
+c: dor ? 0xfff2c4 : OR,
+ch: dor ? 'g' : 's',
+jit: 0
+});
+for (let k = 0; k < 4; k++) {
+const a = PI / 4 + (k * PI) / 2;
+d.add(K.cyl(0.018, 0.018, 0.95, 4), {
+p: [x + Math.sin(a) * 0.61, yt + 0.48, z + Math.cos(a) * 0.61],
+c: TR,
+ch: 's',
+jit: 0
+});
+}
+}
+cerc(x, z, 0.75);
+cerc(x - sd * 0.8, z, 0.35);
+spots.push({ w, x, y: yt + 0.42, z, sd, plaque: [x - sd * 0.845, Y0 + 0.565, z, -sd * (PI / 2), 0.55] });
+}
+for (const sd of [1, -1]) {
+const x = sd * 3.1,
+z = ZI - 0.12;
+d.add(K.box(1.8, 0.1, 0.22), { p: [x, 0.95, z], c: BOIS, jit: 0.03 });
+d.add(K.box(1.8, 0.1, 0.18), { p: [x, 2.0, z], c: BOIS, jit: 0.03 });
+for (let i = 0; i < 5; i++) {
+const xx = x - 0.7 + i * 0.35;
+d.add(K.box(0.09, 0.6, 0.1), { p: [xx, 0.75, z - 0.02], c: BOISD, jit: 0.03 });
+d.add(K.box(0.05, 1.3, 0.06), { p: [xx, 1.65, z - 0.02], c: i % 2 ? FER : PAL.steel, ch: 's', jit: 0 });
+}
+chaine(x - 0.7, z - 0.1, x + 0.7, z - 0.1, 0.4);
+const cx = sd * 3.75,
+cz = ZJ + 0.5;
+d.add(K.box(0.9, 0.6, 0.65), { p: [cx, Y0 + 0.3, cz], c: OD(0), c2: OD(1), jit: 0.04 });
+d.add(K.box(0.7, 0.5, 0.55), {
+p: [cx + sd * 0.05, Y0 + 0.86, cz],
+r: [0, 0.2, 0],
+c: OD(0),
+c2: OD(1),
+jit: 0.04
+});
+d.add(K.box(0.92, 0.06, 0.67), { p: [cx, Y0 + 0.45, cz], c: FER, jit: 0 });
+d.add(K.box(0.3, 0.12, 0.02), { p: [cx, Y0 + 0.3, cz + 0.33], c: 0xffe08a, jit: 0 });
+cerc(cx, cz, 0.6);
+if (vit)
+for (let k = 0; k < 3; k++) {
+const el = ELK[sd > 0 ? k : 3 + k],
+E = K.EL[el],
+zz = PZ[k];
+d.add(K.cyl(0.42, 0.42, 0.08, 10), {
+p: [sd * (W - 0.05), 4.45 + DH, zz],
+r: [0, 0, PI / 2],
+c: E.dark,
+c2: E.main,
+jit: 0
+});
+d.add(K.torus(0.42, 0.045, 3, 12), {
+p: [sd * (W - 0.1), 4.45 + DH, zz],
+r: [0, PI / 2, 0],
+c: TR,
+ch: 's',
+jit: 0
+});
+d.add(K.oct(0.1), { p: [sd * (W - 0.12), 4.45 + DH, zz], c: E.glow, ch: 'g', jit: 0 });
+for (const r of [0.6, -0.6])
+d.add(K.box(0.06, 1.1, 0.06), {
+p: [sd * (W - 0.15), 4.45 + DH, zz],
+r: [r, 0, 0],
+c: PAL.steel,
+ch: 's',
+jit: 0
+});
+}
+}
+if (vit)
+for (const z of [1.6, -0.8]) {
+d.add(K.cyl(0.02, 0.02, HF - 5.6, 4), { p: [0, (HF + 5.6) / 2 - 0.4, z], c: FER, jit: 0 });
+d.add(K.torus(0.6, 0.05, 3, 10), { p: [0, 5.2, z], r: [PI / 2, 0, 0], c: dor ? OR : FER, ch: 's', jit: 0 });
+for (let i = 0; i < 6; i++) {
+const a = (i * TAU) / 6;
+d.add(K.cyl(0.04, 0.04, 0.18, 4), {
+p: [Math.sin(a) * 0.6, 5.32, z + Math.cos(a) * 0.6],
+c: PAL.cream,
+jit: 0
+});
+d.add(K.oct(0.06), {
+p: [Math.sin(a) * 0.6, 5.5, z + Math.cos(a) * 0.6],
+s: [1, 1.6, 1],
+c: 0xffe08a,
+ch: 'g',
+jit: 0
+});
+}
+}
+{
+b.group({ p: [3.85, 0, ZF + T / 2 + 1.5], r: [0, -0.5, 0] }, b => {
+for (const sd of [1, -1])
+b.add(K.box(0.09, 1.7, 0.09), { p: [sd * 0.45, 0.82, -0.1], r: [-0.2, 0, sd * 0.08], c: BOIS, jit: 0 });
+b.add(K.box(0.09, 1.6, 0.09), { p: [0, 0.75, -0.45], r: [0.45, 0, 0], c: BOISD, jit: 0 });
+b.add(K.cyl(0.58, 0.58, 0.16, 12), {
+p: [0, 1.3, 0],
+r: [PI / 2 - 0.2, 0, 0],
+c: PAL.rope,
+c2: PAL.sand,
+jit: 0.03
+});
+[0.46, 0.32, 0.18].forEach((r, i) =>
+b.add(K.cyl(r, r, 0.17 + i * 0.01, 12), {
+p: [0, 1.3, 0],
+r: [PI / 2 - 0.2, 0, 0],
+c: i % 2 ? PAL.white : PAL.cloth,
+jit: 0
+})
+);
+b.add(K.cyl(0.07, 0.07, 0.2, 8), { p: [0, 1.3, 0], r: [PI / 2 - 0.2, 0, 0], c: OR, ch: 's', jit: 0 });
+});
+cerc(3.85, ZF + T / 2 + 1.45, 0.75);
+b.add(K.box(1.0, 0.75, 0.8), {
+p: [-3.7, 0.37, ZF + T / 2 + 1.3],
+r: [0, 0.15, 0],
+c: OD(0),
+c2: OD(1),
+jit: 0.04
+});
+b.add(K.box(0.75, 0.6, 0.6), {
+p: [-3.65, 1.05, ZF + T / 2 + 1.25],
+r: [0, -0.2, 0],
+c: OD(0),
+c2: OD(1),
+jit: 0.04
+});
+b.add(K.box(0.3, 0.14, 0.02), { p: [-3.7, 0.4, ZF + T / 2 + 1.72], c: 0xffe08a, jit: 0 });
+b.add(K.cyl(0.36, 0.32, 0.85, 9), { p: [-4.6, 0.43, ZF + T / 2 + 0.75], c: BOIS, c2: BOISL, jit: 0.04 });
+b.add(K.torus(0.35, 0.03, 3, 10), { p: [-4.6, 0.65, ZF + T / 2 + 0.75], r: [PI / 2, 0, 0], c: FER, jit: 0 });
+cerc(-3.7, ZF + T / 2 + 1.3, 0.75);
+cerc(-4.6, ZF + T / 2 + 0.75, 0.45);
+}
+const banniere = (x, c, c2, h) => {
+const y = 5.6 + DH * 0.5;
+b.add(K.box(0.85, 0.07, 0.07), { p: [x, y + 0.05, ZF + T / 2 + 0.1], c: dor ? OR : FER, ch: 's', jit: 0 });
+b.add(K.box(0.7, h, 0.04), { p: [x, y - h / 2, ZF + T / 2 + 0.08], c: c2, c2: c, jit: 0.02 });
+b.add(
+K.prism(
+[
+[-0.35, 0],
+[0.35, 0],
+[0.35, -0.45],
+[0, -0.22],
+[-0.35, -0.45]
+],
+0.04
+),
+{
+p: [x, y - h, ZF + T / 2 + 0.06],
+r: [PI / 2, 0, 0],
+s: [1, 1, -1],
+c: c2,
+jit: 0
+}
+);
+b.add(K.oct(0.1), {
+p: [x, y - h * 0.4, ZF + T / 2 + 0.12],
+c: dor ? OR : 0xffe08a,
+ch: dor ? 's' : 'm',
+jit: 0
+});
+};
+if (dor) ELK.forEach((el, i) => banniere((i < 3 ? -1 : 1) * (2.55 + (i % 3)), K.EL[el].main, K.EL[el].dark, 1.9));
+else if (vit) for (const sd of [1, -1]) banniere(sd * 3.6, ORANGE, ORANGED, 2.2);
+if (gr) {
+const x0 = WO,
+x1 = 6.95,
+z0 = -4.15,
+z1 = -1.75;
+for (const z of [z0, (z0 + z1) / 2, z1]) {
+b.add(K.box(0.22, 2.7, 0.22), { p: [x1 - 0.12, 1.35, z], c: BOISD, c2: BOIS, jit: 0.03 });
+b.add(K.box(0.3, 0.2, 0.3), { p: [x1 - 0.12, 0.1, z], c: PIERD, jit: 0 });
+cerc(x1 - 0.12, z, 0.3);
+}
+b.add(K.box(0.2, 0.2, z1 - z0 + 0.3), { p: [x1 - 0.12, 2.72, (z0 + z1) / 2], c: BOISD, jit: 0 });
+const al = Math.atan2(4.6 - 2.8, x1 - x0),
+sl = Math.hypot(x1 - x0 + 0.3, 4.6 - 2.8);
+b.add(K.box(sl, 0.2, z1 - z0 + 0.5), {
+p: [(x0 + x1) / 2 + 0.05, 3.72, (z0 + z1) / 2],
+r: [0, 0, -al],
+c: PAL.plank,
+c2: TUIL,
+jit: 0.05
+});
+for (let i = 0; i < 3; i++)
+b.add(K.box(0.65, 0.08, z1 - z0 + 0.55), {
+p: [x0 + 0.5 + i * 0.7, 4.38 - i * 0.48, (z0 + z1) / 2],
+r: [0, 0, -al],
+c: i % 2 ? TUILL : TUIL,
+jit: 0.05
+});
+b.add(K.box(1.3, 1.1, 1.2), { p: [6.2, 0.55, -3.45], c: PIERDD, c2: PIERD, jit: 0.03 });
+b.add(K.cyl(0.55, 0.65, 0.5, 8), { p: [6.2, 1.35, -3.45], c: PIERD, c2: PIER, jit: 0.03 });
+b.add(K.box(0.6, 0.45, 0.06), { p: [6.2, 0.6, -2.84], c: BRAISE, c2: BRAISEL, ch: 'g', jit: 0 });
+b.add(K.cyl(0.22, 0.26, 3.6, 6), { p: [6.2, 3.3, -3.45], c: PIERD, c2: PIER, jit: 0.03 });
+b.add(K.cyl(0.3, 0.3, 0.2, 6), { p: [6.2, 5.2, -3.45], c: FER, ch: 's', jit: 0 });
+cerc(6.2, -3.45, 0.8);
+for (let i = 0; i < 7; i++)
+b.add(K.rock(0.28, 30 + i, 0, 0.3), {
+p: [6.4 + (i % 3) * 0.22 - 0.2, 0.2 + Math.floor(i / 3) * 0.2, -2.3 + (i % 2) * 0.3],
+c: 0x2e2a2a,
+jit: 0.05
+});
+for (let i = 0; i < 6; i++)
+b.add(K.cyl(0.11, 0.11, 1.0, 6), {
+p: [5.85 + (i % 3) * 0.24, 0.13 + Math.floor(i / 3) * 0.2, -1.95],
+r: [0, 0, PI / 2 + 0.02 * i],
+s: [1, 1, 1],
+c: PAL.bark,
+c2: PAL.woodL,
+jit: 0.05
+});
+cerc(6.3, -2.15, 0.7);
+}
+if (L >= 4) {
+const x = -6.1,
+z = 3.3,
+w = 2.4,
+H1 = 12.4;
+b.add(K.box(w + 0.3, 1.2, w + 0.3), { p: [x, 0.6, z], c: PIERDD, c2: PIERD, jit: 0.03 });
+b.add(K.box(w, H1, w, 0.94, 0.94), { p: [x, H1 / 2, z], c: PIERD, c2: PIER, jit: 0.025 });
+for (const y of [4.0, 8.2]) b.add(K.box(w + 0.1, 0.16, w + 0.1), { p: [x, y, z], c: PIERL, jit: 0 });
+for (const [fx, fz] of [
+[0, 1],
+[-1, 0],
+[0, -1]
+])
+for (const y of [2.6, 6.2, 10.2]) {
+b.add(K.box(fz ? 0.16 : 0.08, 0.85, fz ? 0.08 : 0.16), {
+p: [x + fx * (w / 2 - 0.05), y, z + fz * (w / 2 - 0.05)],
+c: y > 10 ? VITRE : 0x2a2320,
+ch: y > 10 ? 'g' : 'm',
+jit: 0
+});
+}
+for (let i = 0; i < 4; i++)
+for (let k = 0; k < 3; k++) {
+const a = (i * PI) / 2,
+u = (k - 1) * 0.85;
+b.add(K.box(0.24, 0.45, 0.3, 1, 0.5), {
+p: [
+x + Math.sin(a) * (w / 2 + 0.05) + Math.cos(a) * u,
+H1 - 0.05,
+z + Math.cos(a) * (w / 2 + 0.05) - Math.sin(a) * u
+],
+r: [PI, a, 0],
+c: PIERL,
+jit: 0
+});
+}
+b.add(K.box(w + 0.8, 0.55, w + 0.8), { p: [x, H1 + 0.45, z], c: PIERD, c2: PIER, jit: 0.02 });
+for (let i = 0; i < 4; i++)
+for (let k = 0; k < 2; k++) {
+const a = (i * PI) / 2,
+u = k ? 0.75 : -0.75;
+b.add(K.box(0.6, 0.7, 0.3), {
+p: [
+x + Math.sin(a) * (w / 2 + 0.25) + Math.cos(a) * u,
+H1 + 1.05,
+z + Math.cos(a) * (w / 2 + 0.25) - Math.sin(a) * u
+],
+r: [0, a, 0],
+c: PIERD,
+c2: PIERL,
+jit: 0.03
+});
+}
+for (const ax of [1, -1])
+for (const az of [1, -1])
+b.add(K.box(0.16, 1.7, 0.16), { p: [x + ax * 0.75, H1 + 1.55, z + az * 0.75], c: BOISD, jit: 0 });
+b.add(K.cone(1.7, 2.3, 4), { p: [x, H1 + 3.55, z], r: [0, PI / 4, 0], c: TUIL, c2: TUILL, jit: 0.04 });
+b.add(K.cyl(0.03, 0.04, 2.2, 4), { p: [x, H1 + 5.6, z], c: dor ? OR : FER, ch: 's', jit: 0 });
+b.add(K.oct(0.14), { p: [x, H1 + 6.75, z], s: [1, 1.5, 1], c: dor ? OR : LAIL, ch: 's', jit: 0 });
+b.add(
+K.prism(
+[
+[0, 0],
+[1.3, -0.12],
+[1.05, 0.35],
+[1.3, 0.8],
+[0, 0.7]
+],
+0.04
+),
+{
+p: [x + 0.04, H1 + 5.9, z],
+r: [PI / 2, 0, 0],
+s: [1, 1, -1],
+c: dor ? OR : ORANGED,
+c2: dor ? 0xfff2c4 : ORANGE,
+ch: dor ? 's' : 'm',
+jit: 0
+}
+);
+if (dor) b.add(K.box(0.5, 0.18, 0.12, 0.6, 1), { p: [x, H1 + 4.75, z], c: OR, ch: 's', jit: 0 });
+for (const ax of [1, -1]) for (const az of [1, -1]) cerc(x + ax * 0.55, z + az * 0.55, 0.85);
+}
+if (L >= 5) {
+for (const sd of [1, -1]) {
+for (let i = 0; i < 8; i++) {
+const z = ZB + 0.1 + i * ((ZF - ZB) / 7);
+if (sd < 0 && L >= 4 && z > 1.9) continue;
+b.add(K.box(0.42, 0.75, 0.62), { p: [sd * (WO - 0.2), HM + 0.35, z], c: PIERD, c2: PIERL, jit: 0.03 });
+}
+b.add(K.box(0.42, 0.25, ZF - ZB + T), { p: [sd * (WO - 0.2), HM + 0.05, (ZF + ZB) / 2], c: PIERD, jit: 0 });
+}
+const z = ZF + T / 2;
+for (let i = 0; i < 5; i++)
+b.add(K.box(0.24, 0.55, 0.6, 1, 0.4), {
+p: [-1.6 + i * 0.8, 5.2 + DH, z + 0.25],
+r: [PI, 0, 0],
+c: PIERL,
+jit: 0
+});
+b.add(K.box(4.0, 0.9, 0.7), { p: [0, 5.95 + DH, z + 0.35], c: PIERD, c2: PIER, jit: 0.02 });
+for (let i = 0; i < 4; i++)
+b.add(K.box(0.6, 0.6, 0.72), { p: [-1.5 + i * 1.0, 6.7 + DH, z + 0.35], c: PIERD, c2: PIERL, jit: 0.03 });
+for (let i = 0; i < 3; i++)
+b.add(K.box(0.12, 0.45, 0.04), { p: [-1.0 + i * 1.0, 5.95 + DH, z + 0.71], c: 0x2a2320, jit: 0 });
+{
+const x = WO - 0.15,
+zz = ZF + T / 2 - 0.15;
+b.add(K.cone(0.8, 1.2, 8), { p: [x, 4.6 + DH, zz], r: [PI, 0, 0], c: PIERD, c2: PIERL, jit: 0.03 });
+b.add(K.cyl(0.8, 0.8, 2.4, 8), { p: [x, 6.4 + DH, zz], c: PIERD, c2: PIER, jit: 0.03 });
+b.add(K.cyl(0.9, 0.9, 0.18, 8), { p: [x, 7.65 + DH, zz], c: dor ? OR : PIERL, ch: dor ? 's' : 'm', jit: 0 });
+b.add(K.box(0.1, 0.6, 0.06), {
+p: [x + 0.55, 6.5 + DH, zz + 0.55],
+r: [0, PI / 4, 0],
+c: VITRE,
+ch: 'g',
+jit: 0
+});
+b.add(K.cone(1.0, 2.1, 8), { p: [x, 8.8 + DH, zz], c: TUIL, c2: TUILL, jit: 0.04 });
+b.add(K.oct(0.12), { p: [x, 9.95 + DH, zz], s: [1, 1.5, 1], c: dor ? OR : LAIL, ch: 's', jit: 0 });
+}
+for (const sd of [1, -1]) {
+const x = sd * 2.55,
+zz = ZF + T / 2 + 1.25;
+b.add(K.cyl(0.08, 0.14, 1.0, 5), { p: [x, 0.5, zz], c: FER, ch: 's', jit: 0 });
+b.add(K.cyl(0.38, 0.2, 0.3, 8), {
+p: [x, 1.12, zz],
+c: dor ? OR : FER,
+c2: dor ? 0xfff2c4 : FERL,
+ch: 's',
+jit: 0
+});
+b.add(K.cyl(0.32, 0.32, 0.05, 8), { p: [x, 1.27, zz], c: BRAISE, c2: BRAISEL, ch: 'g', jit: 0 });
+fe.add(K.cone(0.24, 0.6, 5), { p: [x, 1.55, zz], c: BRAISE, c2: BRAISEL, ch: 'g', jit: 0 });
+cerc(x, zz, 0.42);
+}
+}
+if (dor)
+for (const sd of [1, -1]) {
+const x = sd * 4.45,
+z = ZF + T / 2 + 1.4;
+b.add(K.box(0.9, 0.8, 0.9), { p: [x, 0.4, z], c: PIERD, c2: PIERL, jit: 0.02 });
+b.add(K.box(0.95, 0.1, 0.95), { p: [x, 0.83, z], c: OR, ch: 's', jit: 0 });
+b.group({ p: [x, 0.88, z], r: [0, sd * 0.35, 0] }, b => {
+for (const k of [1, -1])
+b.add(K.box(0.16, 0.7, 0.2), { p: [k * 0.12, 0.35, 0], c: ORD, c2: OR, ch: 's', jit: 0 });
+b.add(K.box(0.5, 0.65, 0.3, 0.85, 0.85), { p: [0, 1.02, 0], c: ORD, c2: OR, ch: 's', jit: 0 });
+b.add(K.sph(0.15, 8, 6), { p: [0, 1.5, 0], c: OR, ch: 's', jit: 0 });
+b.add(K.cone(0.05, 0.3, 4), { p: [0, 1.75, 0], c: OR, ch: 's', jit: 0 });
+b.add(K.box(0.08, 1.5, 0.08), { p: [-sd * 0.32, 1.0, 0.18], c: OR, ch: 's', jit: 0 });
+b.add(K.cone(0.07, 0.3, 4), { p: [-sd * 0.32, 1.9, 0.18], c: 0xfff2c4, ch: 'g', jit: 0 });
+plaque(b, ecu(0.45, 0.6), 0.06, { p: [sd * 0.3, 1.0, 0.2], c: ORD, c2: OR, ch: 's', jit: 0 });
+});
+cerc(x, z, 0.62);
+}
+const D = ZF + T / 2;
+return {
+parts: [
+{ name: 'body', b },
+{ name: 'dedans', b: d, parent: 'body' },
+{
+name: 'feu',
+b: fe,
+parent: 'body',
+pivot: [0, Y0 + 1.0, zf],
+anim: [{ k: 'scl', axis: 'y', amp: 0.12, sp: 11 }]
+},
+{
+name: 'soufflet',
+b: so,
+parent: 'body',
+pivot: [-HW / 2 - 0.95 + 0.65, Y0 + 1.1, zf + 0.1],
+anim: [{ k: 'rot', axis: 'z', amp: 0.09, sp: 2.2 }]
+},
+{
+name: 'fumee',
+b: fu,
+parent: 'body',
+pivot: [0, HC, zc],
+anim: [
+{ k: 'rot', axis: 'y', spin: true, sp: 0.35 },
+{ k: 'scl', axis: 'y', amp: 0.08, sp: 0.9 }
+]
+}
+],
+bake: { ground: 0.12, groundH: 0.6 },
+spots,
+col,
+porte: [0, D + 2.0],
+forge: [0, Y0 + 1.3, zf + 0.2],
+lab: [0, L >= 4 ? 17.6 : 14.2, ZF],
+rad: 8.7
+};
+};
+const OD = k => (k ? 0x7a8452 : 0x56603f);
+MODELS['vil.armes'] = arsenal;
+MODELS['arm.expo'] = ctx => {
+const S0 = 0x010203,
+a = String(ctx.a || 'pistolet'),
+f = MODELS['vm.' + a] || MODELS['vm.pistolet'],
+rec = f({ el: ctx.el, H: { sleeve: S0, sleeveD: S0, glove: S0, gloveD: S0 } });
+for (const pt of rec.parts) {
+const it = pt.b.items;
+for (let i = it.length - 1; i >= 0; i--) {
+const o = it[i].o;
+if (o.c === S0 || o.c2 === S0 || o.nophoto) it.splice(i, 1);
+}
+}
+return rec;
+};
 }
 {
 const {PAL,TAU}=K,PI=Math.PI,mix=K.mix,shade=K.shade,sin=Math.sin,cos=Math.cos;
@@ -10553,10 +11545,11 @@ d: 'Tes artefacts'
 armes: {
 n: "Salle d'armes",
 m: 'vil.armes',
-r: 5.4,
+r: 8.7,
 u: 1,
 up: 1,
 mx: 6,
+fix: 1,
 act: 'armes',
 ly: 8.9,
 col: '#ff9d5c',
@@ -10676,6 +11669,42 @@ g.font = "600 25px 'Barlow',sans-serif";
 g.fillText(ROLE[e], 128, 72, 228);
 return new THREE.Mesh(hallPlG, new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c) }));
 }
+function armPlaque(o) {
+const g = o.cv.getContext('2d'),
+el = wEl(o.w);
+g.fillStyle = '#3b2a16';
+g.fillRect(0, 0, 256, 96);
+g.strokeStyle = elc(el);
+g.lineWidth = 6;
+g.strokeRect(5, 5, 246, 86);
+g.textAlign = 'center';
+g.textBaseline = 'middle';
+g.fillStyle = '#ffe6a6';
+g.font = "700 34px 'Chakra Petch',sans-serif";
+g.fillText(WT[o.w].short.toUpperCase(), 128, 36, 228);
+g.fillStyle = '#e8d6b0';
+g.font = "600 25px 'Barlow',sans-serif";
+g.fillText('niv. ' + wLevel(o.w) + ' · ' + EL[el].n, 128, 71, 228);
+o.tex.needsUpdate = true;
+o.lv = wLevel(o.w);
+}
+function armExpo(o) {
+const el = wEl(o.w),
+p = prepOf('arm.expo', { a: o.w, el }, o.w + '|' + el),
+it = K.inst(p, { cast: false, recv: false }),
+len = Math.max(0.2, p.max[2] - p.min[2]),
+s = Math.min(1.8, 1.16 / len),
+col = new THREE.Color(elc(el)).getHex();
+it.scale.setScalar(s);
+it.position.set(((p.min[0] + p.max[0]) / -2) * s, ((p.min[1] + p.max[1]) / -2) * s, ((p.min[2] + p.max[2]) / -2) * s);
+if (o.it) o.tilt.remove(o.it);
+o.tilt.add(it);
+o.it = it;
+o.el = el;
+o.beam.material.color.setHex(col);
+o.glow.material = glowM(col, 0.5);
+armPlaque(o);
+}
 function vilMonde(B, x, z) {
 const c = Math.cos(B.r),
 s = Math.sin(B.r);
@@ -10715,11 +11744,82 @@ g.add(h);
 g.userData.hv = h;
 }
 }
+if (C.fix && m.userData.prep.col) {
+const pr = m.userData.prep;
+g.userData.cols = pr.col.map(o => vilMonde(B, o[0], o[1]).concat(o[2]));
+g.userData.porte = pr.porte || [0, rOf(B)];
+}
+if (B.t === 'armes') {
+const pr = m.userData.prep;
+g.userData.expo = (pr.spots || [])
+.filter(S => WT[S.w])
+.map(S => {
+const piv = new THREE.Group(),
+tilt = new THREE.Group(),
+beam = new THREE.Mesh(
+hallConeG,
+new THREE.MeshBasicMaterial({
+transparent: true,
+opacity: 0.1,
+blending: THREE.AdditiveBlending,
+depthWrite: false,
+side: THREE.DoubleSide,
+fog: false
+})
+),
+glow = new THREE.Sprite(glowM(0xffffff, 0.4)),
+cv = document.createElement('canvas');
+cv.width = 256;
+cv.height = 96;
+const tex = new THREE.CanvasTexture(cv),
+pl = new THREE.Mesh(hallPlG, new THREE.MeshBasicMaterial({ map: tex }));
+piv.position.set(S.x, S.y, S.z);
+tilt.rotation.x = -0.12;
+piv.add(tilt);
+inn.add(piv);
+beam.scale.set(0.72, 0.78, 0.72);
+beam.position.set(S.x, S.y + 1.95, S.z);
+inn.add(beam);
+glow.position.set(S.x, S.y, S.z);
+glow.scale.setScalar(2);
+inn.add(glow);
+pl.rotation.order = 'YXZ';
+pl.rotation.set(-(S.plaque[4] || 0.16), S.plaque[3], 0);
+pl.position.set(S.plaque[0], S.plaque[1], S.plaque[2]);
+inn.add(pl);
+const o = {
+w: S.w,
+sd: S.sd,
+x: S.x,
+y: S.y,
+z: S.z,
+piv,
+tilt,
+it: null,
+el: '',
+beam,
+glow,
+pl,
+cv,
+tex,
+lv: -1,
+k: 0
+};
+armExpo(o);
+piv.rotation.y = S.x + S.z;
+return o;
+});
+if (pr.forge) {
+const f = new THREE.Sprite(glowM(0xff8a3c, 0.6));
+f.position.set(pr.forge[0], pr.forge[1], pr.forge[2]);
+f.scale.setScalar(3.2);
+inn.add(f);
+g.userData.forge = f;
+}
+}
 if (B.t === 'hall') {
 const pr = m.userData.prep,
 sp = pr.spots || [];
-g.userData.cols = (pr.col || []).map(o => vilMonde(B, o[0], o[1]).concat(o[2]));
-g.userData.porte = pr.porte || [0, rOf(B)];
 g.userData.heroes = sp.map(S => {
 const ee = elH(S.el),
 av = mdlOf('hero.avatar', avCtx(S.el, ee), avKey(S.el, ee), { cast: false });
@@ -11004,6 +12104,20 @@ z = dx * s + dz * c;
 return Math.abs(x) < 7.8 && z > -10.4 && z < 9.6;
 },
 hors = save.vil.filter(B => B !== H && !CAT[B.t].up && dedans(B));
+if (hors.length) {
+save.gold = (save.gold || 0) + hors.reduce((a, B) => a + (B.c || 0), 0);
+save.vil = save.vil.filter(B => !hors.includes(B));
+persist();
+}
+}
+}
+{
+const A = save.vil.find(B => B.t === 'armes');
+if (A) {
+const R = CAT.armes.r + 0.4,
+hors = save.vil.filter(
+B => B !== A && !CAT[B.t].up && Math.hypot(B.x - A.x, B.z - A.z) < R + (CAT[B.t].r || 0) * 0.5
+);
 if (hors.length) {
 save.gold = (save.gold || 0) + hors.reduce((a, B) => a + (B.c || 0), 0);
 save.vil = save.vil.filter(B => !hors.includes(B));
@@ -11375,7 +12489,7 @@ return H.it
 ? `<div class="srow"><span><b>${H.n}</b><small>${H.t(H.v(l))} à ta prochaine partie. Prête toutes les deux parties, ou en ${HVI} h. ${s >= 1 ? (hvHeld(B.t) ? 'Prête, mais tu en emportes déjà une.' : 'Prête : passe devant le bâtiment.') : 'En préparation : ' + Math.round(s * 100) + ' %.'}</small></span></div>`
 : `<div class="srow"><span><b>Récolte</b><small>+${H.per(l)} ${H.u} à chaque partie terminée, et un peu avec le temps. En réserve : ${Math.floor(s)} sur ${hvCap(B.t, l)}. On ramasse en passant devant.</small></span></div>`;
 })() +
-`<p>${mx ? 'Ce bâtiment est à son niveau maximum.' : why || (B.t === 'hall' ? "La cathédrale s'embellit" : "Le bâtiment s'agrandit") + '. +20 renom.'}</p>`;
+`<p>${mx ? 'Ce bâtiment est à son niveau maximum.' : why || (B.t === 'hall' ? "La cathédrale s'embellit" : B.t === 'armes' ? "L'Arsenal s'embellit" : "Le bâtiment s'agrandit") + '. +20 renom.'}</p>`;
 if (!mx && !why)
 $('upGo').onclick = () => {
 if (!save.dev) save.gold -= c;
@@ -11650,7 +12764,7 @@ hasB = t => myVil().some(B => B.t === t);
 function lobSync() {
 ilCheck();
 envSet(1);
-setTxt('lVer', '', 'V13.4');
+setTxt('lVer', '', 'V13.5');
 const cur = tHero;
 {
 const L = save.evo || 1;
@@ -11862,7 +12976,7 @@ ok: () => gSeen('hallV')
 {
 b: 'armes',
 t: () =>
-"La Salle d'armes : six armes, les mêmes aux deux portails. Leurs arbres se paient en or céleste. Ouvre-la, regarde les onglets, puis referme.",
+"La Salle d'armes, notre arsenal : tes six armes y sont exposées, la forge est au fond. Entre, approche-toi d'une arme et touche Action : ses arbres (payés en or céleste), son élément, et elle passe en main. Regarde les onglets, puis referme.",
 ok: () => {
 if (!$('tree').hidden) GD.op = 'tree';
 return GD.op === 'tree' && $('tree').hidden;
@@ -11960,7 +13074,7 @@ function guideAt(S) {
 if (S.at) return S.at();
 if (!S.b) return null;
 const B = gB(S.b),
-u = B.t === 'hall' && vilV.get(B.id) && vilV.get(B.id).userData;
+u = CAT[B.t].fix && vilV.get(B.id) && vilV.get(B.id).userData;
 return u && u.porte ? vilMonde(B, u.porte[0], u.porte[1] + 0.6) : gDoor(B, S.side);
 }
 function guideStep() {
@@ -12082,7 +13196,7 @@ up('hall') +
 B('maison', 'Là où tu te réveilles ; réglages. ' + up('maison') + '.'),
 B(
 'armes',
-'Les arbres de tes six armes. Prépare un affûtage (dégâts en plus à la prochaine partie). ' +
+"L'arsenal de tes six armes : entre, approche-toi d'une arme exposée et touche Action pour ouvrir ses arbres, choisir son élément et la prendre en main (la porte ouvre l'arme en main). La forge du fond prépare un affûtage (dégâts en plus à la prochaine partie). " +
 up('armes') +
 '.'
 ),
@@ -12851,6 +13965,7 @@ SND.play('tick');
 } else if (N.k === 'hall') hallOpen();
 else if (N.k === 'heros') hallOpen(N.e);
 else if (N.k === 'armes') openTree('arme');
+else if (N.k === 'vitrine') armesVoir(N.w);
 else if (N.k === 'musee') lootOpen();
 else if (N.k === 'shop') shopOpen();
 else if (N.k === 'maison') homeOpen();
@@ -13592,6 +14707,12 @@ e =>
 $('lootX').onclick = () => {
 $('lootV').hidden = true;
 };
+function armesVoir(w) {
+if (!WT[w]) return;
+setWeap(w);
+openTree('arme');
+SND.play('tick');
+}
 const LOOTN = {};
 for (const L of LOOT) LOOTN[L[0]] = L[1];
 for (const e of HEROS) LOOTN['etoile_' + e] = 'Étoile de ' + EL[e].hero;
@@ -13635,9 +14756,9 @@ if (PAY) for (const o of PAY.obs) L.push(o);
 for (const B of save.vil) {
 const C = CAT[B.t];
 if (C.pass) continue;
-if (B.t === 'hall') {
-const g = vilV.get(B.id);
-if (g && g.userData.cols) for (const o of g.userData.cols) L.push(o);
+const g = C.fix && vilV.get(B.id);
+if (g && g.userData.cols) {
+for (const o of g.userData.cols) L.push(o);
 continue;
 }
 const br = rOf(B);
@@ -13778,13 +14899,17 @@ if (GUIDE.g && !GUIDE.tp) see({ k: 'guide', id: 'guide' }, GUIDE.x, GUIDE.z, 4.4
 for (const G of LGAMES) see({ k: 'portal', G, id: G.id }, G.x, G.z, 7.5);
 for (const B of save.vil) {
 const C = CAT[B.t],
-u = B.t === 'hall' && vilV.get(B.id) && vilV.get(B.id).userData;
+u = C.fix && vilV.get(B.id) && vilV.get(B.id).userData;
 if (u && u.porte) {
 const q = vilMonde(B, u.porte[0], u.porte[1]);
 see({ k: C.act, id: B.t + lvOf(B), B }, q[0], q[1], 4.4);
-for (const H of u.heroes) {
+for (const H of u.heroes || []) {
 const a = vilMonde(B, H.x - Math.sign(H.x) * 1.6, H.z);
 see({ k: 'heros', e: H.el, id: 'heros' + H.el, B }, a[0], a[1], 2.3);
+}
+for (const A of u.expo || []) {
+const a = vilMonde(B, A.x - A.sd * 1.55, A.z);
+see({ k: 'vitrine', w: A.w, id: 'vitrine' + A.w, B }, a[0], a[1], 1.9);
 }
 } else if (C.act) see({ k: C.act, id: B.t + lvOf(B), B }, B.x, B.z, rOf(B) + 3.6);
 }
@@ -13867,6 +14992,7 @@ LB.mode +
 '|' +
 (LB.takeB ? LB.takeB.id : '') +
 (near && near.e ? elH(near.e) : '') +
+(near && near.w ? wEl(near.w) + wLevel(near.w) : '') +
 '|' +
 save.vil.length +
 '|' +
@@ -13908,7 +15034,7 @@ near.k === 'guide'
 ? 'Parler'
 : near.k === 'portal' || near.k === 'maison'
 ? 'Entrer'
-: near.k === 'heros'
+: near.k === 'heros' || near.k === 'vitrine'
 ? 'Voir'
 : 'Ouvrir';
 t1 =
@@ -13919,6 +15045,13 @@ ROLE[near.e] +
 ' · ' +
 EL[elH(near.e)].n +
 (near.e === tHero ? ' · incarné' : '')
+: near.k === 'vitrine'
+? WT[near.w].title +
+' · niv. ' +
+wLevel(near.w) +
+' · ' +
+EL[wEl(near.w)].n +
+(near.w === tWeap ? ' · en main' : '')
 : near.k === 'guide'
 ? GD
 ? 'Le Guide · la visite continue'
@@ -13944,7 +15077,14 @@ EL[elH(near.e)].n +
 ((save.hv.s.verger || 0) >= 1 ? 'prêtes' : 'en préparation')
 : 'Entrer chez toi';
 alt = near.k === 'portal' && !near.G.open;
-if (near.B && CAT[near.B.t].up && near.k !== 'mine' && near.k !== 'verger' && near.k !== 'heros')
+if (
+near.B &&
+CAT[near.B.t].up &&
+near.k !== 'mine' &&
+near.k !== 'verger' &&
+near.k !== 'heros' &&
+near.k !== 'vitrine'
+)
 t2 = lvOf(near.B) < (CAT[near.B.t].mx || 3) ? 'Améliorer · niv. ' + (lvOf(near.B) + 1) : 'Niveau maximum';
 }
 }
@@ -14001,6 +15141,28 @@ K.pose(H.av, t, H.x, 0);
 H.beam.material.opacity = 0.09 + 0.2 * H.w + 0.02 * Math.sin(t * 2 + H.z);
 H.glow.scale.setScalar(2.2 + 1.8 * H.w + Math.sin(t * 2.2 + H.z) * 0.12);
 H.glow.material.opacity = 0.25 + 0.4 * H.w;
+}
+}
+if (u.expo) {
+const vu = Math.hypot(LB.x - g.position.x, LB.z - g.position.z) < 60,
+nd = u.m.userData.nodes;
+if (nd.dedans) nd.dedans.visible = nd.soufflet.visible = vu;
+if (u.forge) {
+u.forge.visible = vu;
+u.forge.material.opacity = 0.5 + 0.12 * Math.sin(t * 7.3) + 0.08 * Math.sin(t * 13.1);
+}
+for (const A of u.expo) {
+A.piv.visible = A.beam.visible = A.glow.visible = A.pl.visible = vu;
+if (!vu) continue;
+if (A.el !== wEl(A.w)) armExpo(A);
+else if (A.lv !== wLevel(A.w)) armPlaque(A);
+A.k += ((A.w === tWeap ? 1 : 0) - A.k) * Math.min(1, dt * 5);
+if (A.w === 'pistolet') A.piv.rotation.y += dt * 0.45;
+else A.piv.rotation.y = A.sd * 0.35 + Math.sin(t * 0.35 + A.z) * 0.6;
+A.piv.position.y = A.y + Math.sin(t * 1.3 + A.z) * 0.03;
+A.beam.material.opacity = 0.08 + 0.2 * A.k + 0.02 * Math.sin(t * 2 + A.z);
+A.glow.scale.setScalar(1.7 + 1.5 * A.k + Math.sin(t * 2.2 + A.z) * 0.1);
+A.glow.material.opacity = 0.22 + 0.4 * A.k;
 }
 }
 if (u.loot)
@@ -15764,7 +16926,7 @@ nz = N.z + dz * N.sp * dt;
 for (const B of save.vil) {
 const C = CAT[B.t];
 if (C.pass) continue;
-const br = Math.max(0.5, rOf(B) * (B.t === 'hall' ? 1 : 0.8)) + 0.45,
+const br = Math.max(0.5, rOf(B) * (CAT[B.t].fix ? 1 : 0.8)) + 0.45,
 ex = nx - B.x,
 ez = nz - B.z,
 e = Math.hypot(ex, ez);

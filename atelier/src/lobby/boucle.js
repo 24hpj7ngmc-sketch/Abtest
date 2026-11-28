@@ -5,16 +5,16 @@ function lobTurn(dx, dy) {
   LB.pitch = Math.max(-1.3, Math.min(1.3, LB.pitch - dy * 0.0055));
 }
 // les obstacles pleins au sol, en cercles [x, z, rayon] : les poteaux et arbres fixes, ceux du parvis, les bâtiments (les chemins se traversent) ;
-// le Hall, une cathédrale où l'on entre, donne les siens : murs, piliers, socles, autel (cols, calculés à la pose)
+// le Hall (une cathédrale) et la salle d'armes (l'Arsenal), où l'on entre, donnent les leurs : murs, piliers, socles, présentoirs, forge (cols, calculés à la pose)
 function lobCercles() {
   const L = LOBS.slice();
   if (PAY) for (const o of PAY.obs) L.push(o);
   for (const B of save.vil) {
     const C = CAT[B.t];
     if (C.pass) continue;
-    if (B.t === 'hall') {
-      const g = vilV.get(B.id);
-      if (g && g.userData.cols) for (const o of g.userData.cols) L.push(o);
+    const g = C.fix && vilV.get(B.id);
+    if (g && g.userData.cols) {
+      for (const o of g.userData.cols) L.push(o);
       continue;
     }
     const br = rOf(B);
@@ -161,14 +161,18 @@ function lobbyTick(dt, now) {
     for (const G of LGAMES) see({ k: 'portal', G, id: G.id }, G.x, G.z, 7.5);
     for (const B of save.vil) {
       const C = CAT[B.t],
-        u = B.t === 'hall' && vilV.get(B.id) && vilV.get(B.id).userData;
-      // au Hall : la porte ouvre le panneau, comme avant ; dedans, chaque héros exposé se regarde de l'allée (Action ouvre le panneau sur lui)
+        u = C.fix && vilV.get(B.id) && vilV.get(B.id).userData;
+      // au Hall et à l'Arsenal : la porte ouvre le panneau, comme avant ; dedans, chaque héros, chaque arme exposée se regarde de l'allée (Action ouvre le panneau sur lui, sur elle)
       if (u && u.porte) {
         const q = vilMonde(B, u.porte[0], u.porte[1]);
         see({ k: C.act, id: B.t + lvOf(B), B }, q[0], q[1], 4.4);
-        for (const H of u.heroes) {
+        for (const H of u.heroes || []) {
           const a = vilMonde(B, H.x - Math.sign(H.x) * 1.6, H.z);
           see({ k: 'heros', e: H.el, id: 'heros' + H.el, B }, a[0], a[1], 2.3);
+        }
+        for (const A of u.expo || []) {
+          const a = vilMonde(B, A.x - A.sd * 1.55, A.z);
+          see({ k: 'vitrine', w: A.w, id: 'vitrine' + A.w, B }, a[0], a[1], 1.9);
         }
       } else if (C.act) see({ k: C.act, id: B.t + lvOf(B), B }, B.x, B.z, rOf(B) + 3.6);
     }
@@ -251,6 +255,7 @@ function lobbyTick(dt, now) {
     '|' +
     (LB.takeB ? LB.takeB.id : '') +
     (near && near.e ? elH(near.e) : '') +
+    (near && near.w ? wEl(near.w) + wLevel(near.w) : '') +
     '|' +
     save.vil.length +
     '|' +
@@ -293,7 +298,7 @@ function lobbyTick(dt, now) {
             ? 'Parler'
             : near.k === 'portal' || near.k === 'maison'
               ? 'Entrer'
-              : near.k === 'heros'
+              : near.k === 'heros' || near.k === 'vitrine'
                 ? 'Voir'
                 : 'Ouvrir';
         t1 =
@@ -304,32 +309,46 @@ function lobbyTick(dt, now) {
               ' · ' +
               EL[elH(near.e)].n +
               (near.e === tHero ? ' · incarné' : '')
-            : near.k === 'guide'
-              ? GD
-                ? 'Le Guide · la visite continue'
-                : 'Le Guide · pose-lui une question'
-              : near.k === 'portal'
-                ? near.G.open
-                  ? 'Entrer · ' + near.G.t
-                  : 'Portail scellé'
-                : near.k === 'hall'
-                  ? 'Hall des héros · ' + EL[tHero].hero
-                  : near.k === 'armes'
-                    ? "Salle d'armes · " + WT[tWeap].title.toLowerCase() + ' niv. ' + wLevel(tWeap)
-                    : near.k === 'musee'
-                      ? 'Musée · ' + lootN() + ' / ' + LOOT.length
-                      : near.k === 'shop'
-                        ? 'Marchand · ' + save.gold + ' or'
-                        : near.k === 'mine'
-                          ? "Mine d'étoiles · +" + mineG() + ' or par partie'
-                          : near.k === 'taverne'
-                            ? 'Taverne · ' + save.q.filter(q => q.p >= q.n).length + ' défi(s) à réclamer'
-                            : near.k === 'verger'
-                              ? 'Verger céleste · provisions ' +
-                                ((save.hv.s.verger || 0) >= 1 ? 'prêtes' : 'en préparation')
-                              : 'Entrer chez toi';
+            : near.k === 'vitrine'
+              ? WT[near.w].title +
+                ' · niv. ' +
+                wLevel(near.w) +
+                ' · ' +
+                EL[wEl(near.w)].n +
+                (near.w === tWeap ? ' · en main' : '')
+              : near.k === 'guide'
+                ? GD
+                  ? 'Le Guide · la visite continue'
+                  : 'Le Guide · pose-lui une question'
+                : near.k === 'portal'
+                  ? near.G.open
+                    ? 'Entrer · ' + near.G.t
+                    : 'Portail scellé'
+                  : near.k === 'hall'
+                    ? 'Hall des héros · ' + EL[tHero].hero
+                    : near.k === 'armes'
+                      ? "Salle d'armes · " + WT[tWeap].title.toLowerCase() + ' niv. ' + wLevel(tWeap)
+                      : near.k === 'musee'
+                        ? 'Musée · ' + lootN() + ' / ' + LOOT.length
+                        : near.k === 'shop'
+                          ? 'Marchand · ' + save.gold + ' or'
+                          : near.k === 'mine'
+                            ? "Mine d'étoiles · +" + mineG() + ' or par partie'
+                            : near.k === 'taverne'
+                              ? 'Taverne · ' + save.q.filter(q => q.p >= q.n).length + ' défi(s) à réclamer'
+                              : near.k === 'verger'
+                                ? 'Verger céleste · provisions ' +
+                                  ((save.hv.s.verger || 0) >= 1 ? 'prêtes' : 'en préparation')
+                                : 'Entrer chez toi';
         alt = near.k === 'portal' && !near.G.open;
-        if (near.B && CAT[near.B.t].up && near.k !== 'mine' && near.k !== 'verger' && near.k !== 'heros')
+        if (
+          near.B &&
+          CAT[near.B.t].up &&
+          near.k !== 'mine' &&
+          near.k !== 'verger' &&
+          near.k !== 'heros' &&
+          near.k !== 'vitrine'
+        )
           t2 = lvOf(near.B) < (CAT[near.B.t].mx || 3) ? 'Améliorer · niv. ' + (lvOf(near.B) + 1) : 'Niveau maximum';
       }
     }
@@ -390,6 +409,31 @@ function lobbyTick(dt, now) {
         H.beam.material.opacity = 0.09 + 0.2 * H.w + 0.02 * Math.sin(t * 2 + H.z);
         H.glow.scale.setScalar(2.2 + 1.8 * H.w + Math.sin(t * 2.2 + H.z) * 0.12);
         H.glow.material.opacity = 0.25 + 0.4 * H.w;
+      }
+    }
+    // à l'Arsenal, les armes exposées tournent lentement sous leur lumière ; l'arme en main a la plus forte ; la plaque et la couleur suivent le niveau et l'élément.
+    // De loin (plus de 60 m), l'intérieur n'est pas dessiné (présentoirs, forge, charpente, armes, lumières)
+    if (u.expo) {
+      const vu = Math.hypot(LB.x - g.position.x, LB.z - g.position.z) < 60,
+        nd = u.m.userData.nodes;
+      if (nd.dedans) nd.dedans.visible = nd.soufflet.visible = vu;
+      if (u.forge) {
+        u.forge.visible = vu;
+        u.forge.material.opacity = 0.5 + 0.12 * Math.sin(t * 7.3) + 0.08 * Math.sin(t * 13.1);
+      }
+      for (const A of u.expo) {
+        A.piv.visible = A.beam.visible = A.glow.visible = A.pl.visible = vu;
+        if (!vu) continue;
+        if (A.el !== wEl(A.w)) armExpo(A);
+        else if (A.lv !== wLevel(A.w)) armPlaque(A);
+        A.k += ((A.w === tWeap ? 1 : 0) - A.k) * Math.min(1, dt * 5);
+        // le pistolet tourne sur lui-même ; les armes longues se balancent de trois quarts, sans jamais montrer leur bout
+        if (A.w === 'pistolet') A.piv.rotation.y += dt * 0.45;
+        else A.piv.rotation.y = A.sd * 0.35 + Math.sin(t * 0.35 + A.z) * 0.6;
+        A.piv.position.y = A.y + Math.sin(t * 1.3 + A.z) * 0.03;
+        A.beam.material.opacity = 0.08 + 0.2 * A.k + 0.02 * Math.sin(t * 2 + A.z);
+        A.glow.scale.setScalar(1.7 + 1.5 * A.k + Math.sin(t * 2.2 + A.z) * 0.1);
+        A.glow.material.opacity = 0.22 + 0.4 * A.k;
       }
     }
     if (u.loot)

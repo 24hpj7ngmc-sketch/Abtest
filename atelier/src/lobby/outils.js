@@ -301,6 +301,7 @@ function lobAct(n) {
   } else if (N.k === 'hall') hallOpen();
   else if (N.k === 'heros') hallOpen(N.e);
   else if (N.k === 'armes') openTree('arme');
+  else if (N.k === 'vitrine') armesVoir(N.w);
   else if (N.k === 'musee') lootOpen();
   else if (N.k === 'shop') shopOpen();
   else if (N.k === 'maison') homeOpen();

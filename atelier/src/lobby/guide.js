@@ -76,7 +76,7 @@ const GSTEPS = [
   {
     b: 'armes',
     t: () =>
-      "La Salle d'armes : six armes, les mêmes aux deux portails. Leurs arbres se paient en or céleste. Ouvre-la, regarde les onglets, puis referme.",
+      "La Salle d'armes, notre arsenal : tes six armes y sont exposées, la forge est au fond. Entre, approche-toi d'une arme et touche Action : ses arbres (payés en or céleste), son élément, et elle passe en main. Regarde les onglets, puis referme.",
     ok: () => {
       if (!$('tree').hidden) GD.op = 'tree';
       return GD.op === 'tree' && $('tree').hidden;
@@ -174,8 +174,8 @@ function guideAt(S) {
   if (S.at) return S.at();
   if (!S.b) return null;
   const B = gB(S.b),
-    u = B.t === 'hall' && vilV.get(B.id) && vilV.get(B.id).userData;
-  // le Hall, une cathédrale : la colonne de lumière se pose devant sa grande porte
+    u = CAT[B.t].fix && vilV.get(B.id) && vilV.get(B.id).userData;
+  // le Hall (une cathédrale) et la salle d'armes (l'Arsenal) : la colonne de lumière se pose devant leur grande porte
   return u && u.porte ? vilMonde(B, u.porte[0], u.porte[1] + 0.6) : gDoor(B, S.side);
 }
 function guideStep() {
@@ -300,7 +300,7 @@ function guideTopics() {
         B('maison', 'Là où tu te réveilles ; réglages. ' + up('maison') + '.'),
         B(
           'armes',
-          'Les arbres de tes six armes. Prépare un affûtage (dégâts en plus à la prochaine partie). ' +
+          "L'arsenal de tes six armes : entre, approche-toi d'une arme exposée et touche Action pour ouvrir ses arbres, choisir son élément et la prendre en main (la porte ouvre l'arme en main). La forge du fond prépare un affûtage (dégâts en plus à la prochaine partie). " +
             up('armes') +
             '.'
         ),

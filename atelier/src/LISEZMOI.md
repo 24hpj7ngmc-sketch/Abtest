@@ -4,7 +4,7 @@ Le jeu livré est une seule page. `build.py` la fabrique en mettant bout à bout
 
 - `page/page.html` : l'enveloppe (les panneaux, les boutons). `page/style.css` : la feuille de style.
 - Tout le reste est du JavaScript, mis en forme par prettier (`.prettierrc.json` à la racine ; `prettier --write "src/**/*.js" src/page/style.css` après une modification).
-- Les modèles 3D du lobby sont à part, dans `gfx/`. Le Hall des héros, une cathédrale où l'on entre et où les six héros sont exposés, a son propre fichier : `gfx/models/cathedrale.js` (V13.4, assemblé après `lobby.js` dans `build.py`).
+- Les modèles 3D du lobby sont à part, dans `gfx/`. Le Hall des héros, une cathédrale où l'on entre et où les six héros sont exposés, a son propre fichier : `gfx/models/cathedrale.js` (V13.4, assemblé après `lobby.js` dans `build.py`). La salle d'armes, l'Arsenal où l'on entre et où les six armes sont exposées devant la forge, aussi : `gfx/models/arsenal.js` (V13.5, après `cathedrale.js` ; il fournit aussi `arm.expo`, une arme exposée sans gants ni manches).
 - **Depuis la V11.1 il n'y a plus aucune règle de mini-jeu ici** : ni partie, ni ennemis, ni défenses. Ce que le lobby a besoin de savoir de L'Île des Cinq pour ses textes est dans `interface/tables.js`.
 
 
@@ -47,7 +47,7 @@ L'Île céleste : le lobby, son village, ses bâtiments, le Guide, les deux port
 - `terrain.js` (174 lignes) : Le terrain de l'île : grille de sommets sculptable, hauteurs, rayon selon l'évolution, la liste des mini-jeux (LGAMES), couleurs du sol, mer de nuages.
 - `portails.js` (147 lignes) : Les portails sur leur parvis au nord, la montagne, les parcelles et le relief de base de l'île (terraBase).
 - `chemins.js` (283 lignes) : Le réseau de chemins entre les bâtiments, les parcelles, et l'aménagement du sol qui en découle (terraPlan).
-- `village.js` (694 lignes) : Le village : catalogue des bâtiments (CAT), poser, ranger, améliorer, recaler sur le sol, village de départ.
+- `village.js` : Le village : catalogue des bâtiments (CAT), poser, ranger, améliorer, recaler sur le sol, village de départ ; les héros exposés au Hall, les armes exposées à l'Arsenal (armExpo, armPlaque).
 - `evolution.js` (65 lignes) : Le renom et la seule progression : l'évolution de l'île (niveau du Hall), qui agrandit l'île.
 - `recoltes.js` (173 lignes) : Les récoltes : chaque bâtiment qui produit a une réserve, qu'on ramasse en passant ; préparatifs pour la prochaine partie.
 - `taverne.js` (216 lignes) : La taverne et ses défis ; le panneau du renom.
@@ -58,9 +58,9 @@ L'Île céleste : le lobby, son village, ses bâtiments, le Guide, les deux port
 - `arme.js` (109 lignes) : L'outil Arme : l'arme du joueur en main à la couleur de son élément, qui suit la course et recule devant un mur (lobRayon) ; « Montrer » ; ce que les autres joueurs en voient (armeNet, armePub).
 - `dev.js` (111 lignes) : Le mode dev du lobby : raccourcis de test.
 - `carte.js` (261 lignes) : La carte du lobby : mini-carte, grande carte et tous les réglages (son, mode de tir, saut auto, mode dev, multi).
-- `batiments.js` (238 lignes) : Les panneaux des bâtiments : hall des héros, maison, marchand céleste, musée.
+- `batiments.js` : Les panneaux des bâtiments : hall des héros, maison, marchand céleste, musée ; armesVoir (une arme exposée à l'Arsenal ouvre le panneau de la salle d'armes sur elle).
 - `gains.js` (41 lignes) : Le barème commun aux deux portails (GAINS, payOut), les noms du butin.
-- `boucle.js` (458 lignes) : La boucle du lobby : se déplacer (obstacles : lobCercles), tourner, ramasser les récoltes, dessiner (lobbyTick).
+- `boucle.js` : La boucle du lobby : se déplacer (obstacles : lobCercles, dont les murs du Hall et de l'Arsenal), tourner, ramasser les récoltes, ce qu'on a devant soi (héros, armes exposées), dessiner (lobbyTick).
 - `multi.js` (595 lignes) : Le lobby à plusieurs : tous ceux du salon sur l'île de l'hôte (islVisit, islHome), les autres joueurs affichés, le bouton Rejoindre (lobNet).
 - `toit-multi.js` (66 lignes) : Le relais du multi pour Dernier Toit : le lobby fait le facteur entre les téléphones (toitEtat, toitNet).
 - `ile.js` (287 lignes) : L'Île des Cinq derrière le premier portail : le jeu tourne dans son cadre (ile/ile-pour-lobby.js) ; le lobby l'ouvre, lui donne ses bonus, paie au message « fin », fait le facteur du multi.

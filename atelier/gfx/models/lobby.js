@@ -1,6 +1,6 @@
 // L'ÎLE CÉLESTE — le lobby : une île qui flotte au-dessus des nuages, où chaque joueur bâtit son village et sculpte son relief.
-// vil.dessous (roche sous l'île), vil.maison, vil.musee, vil.armes, vil.fontaine (bâtiments), lob.astre (astrolabe),
-// lob.socle + lob.butin (trophées du musée), lob.etoile, lob.banniere, lob.ilot (îlots à la dérive), lob.sceau (chaînes du portail fermé). Le Hall des héros (vil.hall) est dans cathedrale.js.
+// vil.dessous (roche sous l'île), vil.maison, vil.musee, vil.fontaine (bâtiments), lob.astre (astrolabe),
+// lob.socle + lob.butin (trophées du musée), lob.etoile, lob.banniere, lob.ilot (îlots à la dérive), lob.sceau (chaînes du portail fermé). Le Hall des héros (vil.hall) est dans cathedrale.js, la salle d'armes (vil.armes, l'Arsenal) dans arsenal.js.
 {
 const {PAL,TAU}=K,PI=Math.PI;
 const MARB=0xe9e4d8,MARBD=0xcfc8ba,NUIT=0x2c3a78,NUITD=0x1c2553,NUITL=0x4a5aa8,ORC=PAL.gold,ROSE=0xe7c7d8;
@@ -153,29 +153,6 @@ const musee1=ctx=>{const b=K.make(431),slots=[];
   b.add(K.box(1.6,.04,3.6),{p:[0,.32,3.4],c:PAL.purple,c2:PAL.purpleD,jit:0});
   return{parts:[{name:'body',b}],bake:{ground:.15,groundH:.6},slots,rad:6.9};};
 
-// ---------------------------------------------------------------- vil.armes : la salle d'armes — forge de pierre, grande cheminée, enclume, râtelier d'épées et cinq boucliers aux couleurs des héros (façade côté +Z)
-const armes1=ctx=>{const b=K.make(441);
-  b.add(K.box(8,.3,7),{p:[0,.15,.3],c:PAL.stoneD,c2:PAL.stone});
-  SH.blockWall(b,{p:[0,.3,-2.6],w:7,h:3.4,d:.5,rows:6,cols:7});for(const sd of[1,-1])SH.blockWall(b,{p:[sd*3.3,.3,-.6],r:[0,PI/2,0],w:4,h:3.4,d:.5,rows:6,cols:4});
-  // avancée de façade sur deux poteaux, auvent, toit d'ardoise
-  for(const sd of[1,-1]){b.add(K.box(.36,3.4,.36),{p:[sd*3.3,2,2.2],c:PAL.woodD,c2:PAL.wood});b.add(K.box(.3,.3,1.2),{p:[sd*3.3,3.3,1.75],r:[.6,0,0],c:PAL.wood});}
-  b.add(K.box(7.3,.3,.36),{p:[0,3.72,2.2],c:PAL.woodD});
-  b.add(K.box(8.2,2.3,6.2,1,0),{p:[0,4.95,-.2],c:0x3a3f52,c2:0x5a6079,jit:.05});b.add(K.box(8.3,.14,.2),{p:[0,6.12,-.2],c:PAL.iron,ch:'s'});
-  // cheminée de forge : foyer rougeoyant, conduit, braises
-  b.add(K.box(2,2.2,1.5),{p:[-2,1.4,-1.7],c:PAL.stoneD,c2:PAL.stone});b.add(K.box(1.3,.9,.2),{p:[-2,1.25,-.95],c:0xff7a2e,c2:0xffd27a,ch:'g',jit:0});
-  b.add(K.box(1.2,5,1.1,.8,.8),{p:[-2,5,-1.8],c:PAL.stoneD,c2:PAL.stone});b.add(K.box(1.3,.2,1.2),{p:[-2,7.55,-1.8],c:PAL.stoneDD});b.add(K.ico(.3,0),{p:[-2,7.75,-1.8],c:0xff9d5c,ch:'g',jit:0});
-  // enclume sur son billot, marteau, seau
-  b.add(K.cyl(.42,.46,.7,8),{p:[-.2,.65,.9],c:PAL.barkD,c2:PAL.bark});b.add(K.box(.9,.22,.4),{p:[-.2,1.22,.9],c:PAL.iron,c2:PAL.ironL,ch:'s'});b.add(K.box(.5,.2,.32,.7,1),{p:[-.2,1.05,.9],c:PAL.iron,ch:'s'});b.add(K.cone(.14,.5,5),{p:[.45,1.22,.9],r:[0,0,-PI/2],c:PAL.ironL,ch:'s'});
-  b.add(K.box(.3,.2,.2),{p:[-.35,1.44,.86],r:[0,.4,0],c:PAL.steel,ch:'s'});b.add(K.cyl(.035,.035,.55,5),{p:[-.12,1.44,.96],r:[0,.4,PI/2],c:PAL.wood});
-  // râtelier d'épées contre le mur, boucliers des cinq héros sous l'auvent
-  b.add(K.box(2.4,.12,.3),{p:[1.8,1.1,-2.2],c:PAL.wood});b.add(K.box(2.4,.12,.3),{p:[1.8,2.3,-2.2],c:PAL.wood});
-  for(let i=0;i<5;i++){const x=.9+i*.45;b.add(K.box(.09,1.5,.03),{p:[x,1.9,-2.15],c:PAL.steel,c2:0xf2f6fa,ch:'s',jit:0});b.add(K.box(.34,.07,.08),{p:[x,1.12,-2.15],c:ORC,ch:'s'});b.add(K.cyl(.035,.035,.3,5),{p:[x,.94,-2.15],c:PAL.woodD});}
-  ELK.forEach((el,i)=>{const x=-2.8+i*1.4,E=K.EL[el];b.add(K.cyl(.46,.46,.1,10),{p:[x,3.72,2.42],r:[PI/2,0,0],c:E.dark,c2:E.main});b.add(K.torus(.46,.05,4,12),{p:[x,3.72,2.46],c:PAL.ironL,ch:'s',jit:0});b.add(K.ico(.12,0),{p:[x,3.72,2.52],c:E.glow,ch:'g',jit:0});});
-  // mannequin d'entraînement, tonneau d'eau
-  b.add(K.cyl(.08,.1,1.9,6),{p:[2.6,1.25,1.4],c:PAL.wood});b.add(K.box(1.3,.12,.12),{p:[2.6,1.75,1.4],c:PAL.wood});b.add(K.ico(.28,1),{p:[2.6,2.35,1.4],c:PAL.rope});b.add(K.cyl(.34,.3,.9,8),{p:[2.6,1.35,1.4],c:PAL.rope,c2:PAL.sand});
-  b.add(K.cyl(.4,.36,.9,9),{p:[1.2,.75,1.9],c:PAL.wood,c2:PAL.woodL});b.add(K.cyl(.36,.36,.03,9),{p:[1.2,1.17,1.9],c:0x3fa9ff,ch:'s',jit:0});
-  return{parts:[{name:'body',b}],bake:{ground:.18,groundH:.7},rad:5.4};};
-
 // ---------------------------------------------------------------- vil.fontaine : fontaine d'étoiles — bassin rond, vasque, eau claire, étoile qui tourne
 MODELS['vil.fontaine']=ctx=>{const b=K.make(451),st=K.make(452);
   SH.bricks(b,{r:2.1,h:.6,rows:1,n:14,y:0,d:.45,c:MARBD});b.add(K.cyl(2.2,2.2,.1,18),{p:[0,.63,0],c:MARB,c2:0xffffff});b.add(K.cyl(1.72,1.72,.06,18),{p:[0,.67,0],c:NUITD,jit:0});
@@ -220,8 +197,6 @@ const taverne1=ctx=>{const b=K.make(471);
 MODELS['vil.maison']=maison1;
 
 MODELS['vil.musee']=musee1;
-
-MODELS['vil.armes']=armes1;
 
 MODELS['vil.marchand']=ctx=>MODELS['set.etal'](ctx);
 
