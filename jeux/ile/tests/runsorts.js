@@ -148,11 +148,11 @@ const path = require('path');
   ok(
     'Roc en Feu : Onde de choc de Feu (×' +
       (F.dmg / O.dmg).toFixed(3) +
-      " contre la Nature), l'ennemi brûle (" +
+      " contre la Nature), l'ennemi brûle et reste étourdi (" +
       F.burn.toFixed(2) +
       '), événement ' +
       F.ev,
-    F.ev === 'feu' && Math.abs(F.dmg / O.dmg - 1.5) < 0.01 && F.burn > 0
+    F.ev === 'feu' && Math.abs(F.dmg / O.dmg - 1.5) < 0.01 && F.burn > 0 && F.stun >= 2
   );
   ok(
     'Roc sans choix : inchangé (terre, étourdit ' + O.stun.toFixed(1) + ' s, ne brûle pas)',

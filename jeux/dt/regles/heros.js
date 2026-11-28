@@ -537,10 +537,9 @@ function useHeroUlt(S) {
         S.sortEl = null;
         if (mort) continue;
         // V5.3 : l'étourdissement est l'effet de la Terre : avec un autre élément choisi, c'est le sien (sortEffet)
-        if (!ec) {
-          if (bigZ(Z.ty[i])) Z.slow[i] = Math.max(Z.slow[i], 3);
-          else Z.root[i] = 2.5 + m.uDur;
-        }
+        // V5.4 (sa décision du 28/11) : l'Onde de choc étourdit quel que soit l'élément choisi ; l'effet de l'élément s'ajoute
+        if (bigZ(Z.ty[i])) Z.slow[i] = Math.max(Z.slow[i], 3);
+        else Z.root[i] = 2.5 + m.uDur;
         if (st === 5) {
           Z.st[i] = 1;
           Z.y[i] = 0;
@@ -550,7 +549,7 @@ function useHeroUlt(S) {
         S.sortEl = ec;
         const mort = hurtZ(S, i, 90 * pw, 'p');
         S.sortEl = null;
-        if (!mort && !ec) Z.root[i] = 2;
+        if (!mort) Z.root[i] = 2;
       }
     }
   } else if (h === 'elec') {

@@ -205,7 +205,7 @@ const path = require('path');
       return { ok, et, vig: HX.vC };
     });
     if (eh) T('Roc en Feu : l\'Onde de choc brûle', r.ok && r.et.burn > 0, JSON.stringify(r.et));
-    if (eh) T('Roc en Feu : l\'Onde de choc n\'étourdit plus (l\'effet est celui du Feu)', r.et.root === 0, JSON.stringify(r.et));
+    if (eh) T('Roc en Feu : l\'Onde de choc étourdit aussi (V5.4 : quel que soit l\'élément)', r.et.root > 0, JSON.stringify(r.et));
     else T('Roc sans élément choisi : l\'Onde de choc étourdit comme avant, sans brûler', r.ok && r.et.root > 0 && r.et.burn === 0, JSON.stringify(r.et));
     if (eh) T('Roc en Feu : le voile de l\'Onde de choc est orange (Feu)', r.vig === 0xff6a3d, hex(r.vig));
   }

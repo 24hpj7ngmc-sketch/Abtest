@@ -462,8 +462,9 @@ function quake(s, h) {
   for (const e of s.enemies) {
     if (e.hp <= 0 || e.k === 'air' || Math.hypot(e.x - h.x, e.z - h.z) > QR + (e.boss ? 2 : 0)) continue;
     hurtE(e, d * mult(E, e.el, e.boss, BAL.strong + s.m.strong), true, true);
+    // V2.7 (sa décision du 28/11) : l'Onde de choc étourdit quel que soit l'élément choisi ; l'effet de l'élément s'ajoute
     if (E !== 'terre') elState(s, e, E, cn);
-    else if (e.boss) e.slow = Math.max(e.slow, QT);
+    if (e.boss) e.slow = Math.max(e.slow, QT);
     else {
       e.stun = Math.max(e.stun, QT);
       e.imm = e.stun + 1;
@@ -509,10 +510,9 @@ function charge(s, h, a) {
         end = h.m.spB2 && Math.hypot(e.x - ex, e.z - ez) < BAL.chargeR + (e.boss ? 2 : 0);
       if (!on && !end) continue;
       hurtE(e, dmg * mult(E, e.el, e.boss, BAL.strong + s.m.strong), false, true);
-      if (E !== 'terre') {
-        if (!e.boss) knock(s, e, 4);
-        elState(s, e, E, cn);
-      } else if (e.boss) e.slow = Math.max(e.slow, 2);
+      // V2.7 : la charge de l'Avant-garde renverse et étourdit quel que soit l'élément ; l'effet de l'élément s'ajoute
+      if (E !== 'terre') elState(s, e, E, cn);
+      if (e.boss) e.slow = Math.max(e.slow, 2);
       else {
         knock(s, e, 4);
         e.stun = Math.max(e.stun, BAL.chargeStun);
